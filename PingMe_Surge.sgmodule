@@ -1,0 +1,14 @@
+#!name=PingMe Auto CheckIn
+#!desc=PingMe daily check-in + video bonus, multi-account support
+#!icon=https://raw.githubusercontent.com/axhani/icon/refs/heads/main/pingme&wetalk.png
+#!system=ios
+
+[MITM]
+hostname = %APPEND% api.pingmeapp.net
+
+[Script]
+# 1. 账号抓取 (HTTP Request)
+PingMe账号抓取 = type=http-request,pattern=^https:\/\/api\.pingmeapp\.net\/app\/queryBalanceAndBonus,requires-body=false,timeout=60,script-path=https://raw.githubusercontent.com/mickeu/Egern/refs/heads/main/PingMe_capture.js
+
+# 2. 定时签到 (Cron Schedule) - 每 3 小时执行一次
+PingMe签到 = type=cron,cronexp="0 */3 * * *",timeout=240,wake-system=1,script-path=https://raw.githubusercontent.com/mickeu/Egern/refs/heads/main/PingMe_task.js
