@@ -1,0 +1,11 @@
+#!name=WeTalk 账号抓取
+#!desc=抓取 WeTalk 登录 token 并保存，供签到模块使用。\n作者：TG@ZenMoFiShi (Egern port)
+#!icon=https://raw.githubusercontent.com/Rabbit-Spec/Surge/Master/Conf/icon/Proxy.png
+
+[Script]
+# 💡 核心抓包脚本：拦截请求头以获取 Token
+WeTalk 账号抓取 = type=http-request,pattern=^https://api\.wetalkapp\.com/app/queryBalanceAndBonus,script-path=https://github.com/158212892/QuantumultXMark/raw/refs/heads/main/My/Scripts/WeTalk_capture.js,timeout=10,requires-body=0
+
+[MITM]
+# 💡 将域名追加进 MITM 解密列表
+hostname = %APPEND% api.wetalkapp.com
