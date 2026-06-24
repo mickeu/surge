@@ -1,0 +1,15 @@
+#!name=PingMe单帐号一体化(Surge优化版)
+#!desc=PingMe每日自动签到与看视频任务。安装后请完全退出App并重新进入“我的/钱包”页面抓取Cookie。原作者: @ZenMoFiShi & 奶思
+#!icon=https://raw.githubusercontent.com/axhani/icon/refs/heads/main/pingme&wetalk.png
+#!system=ios
+
+[Script]
+# 1. 抓取 Cookie 脚本（移除了逗号后面的空格，防止 Surge 解析失败）
+PingMe获取签到参数 = type=http-request,pattern=^https:\/\/api\.pingmeapp\.net\/app\/queryBalanceAndBonus,script-path=https://raw.githubusercontent.com/fmz200/wool_scripts/main/Scripts/cookie/get_cookie.js,timeout=60
+
+# 2. 定时自动签到脚本（每3小时执行一次）
+PingMe签到 = type=cron,cronexp="0 */3 * * *",script-path=https://raw.githubusercontent.com/fmz200/wool_scripts/main/Scripts/PingMe/PingMeSignin.js,timeout=300,script-update-interval=0
+
+[MITM]
+# 模块模式下，%APPEND% 关键字才会生效
+hostname = %APPEND% api.pingmeapp.net
