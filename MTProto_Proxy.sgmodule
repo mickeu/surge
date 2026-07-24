@@ -1,7 +1,7 @@
 #!name=MTProto Proxy
 #!desc=MTProto 代理模块，支持 Telegram 加速
 #!author=自定义
-#!icon=📡
+#!icon=https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/Telegram_05.png
 
 [MTProto]
 interface = 0.0.0.0
