@@ -1,0 +1,10 @@
+#!name=MTProto Proxy
+#!desc=MTProto 代理模块，支持 Telegram 加速
+#!author=自定义
+#!icon=📡
+
+[MTProto]
+interface = 0.0.0.0
+port = 5753
+secret = 0c28a2f5a59025491c6bea2805ad1a4c
+ipv6 = true
