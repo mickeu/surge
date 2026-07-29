@@ -7,6 +7,14 @@
 
 const ckKey = 'pingme_capture_v3';
 
+// 检查模块开关（通过 #!arguments 传递）
+const captureEnabled = $argument || 'true';
+if (captureEnabled === 'false') {
+    console.log('⏸ PingMe 已关闭，跳过抓参');
+    $done();
+    return;
+}
+
 const url = $request.url;
 const headers = $request.headers;
 
