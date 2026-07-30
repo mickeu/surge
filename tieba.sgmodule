@@ -1,5 +1,5 @@
 #!name=🐻 百度贴吧 [签到]
-#!desc=每日定时签到。打开百度贴吧APP点击"我的"即可自动获取Cookie（静默保存，不弹通知）。默认每天 0:30 和 12:30 签到，可自定义签到时间。 | 原作者: @sazs34 | mickeu修改适配Surge
+#!desc=每日定时签到。打开百度贴吧APP点击"我的"即可自动获取Cookie，抓取成功会弹通知。默认每天 0:30 和 12:30 签到，可自定义签到时间。 | 原作者: @sazs34 | mickeu修改适配Surge
 #!icon=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Action/Baidu_Tieba.png
 #!system=ios
 #!arguments=sign_cron:"30 0,12 * * *",cookie_enabled:true
