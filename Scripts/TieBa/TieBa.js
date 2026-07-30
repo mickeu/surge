@@ -48,7 +48,7 @@ function mainCookie() {
   if (headerCookie && headerCookie.includes('BDUSS=')) {
     $persistentStore.write(headerCookie, ckKey);
     console.log('✅ 百度贴吧Cookie保存成功');
-    $notification.post('✅ 百度贴吧', '', 'Cookie获取成功');
+    $notification.post('✅ 百度贴吧', '', 'Cookie获取成功', { url: undefined });
   } else {
     console.log('❌ 写入Cookie失败, BDUSS值缺失.');
   }
