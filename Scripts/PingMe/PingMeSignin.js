@@ -27,7 +27,10 @@ const fakeDeviceId = genFakeDeviceId();
         // 1. 读取存储的凭证
         const raw = $persistentStore.read(ckKey);
         if (!raw) {
-            $notification.post('❌ PingMe签到', '', '请先获取PingMe签到参数，打开PingMe触发一次');
+            $notification.post('❌ PingMe签到', '', '请先获取PingMe签到参数，打开PingMe触发一次', {
+                sound: true,
+                'auto-dismiss': false
+            });
             $done();
             return;
         }
@@ -36,7 +39,10 @@ const fakeDeviceId = genFakeDeviceId();
         try {
             capture = JSON.parse(raw);
         } catch (e) {
-            $notification.post('❌ PingMe签到', '', '参数损坏，请重新打开PingMe抓参');
+            $notification.post('❌ PingMe签到', '', '参数损坏，请重新打开PingMe抓参', {
+                sound: true,
+                'auto-dismiss': false
+            });
             $done();
             return;
         }
@@ -129,14 +135,18 @@ const fakeDeviceId = genFakeDeviceId();
             // ignore
         }
 
-        // 6. 发送通知（消息放body，原版格式）
+        // 6. 发送通知（消息放body，带声音，不自动消失，确保进通知中心）
         $notification.post('🎉 PingMe签到完成', '', logs.join('\n'), {
-            'media-url': NOTIFY_ICON
+            'media-url': NOTIFY_ICON,
+            sound: true,
+            'auto-dismiss': false
         });
 
     } catch (err) {
         $notification.post('❌ PingMe签到失败', '', logs.join('\n') + '\n' + (err.message || String(err)), {
-            'media-url': NOTIFY_ICON
+            'media-url': NOTIFY_ICON,
+            sound: true,
+            'auto-dismiss': false
         });
     }
 

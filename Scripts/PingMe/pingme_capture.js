@@ -24,8 +24,11 @@ if (url.includes('/app/queryBalanceAndBonus')) {
     };
     $persistentStore.write(JSON.stringify(capture), ckKey);
     console.log('✅ PingMe 参数已保存');
-    // 通知消息放在 body 位置（第三个参数），原版脚本格式如此
-    $notification.post('✅ PingMe 获取成功', '', '现在可以关闭抓参了');
+    // 通知消息放在 body 位置（第三个参数），带声音，确保进通知中心
+    $notification.post('✅ PingMe 获取成功', '', '现在可以关闭抓参了', {
+        sound: true,
+        'auto-dismiss': false
+    });
     console.log('PingMe 获取到的内容为：' + url);
 } else {
     console.log('⚠️ URL 不匹配，跳过抓参');
