@@ -150,13 +150,11 @@ const fakeDeviceId = genFakeDeviceId();
 
         // 6. 发送通知（消息放body，确保进通知中心）
         $notification.post('🎉 PingMe签到完成', '', logs.join('\n'), {
-            'media-url': NOTIFY_ICON,
             sound: true
         });
 
     } catch (err) {
         $notification.post('❌ PingMe签到失败', '', logs.join('\n') + '\n' + (err.message || String(err)), {
-            'media-url': NOTIFY_ICON,
             sound: true
         });
     }
