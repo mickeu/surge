@@ -12,9 +12,15 @@ const ckKey = 'pingme_capture_v3';
 console.log('🔔 PingMe 抓参脚本被触发');
 console.log('URL: ' + $request.url);
 
-// 检查模块参数开关（可能为字符串 "false" 或布尔值 false）
-const captureEnabled = $argument !== undefined && $argument !== null ? $argument : 'true';
-console.log('📋 capture参数值: ' + captureEnabled + ' (类型: ' + typeof captureEnabled + ')');
+// 检查模块参数开关（Sub-Store 格式：argument="capture={{{capture}}}"）
+const captureArg = $argument || 'true';
+let captureEnabled;
+if (typeof captureArg === 'string' && captureArg.includes('=')) {
+    captureEnabled = captureArg.split('=')[1];
+} else {
+    captureEnabled = captureArg;
+}
+console.log('📋 capture参数原始值: ' + $argument + ' (类型: ' + typeof $argument + ') 解析后: ' + captureEnabled);
 if (captureEnabled === false || captureEnabled === 'false') {
     console.log('⏸ PingMe 抓参已关闭（capture=false），跳过');
     $done();

@@ -7,10 +7,10 @@
 
 [Script]
 # 1. 抓取 Cookie 脚本（参数 capture=true 开启抓参，capture=false 关闭）
-PingMe获取签到参数 = type=http-request,pattern=^https:\/\/api\.pingmeapp\.net\/app\/queryBalanceAndBonus,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/PingMe/pingme_capture.js,argument={{{capture}}},timeout=60
+PingMe获取签到参数 = type=http-request,pattern=^https:\/\/api\.pingmeapp\.net\/app\/queryBalanceAndBonus,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/PingMe/pingme_capture.js,argument="capture={{{capture}}}",timeout=60
 
 # 2. 定时自动签到脚本（每3小时执行一次，每运行一次随机生成设备ID）
-PingMe签到 = type=cron,cronexp="{{{cronexp}}}",script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/PingMe/PingMeSignin.js,argument={{{policy}}},timeout=300,script-update-interval=0
+PingMe签到 = type=cron,cronexp="{{{cronexp}}}",script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/PingMe/PingMeSignin.js,argument="policy={{{policy}}}",timeout=300,script-update-interval=0
 
 [MITM]
 # 模块模式下，%APPEND% 关键字才会生效

@@ -14,7 +14,13 @@ const VIDEO_DELAY = 10000;
 const NOTIFY_ICON = 'https://raw.githubusercontent.com/axhani/icon/refs/heads/main/pingme&wetalk.png';
 
 // 从模块参数读取策略设置（默认 DIRECT）
-const policy = $argument !== undefined && $argument !== null ? $argument : 'DIRECT';
+const policyArg = $argument || 'DIRECT';
+let policy;
+if (typeof policyArg === 'string' && policyArg.includes('=')) {
+    policy = policyArg.split('=')[1];
+} else {
+    policy = policyArg;
+}
 
 // 每运行一次重新生成一个固定的伪造设备ID，整次运行所有视频都用同一个设备ID
 const fakeDeviceId = genFakeDeviceId();
