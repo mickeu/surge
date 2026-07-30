@@ -34,7 +34,13 @@ if (typeof $request !== 'undefined') {
   }
 } else {
   // —— 签到模式 ——
-  mainSign();
+  mainSign().then(function() {
+    $done();
+  }).catch(function(err) {
+    console.log('❌ 签到异常: ' + err);
+    $notification.post('贴吧签到', '', '签到异常：' + err);
+    $done();
+  });
 }
 
 function mainCookie() {
@@ -42,6 +48,7 @@ function mainCookie() {
   if (headerCookie && headerCookie.includes('BDUSS=')) {
     $persistentStore.write(headerCookie, ckKey);
     console.log('✅ 百度贴吧Cookie保存成功');
+    $notification.post('✅ 百度贴吧', '', 'Cookie获取成功');
   } else {
     console.log('❌ 写入Cookie失败, BDUSS值缺失.');
   }
@@ -57,7 +64,6 @@ async function mainSign() {
   if (!cookieVal) {
     console.log('❌ 未获取到cookie');
     $notification.post('贴吧签到', '', '签到失败：未获取到cookie');
-    $done();
     return;
   }
 
