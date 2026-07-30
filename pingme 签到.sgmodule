@@ -16,6 +16,9 @@ PingMe获取签到参数 = type=http-request,pattern=^https:\/\/api\.pingmeapp\.
 # 2. 定时自动签到脚本（每3小时执行一次，每运行一次随机生成设备ID）
 PingMe签到 = type=cron,cronexp="{{{cronexp}}}",script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/PingMe/PingMeSignin.js,argument="policy={{{policy}}}&capture={{{capture}}}",timeout=300,script-update-interval=0
 
+# 3. 同步capture开关（每5分钟，确保抓参脚本快速响应开关变化）
+PingMe同步 = type=cron,cronexp="*/5 * * * *",script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/PingMe/pingme_sync.js,argument="capture={{{capture}}}",timeout=10
+
 [MITM]
 # 模块模式下，%APPEND% 关键字才会生效
 hostname = %APPEND% api.pingmeapp.net
