@@ -13,14 +13,23 @@ const VIDEO_DELAY = 10000;
 
 const NOTIFY_ICON = 'https://raw.githubusercontent.com/axhani/icon/refs/heads/main/pingme&wetalk.png';
 
-// 从模块参数读取策略设置（默认 DIRECT）
-const policyArg = $argument || 'DIRECT';
-let policy;
-if (typeof policyArg === 'string' && policyArg.includes('=')) {
-    policy = policyArg.split('=')[1];
-} else {
-    policy = policyArg;
+// 从模块参数读取策略设置和capture开关（cron脚本 $argument 正常有效）
+const args = $argument || '';
+let policy = 'DIRECT';
+let captureValue = 'true';
+
+// 解析 argument="policy=xxx&capture=yyy" 格式
+if (typeof args === 'string') {
+    args.split('&').forEach(pair => {
+        const [k, v] = pair.split('=');
+        if (k === 'policy' && v) policy = v;
+        if (k === 'capture' && v) captureValue = v;
+    });
 }
+
+// 同步 capture 开关到 $persistentStore，供抓参脚本运行时读取
+$persistentStore.write(captureValue, 'pingme_capture_switch');
+console.log('📋 同步capture开关: ' + captureValue + ' | 策略: ' + policy);
 
 // 每运行一次重新生成一个固定的伪造设备ID，整次运行所有视频都用同一个设备ID
 const fakeDeviceId = genFakeDeviceId();
