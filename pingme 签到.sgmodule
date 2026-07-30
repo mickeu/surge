@@ -2,14 +2,12 @@
 #!desc=PingMe每日自动签到与看视频任务。安装后请完全退出App并重新进入"我的/钱包"页面抓取Cookie。脚本已优化：每运行一次随机生成设备ID，防止被检测，支持参数开关。 | 原作者: @ZenMoFiShi & 奶思 | mickeu修改适配Surge并添加随机设备ID与参数开关
 #!icon=https://raw.githubusercontent.com/axhani/icon/refs/heads/main/pingme&wetalk.png
 #!system=ios
-#!arguments=capture=true
-
-# capture开关说明：关闭抓参时设为 false，开启设为 true。默认 true 开启抓参。
-# 修改者：mickeu
+#!arguments=capture:true
+#!arguments-desc=\n1️⃣ capture\n\n抓取Cookie开关\n默认 true 开启抓参\n设为 false 关闭抓参\n\n每运行一次签到脚本，自动生成随机设备ID，防止被检测\n\n修改者：mickeu
 
 [Script]
 # 1. 抓取 Cookie 脚本（Surge专用版，参数 capture=true 开启抓参，capture=false 关闭）
-PingMe获取签到参数 = type=http-request,pattern=^https:\/\/api\.pingmeapp\.net\/app\/queryBalanceAndBonus,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/PingMe/pingme_capture.js,argument=%capture%,timeout=60
+PingMe获取签到参数 = type=http-request,pattern=^https:\/\/api\.pingmeapp\.net\/app\/queryBalanceAndBonus,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/PingMe/pingme_capture.js,argument={{{capture}}},timeout=60
 
 # 2. 定时自动签到脚本（每3小时执行一次，每运行一次随机生成设备ID）
 PingMe签到 = type=cron,cronexp="0 */3 * * *",script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/PingMe/PingMeSignin.js,timeout=300,script-update-interval=0
