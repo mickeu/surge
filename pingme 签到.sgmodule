@@ -3,6 +3,10 @@
 #!icon=https://raw.githubusercontent.com/axhani/icon/refs/heads/main/pingme&wetalk.png
 #!system=ios
 
+[Rule]
+# 直连 PingMe API，不走代理，避免签到失败
+DOMAIN-SUFFIX,api.pingmeapp.net,DIRECT
+
 [Script]
 # 1. 抓取 Cookie 脚本
 PingMe获取签到参数 = type=http-request,pattern=^https:\/\/api\.pingmeapp\.net\/app\/queryBalanceAndBonus,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/PingMe/pingme_capture.js,timeout=60
