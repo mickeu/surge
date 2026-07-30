@@ -3,7 +3,12 @@
 #!icon=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Action/Baidu_Tieba.png
 #!system=ios
 #!arguments=cookie_enabled:true
-#!arguments-desc=\n1️⃣ cookie_enabled\n\n抓取Cookie开关\n默认 true 开启抓参\n设为 false 关闭抓参\n\n━━━━━━━━━━━━━━━━\n📌 策略组自定义\n\n如需指定贴吧流量走特定策略，在 Surge 主配置 [Rule] 中添加：\n\n直连：DOMAIN-SUFFIX,c.tieba.baidu.com,DIRECT\n走Proxy：DOMAIN-SUFFIX,c.tieba.baidu.com,Proxy\n\n不加规则则走兜底 FINAL 策略\n\n━━━━━━━━━━━━━━━━\n📌 签到脚本手动添加\n\n在 Surge 主配置 [Script] 中添加：\n\n百度贴吧[签到] = type=cron,cronexp="30 0,12 * * *",script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/TieBa/TieBa.js,timeout=600\n\n如需自定义定时，修改 cronexp 即可\n\n━━━━━━━━━━━━━━━━\n修改者：mickeu
+#!arguments-desc=\n1️⃣ cookie_enabled\n\n抓取Cookie开关\n默认 true 开启抓参\n设为 false 关闭抓参\n\n━━━━━━━━━━━━━━━━\n📌 签到脚本手动添加\n\n在 Surge 主配置 [Script] 中添加：\n\n百度贴吧[签到] = type=cron,cronexp="30 0,12 * * *",script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/TieBa/TieBa.js,timeout=600\n\n如需自定义定时，修改 cronexp 即可\n\n━━━━━━━━━━━━━━━━\n修改者：mickeu
+
+[Rule]
+# 贴吧API直连
+DOMAIN-SUFFIX,c.tieba.baidu.com,DIRECT
+DOMAIN-SUFFIX,tiebac.baidu.com,DIRECT
 
 [Script]
 # 抓取 Cookie 脚本（cookie_enabled=true 开启抓参，false 关闭）
