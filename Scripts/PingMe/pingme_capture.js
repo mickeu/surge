@@ -12,6 +12,14 @@ const ckKey = 'pingme_capture_v3';
 console.log('🔔 PingMe 抓参脚本被触发');
 console.log('URL: ' + $request.url);
 
+// 检查模块参数开关
+const captureEnabled = $argument || 'true';
+if (captureEnabled === 'false') {
+    console.log('⏸ PingMe 抓参已关闭（capture=false），跳过');
+    $done();
+    return;
+}
+
 const url = $request.url;
 const headers = $request.headers;
 
@@ -27,7 +35,7 @@ if (url.includes('/app/queryBalanceAndBonus')) {
     console.log('PingMe 获取到的内容为：' + url);
     // 完全匹配原版 $.notify 格式：$notification.post(title, '', body, { url: undefined })
     try {
-        $notification.post('✅ PingMe 获取成功', '', '现在可以关闭抓参了', { url: undefined });
+        $notification.post('✅ PingMe 获取成功', '', '现在可以关闭抓参了', { url: undefined, sound: true });
         console.log('✅ 通知已发送');
     } catch (e) {
         console.log('❌ 通知发送失败: ' + e);
