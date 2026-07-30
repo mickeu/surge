@@ -57,9 +57,12 @@ function mainCookie() {
 
 async function mainSign() {
   console.log('🔔 百度贴吧签到开始');
+  console.log('📋 读取Cookie...');
   var cookieVal = $persistentStore.read(ckKey);
+  console.log('📋 Cookie状态: ' + (cookieVal ? '已获取' : '未获取'));
   var useParallel = parseInt($persistentStore.read('BDTB_DailyBonus_Mode') || '0', 10);
   var singleNotifyCount = parseInt($persistentStore.read('BDTB_DailyBonus_notify') || '20', 10);
+  console.log('📋 并行模式: ' + (useParallel === 2 ? '强制并行' : (useParallel === 1 ? '强制串行' : '自动')) + ', 单次通知条数: ' + singleNotifyCount);
 
   if (!cookieVal) {
     console.log('❌ 未获取到cookie');
