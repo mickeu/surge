@@ -11,7 +11,7 @@ const SECRET = '0fOiukQq7jXZV2GRi9LGlO';
 const MAX_VIDEO = 5;
 const VIDEO_DELAY = 10000;
 
-const NOTIFY_ICON = 'https://raw.githubusercontent.com/axhani/icon/refs/heads/main/pingme&wetalk.png';
+const NOTIFY_ICON = 'https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/PingMe.png';
 
 // 从模块参数读取策略设置和capture开关（cron脚本 $argument 正常有效）
 const args = $argument || '';
@@ -42,9 +42,7 @@ const fakeDeviceId = genFakeDeviceId();
         // 1. 读取存储的凭证
         const raw = $persistentStore.read(ckKey);
         if (!raw) {
-            $notification.post('❌ PingMe签到', '', '请先获取PingMe签到参数，打开PingMe触发一次', {
-                sound: true
-            });
+            $notification.post('❌ PingMe签到', '', '请先获取PingMe签到参数，打开PingMe触发一次');
             $done();
             return;
         }
@@ -53,9 +51,7 @@ const fakeDeviceId = genFakeDeviceId();
         try {
             capture = JSON.parse(raw);
         } catch (e) {
-            $notification.post('❌ PingMe签到', '', '参数损坏，请重新打开PingMe抓参', {
-                sound: true
-            });
+            $notification.post('❌ PingMe签到', '', '参数损坏，请重新打开PingMe抓参');
             $done();
             return;
         }
@@ -69,7 +65,7 @@ const fakeDeviceId = genFakeDeviceId();
             return new Promise((resolve, reject) => {
                 const overrideId = useFakeId ? fakeDeviceId : null;
                 const url = buildUrl(path, capture, overrideId);
-                const options = { url: url, headers: headers };
+                const options = { url: url, headers: headers, timeout: 15000 };
                 if (policy) {
                     options.policy = policy;
                 }
@@ -148,15 +144,11 @@ const fakeDeviceId = genFakeDeviceId();
             // ignore
         }
 
-        // 6. 发送通知（消息放body，确保进通知中心）
-        $notification.post('🎉 PingMe签到完成', '', logs.join('\n'), {
-            sound: true
-        });
+        // 6. 发送通知（消息放body）
+        $notification.post('🎉 PingMe签到完成', '', logs.join('\n'));
 
     } catch (err) {
-        $notification.post('❌ PingMe签到失败', '', logs.join('\n') + '\n' + (err.message || String(err)), {
-            sound: true
-        });
+        $notification.post('❌ PingMe签到失败', '', logs.join('\n') + '\n' + (err.message || String(err)));
     }
 
     $done();

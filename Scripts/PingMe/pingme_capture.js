@@ -48,7 +48,7 @@ if (url.includes('/app/queryBalanceAndBonus')) {
     console.log('PingMe 获取到的内容为：' + url);
     // 完全匹配原版 $.notify 格式：$notification.post(title, '', body, { url: undefined })
     try {
-        $notification.post('✅ PingMe 获取成功', '', '现在可以关闭抓参了', { url: undefined, sound: true });
+        $notification.post('✅ PingMe 获取成功', '', '现在可以关闭抓参了', { url: undefined });
         console.log('✅ 通知已发送');
     } catch (e) {
         console.log('❌ 通知发送失败: ' + e);
