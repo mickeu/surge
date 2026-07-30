@@ -1,0 +1,16 @@
+#!name=🐻 百度贴吧 [签到]
+#!desc=每日定时签到。打开百度贴吧APP点击"我的"即可自动获取Cookie（静默保存，不弹通知）。默认每天 0:30 和 12:30 签到，可自定义签到时间。 | 原作者: @sazs34 | mickeu修改适配Surge
+#!icon=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Action/Baidu_Tieba.png
+#!system=ios
+#!arguments=sign_cron:30 0,12 * * *,cookie_enabled:true
+#!arguments-desc=\n1️⃣ sign_cron\n\n签到定时任务\n默认 30 0,12 * * *（每天0:30和12:30）\n可自定义 cron 表达式\n\n2️⃣ cookie_enabled\n\n抓取Cookie开关\n默认 true 开启\n设为 false 关闭\n\n修改者：mickeu
+
+[Script]
+# 获取Cookie脚本（cookie_enabled=true 开启抓参，false 关闭）
+百度贴吧[Cookie] = type=http-request,pattern=^https?:\/\/(c\.tieba|tiebac)\.baidu\.com\/c\/s\/login,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/TieBa/TieBa.js,argument="cookie_enabled={{{cookie_enabled}}}",timeout=60
+
+# 定时签到脚本
+百度贴吧[签到] = type=cron,cronexp="{{{sign_cron}}}",script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/TieBa/TieBa.js,timeout=600,script-update-interval=0
+
+[MITM]
+hostname = %APPEND% c.tieba.baidu.com, tiebac.baidu.com
