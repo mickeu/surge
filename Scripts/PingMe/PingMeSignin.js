@@ -57,7 +57,7 @@ const fakeDeviceId = genFakeDeviceId();
         }
 
         console.log('PingMe签到, 开始!');
-        console.log('PingMe 本次运行设备ID:' + fakeDeviceId);
+        console.log('PingMe 签到本次运行设备ID:' + fakeDeviceId);
         notify('开始运行签到');
         const headers = buildHeaders(capture);
 
@@ -144,11 +144,11 @@ const fakeDeviceId = genFakeDeviceId();
             // ignore
         }
 
-        // 6. 发送通知（消息放body）
-        $notification.post('🎉 PingMe签到完成', '', logs.join('\n'));
+        // 6. 发送通知（消息放body，加 { url: undefined } 匹配原版格式）
+        $notification.post('🎉 PingMe签到完成', '', logs.join('\n'), { url: undefined });
 
     } catch (err) {
-        $notification.post('❌ PingMe签到失败', '', logs.join('\n') + '\n' + (err.message || String(err)));
+        $notification.post('❌ PingMe签到失败', '', logs.join('\n') + '\n' + (err.message || String(err)), { url: undefined });
     }
 
     $done();
