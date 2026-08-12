@@ -4,7 +4,7 @@
 #!icon=https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/Telegram_05.png
 
 [MTProto]
-interface = 127.0.0.1
+interface = 0.0.0.0
 port = 2887
 secret = dd26d1e7523936deb5c47ad16b31fb0719
 ipv6 = true
