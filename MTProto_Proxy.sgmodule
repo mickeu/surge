@@ -7,5 +7,5 @@
 interface = 0.0.0.0
 port = 2887
 secret = dd26d1e7523936deb5c47ad16b31fb0719
-ipv6 = true
+ipv6 = false
 dc-config-url = https://github.com/Repcz/Tool/raw/X/Surge/mtproto-dc-config.json
