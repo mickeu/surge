@@ -1,22 +1,16 @@
 #!name=网上国网
-#!desc=余量查询（Loon 转 Surge）
-#!author=𝐎𝐍𝐙𝟑𝐕（Loon 原作者）/ mickeu（转换）
+#!desc=国家电网电费余量查询（95598）| Loon 原版: @𝐎𝐍𝐙𝟑𝐕 | mickeu转换适配Surge
 #!icon=https://is1-ssl.mzstatic.com/image/thumb/Purple116/v4/83/d8/8a/83d88a92-5a4d-7a2f-118c-80d795e7a9f6/AppIcon-0-0-1x_U007emarketing-0-5-0-0-sRGB-85-220.png/144x144.png
-#!arguments=SGCC_ENABLE=true,CRONEXP=0 9 * * *,USERNAME=,PASSWORD=,DEBUG=false,SHOW_RECENT_USAGE=false,NOTIFY_ALL_ACCOUNTS=false,TIMEOUT=60
+#!system=ios
+#!arguments=SGCC_ENABLE:true,CRONEXP:0 9 * * *,USERNAME:,PASSWORD:,DEBUG:false,SHOW_RECENT_USAGE:false,NOTIFY_ALL_ACCOUNTS:false,TIMEOUT:60
 
-#!arguments-desc
-🔘 SGCC_ENABLE: 是否开启接口重写（true/false）
-⏰ CRONEXP: Crontab表达式，推荐: "https://www.bejson.com/othertools/cron/"
-👤 USERNAME: 登录账号（95598.cn 或网上国网App账号）
-🔑 PASSWORD: 登录密码
-🐞 DEBUG: 是否开启调试模式（true/false）
-📊 SHOW_RECENT_USAGE: 是否展示近期用量（true/false）
-🔔 NOTIFY_ALL_ACCOUNTS: 是否通知全部户号（true/false）
-⏱ TIMEOUT: 脚本运行最大时间（秒）
+#!arguments-desc=\n1️⃣ SGCC_ENABLE\n\n接口重写开关\n默认 true 开启\n设为 false 关闭重写（脚本将无法捕获接口）\n\n━━━━━━━━━━━━━━━━\n2️⃣ CRONEXP\n\n定时任务表达式（crontab）\n默认 0 9 * * *（每天早上9点执行）\n\n如需自定义时间，参考格式：\n0 8 * * *  → 每天8点\n0 */6 * * * → 每6小时\n30 12 * * * → 每天12点30分\n\n表达式生成器: https://www.bejson.com/othertools/cron/\n\n━━━━━━━━━━━━━━━━\n3️⃣ USERNAME\n\n登录账号\n"https://95598.cn" 或 "网上国网App" 的登录账号（手机号/用户名）\n\n━━━━━━━━━━━━━━━━\n4️⃣ PASSWORD\n\n登录密码\n与 USERNAME 对应的账号密码\n\n━━━━━━━━━━━━━━━━\n5️⃣ DEBUG\n\n调试模式开关\n默认 false 关闭\n设为 true 开启（输出详细调试日志）\n\n━━━━━━━━━━━━━━━━\n6️⃣ SHOW_RECENT_USAGE\n\n是否展示近期用电量\n默认 false 关闭\n设为 true 开启（通知中包含近期用量明细）\n\n━━━━━━━━━━━━━━━━\n7️⃣ NOTIFY_ALL_ACCOUNTS\n\n是否通知全部户号\n默认 false 只通知第一个户号\n设为 true 通知所有户号\n\n━━━━━━━━━━━━━━━━\n8️⃣ TIMEOUT\n\n脚本运行最大时间（秒）\n默认 60\n如网络较慢可调大至 120\n\n━━━━━━━━━━━━━━━━\n📌 使用前提\n\n1. 信任并安装 MITM 证书\n2. 模块会自动添加 api.wsgw-rewrite.com 到 MITM 解密\n3. 打开一次"网上国网App"或 95598.cn 网页版，脚本会自动捕获登录接口\n4. 之后按 CRONEXP 定时自动查询余量并推送通知\n\n━━━━━━━━━━━━━━━━\n修改者：mickeu（转换自 Loon 插件）
 
 [Script]
-网上国网接口重写 = type=http-request, pattern=^https?:\/\/api\.wsgw-rewrite\.com\/electricity\/bill\/all, requires-body=true, script-path=https://raw.githubusercontent.com/Yuheng0101/X/main/Tasks/95598/95598.js, script-update-interval=0, timeout={{TIMEOUT}}, enable={{SGCC_ENABLE}}
-网上国网 = type=cron, cronexp={{CRONEXP}}, wake-system=1, timeout={{TIMEOUT}}, script-path=https://raw.githubusercontent.com/Yuheng0101/X/main/Tasks/95598/95598.js, argument={{USERNAME}}|{{PASSWORD}}|{{DEBUG}}|{{SHOW_RECENT_USAGE}}|{{NOTIFY_ALL_ACCOUNTS}}
+# 网上国网接口重写（捕获登录/查询接口，SGCC_ENABLE=true 开启）
+网上国网接口重写 = type=http-request,pattern=^https?:\/\/api\.wsgw-rewrite\.com\/electricity\/bill\/all,requires-body=true,script-path=https://raw.githubusercontent.com/Yuheng0101/X/main/Tasks/95598/95598.js,argument="SGCC_ENABLE={{{SGCC_ENABLE}}}",timeout={{TIMEOUT}}
+# 网上国网定时查询（按 CRONEXP 定时执行余量查询）
+网上国网 = type=cron,cronexp="{{{CRONEXP}}}",wake-system=1,timeout={{TIMEOUT}},script-path=https://raw.githubusercontent.com/Yuheng0101/X/main/Tasks/95598/95598.js,argument="USERNAME={{{USERNAME}}}|PASSWORD={{{PASSWORD}}}|DEBUG={{{DEBUG}}}|SHOW_RECENT_USAGE={{{SHOW_RECENT_USAGE}}}|NOTIFY_ALL_ACCOUNTS={{{NOTIFY_ALL_ACCOUNTS}}}"
 
 [MITM]
-hostname = api.wsgw-rewrite.com
+hostname = %APPEND% api.wsgw-rewrite.com
