@@ -1,0 +1,10 @@
+# Surge 补充直连规则集
+# 来源：通过 Surge CLI rule explain 扫描发现，这些域名走了 FINAL → PROXY
+# 但它们是正常业务域名，应该直连，不应该绕到代理节点
+# 维护者：mickeu
+# 更新时间：2026-08-14
+
+# > 腾讯业务域名（误走代理）
+DOMAIN-SUFFIX,qqmail.com,DIRECT
+DOMAIN-SUFFIX,hapv.qq.com,DIRECT
+DOMAIN-SUFFIX,content.weixin.qq.com,DIRECT
