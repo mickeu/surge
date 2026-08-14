@@ -2,7 +2,7 @@
 #!desc=国家电网电费余量查询（95598.cn）｜Loon 原版: @𝐎𝐍𝐙𝟑𝐕 ｜mickeu 转换适配 Surge
 #!icon=https://is1-ssl.mzstatic.com/image/thumb/Purple116/v4/83/d8/8a/83d88a92-5a4d-7a2f-118c-80d795e7a9f6/AppIcon-0-0-1x_U007emarketing-0-5-0-0-sRGB-85-220.png/144x144.png
 #!system=ios
-#!arguments=SGCC_ENABLE:true,CRONEXP:0 9 * * *,USERNAME:,PASSWORD:,DEBUG:false,SHOW_RECENT_USAGE:false,NOTIFY_ALL_ACCOUNTS:false,TIMEOUT:60
+#!arguments=SGCC_ENABLE:true,CRONEXP:0 9 * * *,USERNAME,PASSWORD,DEBUG:false,SHOW_RECENT_USAGE:false,NOTIFY_ALL_ACCOUNTS:false,TIMEOUT:60
 
 #!arguments-desc=\n网上国网模块参数说明（逗号分隔，冒号默认值）\n\n1️⃣ SGCC_ENABLE\n接口重写开关，默认 true 开启 / false 关闭\n\n2️⃣ CRONEXP\n定时任务表达式（crontab），默认 0 9 * * *（每天9点）\n示例：0 8 * * *（每天8点）、0 */6 * * *（每6小时）\n格式生成器: https://www.bejson.com/othertools/cron/\n\n3️⃣ USERNAME\n登录账号，95598.cn 或 网上国网App 的登录账号（手机号/用户名）\n\n4️⃣ PASSWORD\n登录密码，与 USERNAME 对应的账号密码\n\n5️⃣ DEBUG\n调试模式开关，默认 false / true 输出调试日志\n\n6️⃣ SHOW_RECENT_USAGE\n是否展示近期用电量，默认 false / true 通知包含用量明细\n\n7️⃣ NOTIFY_ALL_ACCOUNTS\n是否通知全部户号，默认 false 仅第一个户号 / true 通知所有户号\n\n8️⃣ TIMEOUT\n脚本运行最大时间（秒），默认 60，网络慢可调至 120\n\n━━━━━━━━━━━━━━━━\n📌 使用前提\n\n1. 信任并安装 MITM 证书\n2. 模块自动将 api.wsgw-rewrite.com 加入 MITM 解密\n3. 打开一次 网上国网App 或 95598.cn 网页版，脚本捕获登录接口\n4. 之后按 CRONEXP 定时自动查询余量并推送通知\n\n修改者：mickeu（转换自 Loon 插件）
 
