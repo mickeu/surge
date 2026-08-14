@@ -1,0 +1,22 @@
+#!name=网上国网
+#!desc=余量查询（Loon 转 Surge）
+#!author=𝐎𝐍𝐙𝟑𝐕（Loon 原作者）/ mickeu（转换）
+#!icon=https://is1-ssl.mzstatic.com/image/thumb/Purple116/v4/83/d8/8a/83d88a92-5a4d-7a2f-118c-80d795e7a9f6/AppIcon-0-0-1x_U007emarketing-0-5-0-0-sRGB-85-220.png/144x144.png
+#!arguments=SGCC_ENABLE=true,CRONEXP=0 9 * * *,USERNAME=,PASSWORD=,DEBUG=false,SHOW_RECENT_USAGE=false,NOTIFY_ALL_ACCOUNTS=false,TIMEOUT=60
+
+#!arguments-desc
+🔘 SGCC_ENABLE: 是否开启接口重写（true/false）
+⏰ CRONEXP: Crontab表达式，推荐: "https://www.bejson.com/othertools/cron/"
+👤 USERNAME: 登录账号（95598.cn 或网上国网App账号）
+🔑 PASSWORD: 登录密码
+🐞 DEBUG: 是否开启调试模式（true/false）
+📊 SHOW_RECENT_USAGE: 是否展示近期用量（true/false）
+🔔 NOTIFY_ALL_ACCOUNTS: 是否通知全部户号（true/false）
+⏱ TIMEOUT: 脚本运行最大时间（秒）
+
+[Script]
+网上国网接口重写 = type=http-request, pattern=^https?:\/\/api\.wsgw-rewrite\.com\/electricity\/bill\/all, requires-body=true, script-path=https://raw.githubusercontent.com/Yuheng0101/X/main/Tasks/95598/95598.js, script-update-interval=0, timeout={{TIMEOUT}}, enable={{SGCC_ENABLE}}
+网上国网 = type=cron, cronexp={{CRONEXP}}, wake-system=1, timeout={{TIMEOUT}}, script-path=https://raw.githubusercontent.com/Yuheng0101/X/main/Tasks/95598/95598.js, argument={{USERNAME}}|{{PASSWORD}}|{{DEBUG}}|{{SHOW_RECENT_USAGE}}|{{NOTIFY_ALL_ACCOUNTS}}
+
+[MITM]
+hostname = api.wsgw-rewrite.com
