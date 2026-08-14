@@ -10,7 +10,7 @@
 # 网上国网接口重写（捕获登录/查询接口）
 网上国网接口重写 = type=http-request,pattern=^https?:\/\/api\.wsgw-rewrite\.com\/electricity\/bill\/all,requires-body=true,script-path=https://raw.githubusercontent.com/Yuheng0101/X/main/Tasks/95598/95598.js,timeout={{{TIMEOUT}}}
 # 网上国网定时查询（按 CRONEXP 定时执行余量查询）
-网上国网 = type=cron,cronexp="{{{CRONEXP}}}",wake-system=1,timeout={{{TIMEOUT}}},script-path=https://raw.githubusercontent.com/Yuheng0101/X/main/Tasks/95598/95598.js,argument="username={{{USERNAME}}}&password={{{PASSWORD}}}&debug={{{DEBUG}}}&showRecentUsage={{{SHOW_RECENT_USAGE}}}&notifyAllAccounts={{{NOTIFY_ALL_ACCOUNTS}}}"
+网上国网 = type=cron,cronexp="{{{CRONEXP}}}",wake-system=1,timeout={{{TIMEOUT}}},script-path=https://raw.githubusercontent.com/Yuheng0101/X/main/Tasks/95598/95598.js,argument="username={{{USERNAME}}}&password={{{PASSWORD}}}&debug={{{DEBUG}}}&show_recent_usage={{{SHOW_RECENT_USAGE}}}&notify_all_accounts={{{NOTIFY_ALL_ACCOUNTS}}}"
 
 [MITM]
 hostname = %APPEND% api.wsgw-rewrite.com
