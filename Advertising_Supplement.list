@@ -1,24 +1,24 @@
 # Surge 广告拦截补充规则集
-# 来源：通过 Surge CLI rule explain 扫描发现，这些域名未被 blackmatrix7 Advertising_All.list 覆盖
-# 走了 FINAL → PROXY，既没拦截又绕路到代理节点
+# 补充 blackmatrix7 Advertising_All.list 未覆盖的广告域名
+# 来源：Surge CLI rule explain 扫描发现
 # 维护者：mickeu
 # 更新时间：2026-08-14
 
-# > 微信广告域名（blackmatrix7 漏覆盖）
-DOMAIN-SUFFIX,adservice.weixin.qq.com,REJECT
-DOMAIN-SUFFIX,adsdk.weixin.qq.com,REJECT
-DOMAIN-SUFFIX,adclick.weixin.qq.com,REJECT
-DOMAIN-SUFFIX,adclick.qq.com,REJECT
-DOMAIN-SUFFIX,wxbhzyl.weixin.qq.com,REJECT
-DOMAIN-SUFFIX,bzyapp.weixin.qq.com,REJECT
-DOMAIN-SUFFIX,adnet.qq.com,REJECT
+# 微信广告域名
+DOMAIN-SUFFIX,adservice.weixin.qq.com
+DOMAIN-SUFFIX,adsdk.weixin.qq.com
+DOMAIN-SUFFIX,adclick.weixin.qq.com
+DOMAIN-SUFFIX,adclick.qq.com
+DOMAIN-SUFFIX,wxbhzyl.weixin.qq.com
+DOMAIN-SUFFIX,bzyapp.weixin.qq.com
+DOMAIN-SUFFIX,adnet.qq.com
 
-# > 百度广告平台（blackmatrix7 漏覆盖）
-DOMAIN-SUFFIX,baiduadx.com,REJECT
-DOMAIN-SUFFIX,baidumobads.com,REJECT
+# 百度广告平台
+DOMAIN-SUFFIX,baiduadx.com
+DOMAIN-SUFFIX,baidumobads.com
 
-# > 其他广告联盟/统计
-DOMAIN-SUFFIX,adsame.cn,REJECT
-DOMAIN-SUFFIX,adsame1.cn,REJECT
-DOMAIN-SUFFIX,mads.weather.com.cn,REJECT
-DOMAIN-SUFFIX,pglstatp.com,REJECT
+# 其他广告联盟/统计
+DOMAIN-SUFFIX,adsame.cn
+DOMAIN-SUFFIX,adsame1.cn
+DOMAIN-SUFFIX,mads.weather.com.cn
+DOMAIN-SUFFIX,pglstatp.com
