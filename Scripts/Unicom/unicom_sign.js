@@ -22,11 +22,13 @@ function parseQuery(url) {
 
 // ========== 捕获认证信息（http-request） ==========
 function capture() {
-  if (!$request) { $done({}); return; }
+  if (!$request) { console.log("NO REQUEST OBJECT"); $done({}); return; }
   const url = $request.url || "";
   const hd = $request.headers || {};
+  console.log("触发 URL: " + url);
+  console.log("Headers: " + JSON.stringify(hd).slice(0, 300));
   
-  if (!url.match(/10010\.(com|cn)/)) { $done({}); return; }
+  if (!url.match(/10010\.(com|cn)/)) { console.log("URL 不匹配 10010"); $done({}); return; }
 
   const cookie = hd["Cookie"] || hd["cookie"] || "";
   const params = parseQuery(url);
