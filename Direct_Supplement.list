@@ -8,3 +8,8 @@
 DOMAIN-SUFFIX,qqmail.com
 DOMAIN-SUFFIX,hapv.qq.com
 DOMAIN-SUFFIX,content.weixin.qq.com
+
+# 补充直连（扫描发现走兜底的国内域名）
+DOMAIN-SUFFIX,didi.com
+DOMAIN-SUFFIX,unionpay.com
+DOMAIN-SUFFIX,gov.cn
