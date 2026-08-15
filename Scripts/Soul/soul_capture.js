@@ -6,8 +6,8 @@
 const STORE_KEY = "soul_capture_log";
 
 function main() {
-  const url = $request?.url || "";
-  const headers = $request?.headers || {};
+  const url = $request ? ($request.url || "") : "";
+  const headers = $request ? ($request.headers || {}) : {};
   
   // 提取关键认证信息（脱敏后输出）
   const authInfo = {
