@@ -1,5 +1,5 @@
 // 中国联通 App 每日签到（Surge）
-// 抓 Cookie + 自动签到
+// 抓取 URL 认证参数（unikey/deviceId/mobile）+ 自动签到
 // 修改者：mickeu（2026-08-15）
 
 const KEY = "unicom_auth";
@@ -9,50 +9,78 @@ function read(key, def) {
 }
 function write(key, val) { $persistentStore.write(JSON.stringify(val), key); }
 
+function parseQuery(url) {
+  const q = {};
+  const m = url.split("?")[1];
+  if (!m) return q;
+  m.split("&").forEach(p => {
+    const kv = p.split("=");
+    if (kv[0]) q[kv[0]] = decodeURIComponent(kv[1] || "");
+  });
+  return q;
+}
+
 // ========== 捕获认证信息（http-request） ==========
 function capture() {
   if (!$request) { $done({}); return; }
   const url = $request.url || "";
   const hd = $request.headers || {};
-  const cookie = hd["Cookie"] || hd["cookie"] || "";
-  const ua = hd["User-Agent"] || hd["user-agent"] || "";
   
   if (!url.match(/10010\.(com|cn)/)) { $done({}); return; }
 
+  const cookie = hd["Cookie"] || hd["cookie"] || "";
+  const params = parseQuery(url);
+  
   let data = read(KEY, {});
-  if (cookie) { 
-    data.cookie = cookie; 
-    $notification.post("联通签到", "Cookie 已捕获", "url: " + url.replace(/https?:\/\//,"").slice(0, 40));
+  let captured = [];
+  
+  if (cookie) { data.cookie = cookie; captured.push("Cookie"); }
+  if (params["unikey"]) { data.unikey = params["unikey"]; captured.push("unikey"); }
+  if (params["deviceId"]) { data.deviceId = params["deviceId"]; captured.push("deviceId"); }
+  if (params["mobile"]) { data.mobile = params["mobile"]; captured.push("mobile"); }
+  if (params["appId"]) { data.appId = params["appId"]; captured.push("appId"); }
+  if (hd["User-Agent"] || hd["user-agent"]) { data.ua = hd["User-Agent"] || hd["user-agent"]; }
+  
+  if (captured.length > 0) {
+    write(KEY, data);
+    $notification.post("联通签到", "认证信息已捕获", captured.join(" + ") + "，URL: " + url.replace(/https?:\/\//,"").slice(0, 30));
   } else {
-    $notification.post("联通签到", "请求已捕获", "但未找到 Cookie，URL: " + url.replace(/https?:\/\//,"").slice(0, 40));
+    $notification.post("联通签到", "请求已捕获", "未提取到认证参数，URL: " + url.replace(/https?:\/\//,"").slice(0, 40));
   }
-  if (ua) { data.ua = ua; }
-  write(KEY, data);
   $done({});
 }
 
 // ========== 每日签到（cron） ==========
 function sign() {
   const data = read(KEY, {});
-  const cookie = data.cookie || "";
-  if (!cookie) {
-    $notification.post("联通签到", "失败", "未捕获到 Cookie，请打开联通 App 后再试");
+  const unikey = data.unikey || "";
+  const mobile = data.mobile || "18573908368";
+  
+  if (!unikey && !data.cookie) {
+    $notification.post("联通签到", "失败", "未捕获到认证信息，请打开联通 App 后再试");
     $done();
     return;
   }
 
   const headers = {
-    "Cookie": cookie,
     "User-Agent": data.ua || "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148",
     "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
     "Accept": "application/json, text/plain, */*"
   };
+  if (data.cookie) headers["Cookie"] = data.cookie;
 
-  // 签到接口 - 从抓包分析，m.client.10010.com 的通用接口格式
-  const signUrl = "https://m.client.10010.com/mobileService/signin/sign.htm";
-  const body = "mobile=18573908368&version=iphone_c@12.1400";
+  // 签到接口（用 URL 参数认证）
+  const params = [];
+  if (unikey) params.push("unikey=" + encodeURIComponent(unikey));
+  if (data.deviceId) params.push("deviceId=" + encodeURIComponent(data.deviceId));
+  if (data.appId) params.push("appId=" + encodeURIComponent(data.appId));
+  params.push("mobile=" + encodeURIComponent(mobile));
+  params.push("version=iphone_c@12.1400");
 
-  $httpClient.post({ url: signUrl, headers: headers, body: body }, (err, resp, body) => {
+  const signUrl = "https://m.client.10010.com/mobileService/signin/sign.htm?" + params.join("&");
+  console.log("签到 URL: " + signUrl);
+
+  $httpClient.get({ url: signUrl, headers: headers, timeout: 20 }, (err, resp, body) => {
     if (err) {
       $notification.post("联通签到", "请求失败", err);
       $done();
