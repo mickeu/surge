@@ -11,18 +11,24 @@ function write(key, val) { $persistentStore.write(JSON.stringify(val), key); }
 
 // ========== 捕获认证信息（http-request） ==========
 function capture() {
-  if (!$request) return;
+  if (!$request) { $done({}); return; }
   const url = $request.url || "";
   const hd = $request.headers || {};
   const cookie = hd["Cookie"] || hd["cookie"] || "";
   const ua = hd["User-Agent"] || hd["user-agent"] || "";
-  if (!url.match(/10010\.(com|cn)/)) return;
+  
+  if (!url.match(/10010\.(com|cn)/)) { $done({}); return; }
 
   let data = read(KEY, {});
-  if (cookie) { data.cookie = cookie; console.log("Cookie: OK"); }
+  if (cookie) { 
+    data.cookie = cookie; 
+    $notification.post("联通签到", "Cookie 已捕获", "url: " + url.replace(/https?:\/\//,"").slice(0, 40));
+  } else {
+    $notification.post("联通签到", "请求已捕获", "但未找到 Cookie，URL: " + url.replace(/https?:\/\//,"").slice(0, 40));
+  }
   if (ua) { data.ua = ua; }
   write(KEY, data);
-  $done();
+  $done({});
 }
 
 // ========== 每日签到（cron） ==========
@@ -31,7 +37,8 @@ function sign() {
   const cookie = data.cookie || "";
   if (!cookie) {
     $notification.post("联通签到", "失败", "未捕获到 Cookie，请打开联通 App 后再试");
-    return $done();
+    $done();
+    return;
   }
 
   const headers = {
@@ -41,27 +48,18 @@ function sign() {
     "Accept": "application/json, text/plain, */*"
   };
 
-  // 签到接口（从抓包 + JS 分析推断）
+  // 签到接口 - 从抓包分析，m.client.10010.com 的通用接口格式
   const signUrl = "https://m.client.10010.com/mobileService/signin/sign.htm";
   const body = "mobile=18573908368&version=iphone_c@12.1400";
 
   $httpClient.post({ url: signUrl, headers: headers, body: body }, (err, resp, body) => {
     if (err) {
       $notification.post("联通签到", "请求失败", err);
-      return $done();
+      $done();
+      return;
     }
-    console.log("签到响应: " + (body || "").slice(0, 300));
-    try {
-      const j = JSON.parse(body);
-      if (j.code === "0000" || j.status === "0000" || j.returnCode === "0000") {
-        $notification.post("联通签到", "成功", j.msg || j.message || "签到成功");
-      } else {
-        // 接口不对，告诉用户实际响应
-        $notification.post("联通签到", "签到结果", (j.msg || j.message || body || "").slice(0, 120));
-      }
-    } catch(e) {
-      $notification.post("联通签到", "响应原始", (body || "").slice(0, 120));
-    }
+    console.log("签到响应: " + (body || "").slice(0, 500));
+    $notification.post("联通签到", "响应结果", (body || "").slice(0, 200));
     $done();
   });
 }
@@ -70,4 +68,4 @@ function sign() {
 const t = ($script && $script.type) || "";
 if (t === "http-request") capture();
 else if (t === "cron") sign();
-else { if (typeof $done === "function") $done(); }
+else { $done({}); }
