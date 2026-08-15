@@ -1,0 +1,10 @@
+#!name=中国联通 签到抓包
+#!desc=中国联通 App 签到抓包分析（MITM 解密 + 请求捕获）｜分析阶段｜mickeu
+#!system=ios
+
+[Script]
+# 捕获联通 App API 请求
+联通抓包 = type=http-request,pattern=^https?:\/\/[a-z0-9-]+\.(10010|10086)\.(com|cn)\/,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/Unicom/unicom_capture.js,timeout=10
+
+[MITM]
+hostname = %APPEND% *.10010.com, *.10010.cn, *.10086.com, *.10086.cn
