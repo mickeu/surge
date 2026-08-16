@@ -40,6 +40,7 @@ if (MODE === 'patrol') SETTLE_MS = 0; // 巡检时网络早已稳定，无需等
   if (ARG.SETTLE_MS && /^\d+$/.test(ARG.SETTLE_MS)) SETTLE_MS = parseInt(ARG.SETTLE_MS, 10);
 
   var log = function(m) { console.log('[auto-reconnect/' + MODE + '] ' + m); };
+  log('[probe] typeof $event=' + (typeof $event) + ', $event=' + (typeof $event !== 'undefined' ? JSON.stringify($event) : '-') + ', typeof $cronexp=' + (typeof $cronexp));
   var delay = function(ms) { return new Promise(function(r) { setTimeout(r, ms); }); };
   var enc = encodeURIComponent;
 
