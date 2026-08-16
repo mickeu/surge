@@ -1,86 +1,118 @@
-// auto-reconnect.js
-// 断线自动重连：network-changed 事件触发时，探测代理连通性
-// 不通 → 刷新 DNS + 强制重连(kill 技巧) + 切换备用节点
-// 借鉴 kill-active-requests 模块 (xream/scripts) 的 $httpAPI 机制
+// auto-reconnect.js v5
+// 断线自动重连（叶子 select 组智能切换，自动检测，不写死组名）
+// network-changed 触发时：
+//   1. 找出所有 select 组（GET /v1/policies/detail 判断类型）
+//   2. 只处理"叶子" select 组：selected 是具体节点（非组、非 DIRECT/REJECT）
+//      —— 选中"组"的组（如 Spotify→PROXY）自动跟随被引用组，不用管
+//   3. 串行 POST /v1/policy_groups/test 测速（Surge 只支持单测速任务的并发限制）
+//   4. 当前选中不在可用列表 → 切到可用列表第一个 + 通知
+// 设计要点：
+//   - 用 /v1/policy_groups/test 而不是 /v1/policies/test（后者对 Trojan/H2 返回空，不可靠）
+//   - 组测速必须串行（Surge 并发限制，并行会导致部分组返回空）
 // 挂载: type=event,event-name=network-changed
 
-// ===== 可配置参数 =====
-var FALLBACK_POLICY = '🇸🇬新加坡';   // 主节点断线时切换到的备用节点
-var GROUP_NAME = 'PROXY';              // 要操作的策略组
-var PROBE_URL = 'http://connectivitycheck.gstatic.com/generate_204'; // 探测地址(走代理)
-var PROBE_TIMEOUT = 5000;              // 探测超时 ms
-var SETTLE_MS = 3000;                  // 网络稳定等待时间 ms
+// ===== 可配置（$argument 可覆盖） =====
+var PROBE_URL = 'http://connectivitycheck.gstatic.com/generate_204';
+var SETTLE_MS = 3000;        // 网络稳定等待
+var DISMISS = 5;             // 通知自动消除秒数
+var TEST_TIMEOUT = 20000;    // 单组测速超时 ms
 
 (function() {
-  var log = function(msg) { console.log('[auto-reconnect] ' + msg); };
+  var ARG = {};
+  if (typeof $argument != 'undefined' && $argument) {
+    try { ARG = Object.fromEntries($argument.split('&').map(function(i) { var p = i.split('='); return [p[0], p[1]]; })); } catch (e) {}
+  }
+  if (ARG.PROBE_URL) PROBE_URL = ARG.PROBE_URL;
+  if (ARG.SETTLE_MS && /^\d+$/.test(ARG.SETTLE_MS)) SETTLE_MS = parseInt(ARG.SETTLE_MS, 10);
+
+  var log = function(m) { console.log('[auto-reconnect] ' + m); };
   var delay = function(ms) { return new Promise(function(r) { setTimeout(r, ms); }); };
+  var enc = encodeURIComponent;
 
-  function httpAPI(path, method, body) {
+  function httpAPI(path, method, body, timeoutMs) {
     return new Promise(function(resolve) {
-      $httpAPI(method || 'POST', path, body || null, function(result) {
-        resolve(result || {});
+      var done = false;
+      var timer = setTimeout(function() { if (!done) { done = true; resolve({}); } }, timeoutMs || 8000);
+      $httpAPI(method || 'POST', path, body || null, function(r) {
+        if (!done) { done = true; clearTimeout(timer); resolve(r || {}); }
       });
     });
   }
 
-  // 探测代理连通性：请求走规则(google 走 PROXY)，成功=代理通
-  function probe() {
-    return new Promise(function(resolve) {
-      $httpClient.get({ url: PROBE_URL, timeout: PROBE_TIMEOUT / 1000 }, function(err, resp, data) {
-        if (err) { log('探测失败: ' + err); resolve(false); return; }
-        log('探测成功, status=' + resp.status);
-        resolve(resp.status >= 200 && resp.status < 400);
-      });
-    });
+  async function getGroupType(name) {
+    var r = await httpAPI('/v1/policies/detail?policy_name=' + enc(name), 'GET');
+    var line = r[name] || '';
+    var types = ['select', 'smart', 'url-test', 'fallback', 'load-balance'];
+    for (var i = 0; i < types.length; i++) {
+      if (line.indexOf('= ' + types[i]) >= 0) return types[i];
+    }
+    return 'unknown';
   }
 
-  // 借鉴 kill-active-requests: 切模式强制所有活跃连接断掉重走规则
-  function forceReconnect() {
-    return (async function() {
-      await httpAPI('/v1/dns/flush', 'POST');
-      var before = (await httpAPI('/v1/outbound', 'GET')).mode;
-      log('当前模式: ' + before);
-      var map = { direct: 'proxy', proxy: 'direct', rule: 'proxy' };
-      var to = map[before] || 'rule';
-      log('切换到: ' + to + ' (制造连接断开)');
-      await httpAPI('/v1/outbound', 'POST', { mode: to });
-      await httpAPI('/v1/outbound', 'POST', { mode: before }); // 切回
-      log('切回: ' + before);
-    })();
+  async function getSelected(name) {
+    var r = await httpAPI('/v1/policy_groups/select?group_name=' + enc(name), 'GET');
+    return r.policy || '';
+  }
+
+  async function getAvailable(name) {
+    // POST /v1/policy_groups/test 触发整组测速
+    var r = await httpAPI('/v1/policy_groups/test', 'POST', { group_name: name }, TEST_TIMEOUT);
+    return r.available || [];
   }
 
   (async function() {
-    // 网络刚变化，等网络稳定
-    log('network-changed 事件触发, 等待 ' + SETTLE_MS + 'ms 网络稳定');
+    log('network-changed 触发, 等待 ' + SETTLE_MS + 'ms');
     await delay(SETTLE_MS);
 
-    // 先探测一次
-    var ok = await probe();
-    if (ok) {
-      log('代理正常, 无需处理');
-      $done();
-      return;
+    var groupsRes = await httpAPI('/v1/policy_groups', 'GET');
+    var groupNames = Object.keys(groupsRes);
+    log('总组数: ' + groupNames.length);
+
+    // 叶子 select 组：type=select && selected 是具体节点（groupsRes 里不存在=节点）
+    var targets = [];
+    for (var i = 0; i < groupNames.length; i++) {
+      var n = groupNames[i];
+      var type = await getGroupType(n);
+      if (type !== 'select') continue;
+      var sel = await getSelected(n);
+      if (!sel || sel === 'DIRECT' || sel === 'REJECT') continue;
+      var isGroupRef = !!groupsRes[sel]; // selected 是另一个组 → 跟随该组, 跳过
+      if (isGroupRef) continue;
+      targets.push({ name: n, selected: sel });
+    }
+    log('叶子 select 组: ' + targets.length + ' 个');
+    targets.forEach(function(t) { log('  - ' + t.name + ' 选中: ' + t.selected); });
+    if (!targets.length) { log('无需要处理的组'); $done(); return; }
+
+    // 串行组测速 + 判断 + 切换
+    var switched = [];
+    for (var j = 0; j < targets.length; j++) {
+      var t = targets[j];
+      var available = await getAvailable(t.name);
+      log('  ' + t.name + ' 可用: ' + (available.length ? available.join(', ') : '(无)'));
+      if (available.indexOf(t.selected) >= 0) continue; // 当前选中可用
+      // 当前选中不可用 → 切到组内第一个候选节点(enabled、非组、非当前、非DIRECT/REJECT)
+      // 注: /v1/policies/test 对 Trojan/H2 不可靠, 候选不做单测验证, 直接切过去试
+      var options = groupsRes[t.name] || [];
+      var candidate = null;
+      for (var m = 0; m < options.length; m++) {
+        var o = options[m];
+        if (o.enabled && !o.isGroup && o.name !== t.selected && o.name !== 'DIRECT' && o.name !== 'REJECT') {
+          candidate = o.name; break;
+        }
+      }
+      if (candidate) {
+        await httpAPI('/v1/policy_groups/select', 'POST', { group_name: t.name, policy: candidate });
+        log('✅ ' + t.name + ': ' + t.selected + ' → ' + candidate);
+        switched.push(t.name + ': ' + t.selected + ' → ' + candidate);
+      } else {
+        log('❌ ' + t.name + ' 无候选节点, 保持现状');
+        switched.push(t.name + ': 无可用候选');
+      }
     }
 
-    log('代理不通! 执行强制重连 + 切换备用节点');
-    await forceReconnect();
-
-    // 切换策略组到备用节点
-    await httpAPI('/v1/policy_groups/select', 'POST', {
-      group_name: GROUP_NAME,
-      policy: FALLBACK_POLICY
-    });
-    log('已切换到备用节点: ' + FALLBACK_POLICY);
-
-    // 等 3 秒再探测确认
-    await delay(3000);
-    var ok2 = await probe();
-    if (ok2) {
-      $notification.post('断线自动重连', '✅ 已恢复', '已切换到 ' + FALLBACK_POLICY);
-      log('恢复成功: ' + FALLBACK_POLICY);
-    } else {
-      $notification.post('断线自动重连', '❌ 备用节点也不通', FALLBACK_POLICY);
-      log('备用节点也不通');
+    if (switched.length) {
+      $notification.post('断线自动重连', '已处理 ' + switched.length + ' 个策略组', switched.join('\n'), { 'auto-dismiss': DISMISS });
     }
     $done();
   })().catch(function(e) {
