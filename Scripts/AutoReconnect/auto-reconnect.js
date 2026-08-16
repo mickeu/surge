@@ -2,7 +2,7 @@
 // 断线自动重连 + 定时巡检（同一份脚本，双挂载点）
 //   断线重连 = type=event,event-name=network-changed,script-path=...
 //   定时巡检 = type=cron,cronexp="0 */30 * * *",script-path=...
-// 触发源区分：cron 触发时 $cronexp 存在；event 触发时 $event.name 存在
+// 触发源区分：event 触发时 $event.name 存在；cron 触发时无 $event（实测 $cronexp 不注入）
 //
 // 逻辑（两种触发共用）：
 //   1. 找出所有 select 组（GET /v1/policies/detail 判断类型）
@@ -26,7 +26,9 @@ var V6_NODES = ['🇯🇵日本', '🇸🇬新加坡'];
 var V6_ONLY_GROUPS = ['Telegram'];
 
 // ===== 触发源判定 =====
-var MODE = (typeof $cronexp !== 'undefined') ? 'patrol' : 'reconnect';
+// 实测：cron 触发环境下 $cronexp 并不注入（Surge 文档与实机行为不一致）
+// 改用 $event：event 触发时必有 $event.name='network-changed'；cron/手动触发时无 $event
+var MODE = ($event && $event.name === 'network-changed') ? 'reconnect' : 'patrol';
 if (MODE === 'patrol') SETTLE_MS = 0; // 巡检时网络早已稳定，无需等待
 
 (function() {
