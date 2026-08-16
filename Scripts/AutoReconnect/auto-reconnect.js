@@ -16,6 +16,10 @@ var PROBE_URL = 'http://connectivitycheck.gstatic.com/generate_204';
 var SETTLE_MS = 3000;        // 网络稳定等待
 var DISMISS = 5;             // 通知自动消除秒数
 var TEST_TIMEOUT = 20000;    // 单组测速超时 ms
+// v6 白名单：以下节点支持 IPv6，特定组(如 Telegram)切换时只允许用它们
+var V6_NODES = ['🇯🇵日本', '🇸🇬新加坡'];
+// 必须使用 v6 节点的组
+var V6_ONLY_GROUPS = ['Telegram'];
 
 (function() {
   var ARG = {};
@@ -93,13 +97,15 @@ var TEST_TIMEOUT = 20000;    // 单组测速超时 ms
       if (available.indexOf(t.selected) >= 0) continue; // 当前选中可用
       // 当前选中不可用 → 切到组内第一个候选节点(enabled、非组、非当前、非DIRECT/REJECT)
       // 注: /v1/policies/test 对 Trojan/H2 不可靠, 候选不做单测验证, 直接切过去试
+      // v6 约束: 必须用 v6 节点的组(如 Telegram)只允许选 V6_NODES 内的节点
+      var v6Only = V6_ONLY_GROUPS.indexOf(t.name) >= 0;
       var options = groupsRes[t.name] || [];
       var candidate = null;
       for (var m = 0; m < options.length; m++) {
         var o = options[m];
-        if (o.enabled && !o.isGroup && o.name !== t.selected && o.name !== 'DIRECT' && o.name !== 'REJECT') {
-          candidate = o.name; break;
-        }
+        if (!o.enabled || o.isGroup || o.name === t.selected || o.name === 'DIRECT' || o.name === 'REJECT') continue;
+        if (v6Only && V6_NODES.indexOf(o.name) < 0) continue; // 该组只允许 v6 节点
+        candidate = o.name; break;
       }
       if (candidate) {
         await httpAPI('/v1/policy_groups/select', 'POST', { group_name: t.name, policy: candidate });
