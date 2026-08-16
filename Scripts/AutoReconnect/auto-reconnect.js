@@ -26,11 +26,12 @@ var V6_NODES = [];           // 支持 IPv6 的节点名列表，如: ['🇯🇵
 var V6_ONLY_GROUPS = [];     // 必须使用 v6 节点的组名列表，如: ['Telegram']
 
 // ===== 触发源判定 =====
-// 实测（2026-08-17）：
-//   - evaluate(cron mock) / 真实 cron 触发：$cronexp、$event 均未注入 → 走 patrol
-//   - CLI script run 手动触发：注入 mock $event(name=network-changed) → 走 reconnect（调试观察用，无实际影响）
+// 实测（2026-08-17，Surge 5.102.0 3819）：
+//   - cron / script run 环境：直接引用 $event 会抛 ReferenceError（变量未声明）！
+//     必须先用 typeof 防护，否则整个脚本静默崩溃、无任何输出
+//   - CLI script run 手动触发特定环境可能注入 mock $event(name=network-changed)，此时误走 reconnect（调试观察用，无实际影响）
 //   - 真实 network-changed event 触发：$event.name='network-changed' → 走 reconnect
-var MODE = ($event && $event.name === 'network-changed') ? 'reconnect' : 'patrol';
+var MODE = (typeof $event !== 'undefined' && $event && $event.name === 'network-changed') ? 'reconnect' : 'patrol';
 if (MODE === 'patrol') SETTLE_MS = 0; // 巡检时网络早已稳定，无需等待
 
 (function() {
