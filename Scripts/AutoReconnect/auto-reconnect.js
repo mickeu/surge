@@ -1,29 +1,29 @@
-// auto-reconnect.js v6
-// 断线自动重连 + 定时巡检（同一份脚本，双挂载点）
+// auto-reconnect.js v7
+// 断线自动重连 + 定时巡检（同一份脚本，双挂载点，完全自适应任意策略组配置）
 //   断线重连 = type=event,event-name=network-changed,script-path=...
 //   定时巡检 = type=cron,cronexp="0 */30 * * *",script-path=...
 // 触发源区分：event 触发时 $event.name 存在；cron 触发时无 $event（实测 $cronexp 不注入）
 //
-// 逻辑（两种触发共用）：
-//   1. 找出所有 select 组（GET /v1/policies/detail 判断类型）
-//   2. 只处理"叶子" select 组：selected 是具体节点（非组、非 DIRECT/REJECT）
-//      —— 选中"组"的组（如 Spotify→PROXY）自动跟随被引用组，不用管
-//   3. 串行 POST /v1/policy_groups/test 测速（Surge 只支持单测速任务的并发限制）
-//   4. 当前选中不在可用列表 → 切换：优先选测速确认可用的候选，其次组内顺序候选 + 通知
+// 通用性设计（不写死任何组名/数量）：
+//   1. 动态找出所有 select 组（GET /v1/policies/detail 判断类型），只看"叶子"组：
+//      selected 是具体节点（非组、非 DIRECT/REJECT）；选中"组"的组自动跟随被引用组
+//   2. 串行 POST /v1/policy_groups/test 测速（Surge 只支持单测速任务的并发限制）
+//   3. 当前选中不在可用列表 → 切换：优先选测速确认可用的候选，其次组内顺序候选 + 通知
+//   4. 测速无结果（超时/并发冲突）→ 跳过该组，绝不盲目切换
+//   5. v6 约束完全可选：V6_ONLY_GROUPS/V6_NODES 通过 $argument 传入（默认不限制）
+//      例: argument="V6_ONLY_GROUPS=Telegram&V6_NODES=🇯🇵日本,🇸🇬新加坡"
 // 设计要点：
 //   - 用 /v1/policy_groups/test 而不是 /v1/policies/test（后者对 Trojan/H2 返回空，不可靠）
 //   - 组测速必须串行（Surge 并发限制，并行会导致部分组返回空）
 //   - 只在"当前选中不可用"时才切，手动选择的节点不会被定时任务无故更改
 
 // ===== 可配置（$argument 可覆盖） =====
-var PROBE_URL = 'http://connectivitycheck.gstatic.com/generate_204';
 var SETTLE_MS = 3000;        // 断线模式：网络稳定等待（巡检模式自动置 0）
 var DISMISS = 5;             // 通知自动消除秒数
 var TEST_TIMEOUT = 20000;    // 单组测速超时 ms
-// v6 白名单：以下节点支持 IPv6，特定组(如 Telegram)切换时只允许用它们
-var V6_NODES = ['🇯🇵日本', '🇸🇬新加坡'];
-// 必须使用 v6 节点的组
-var V6_ONLY_GROUPS = ['Telegram'];
+// v6 约束（默认不限制任何组/节点；有需求的用户通过 $argument 传入）
+var V6_NODES = [];           // 支持 IPv6 的节点名列表，如: ['🇯🇵日本','🇸🇬新加坡']
+var V6_ONLY_GROUPS = [];     // 必须使用 v6 节点的组名列表，如: ['Telegram']
 
 // ===== 触发源判定 =====
 // 实测（2026-08-17）：
@@ -38,8 +38,11 @@ if (MODE === 'patrol') SETTLE_MS = 0; // 巡检时网络早已稳定，无需等
   if (typeof $argument != 'undefined' && $argument) {
     try { ARG = Object.fromEntries($argument.split('&').map(function(i) { var p = i.split('='); return [p[0], p[1]]; })); } catch (e) {}
   }
-  if (ARG.PROBE_URL) PROBE_URL = ARG.PROBE_URL;
   if (ARG.SETTLE_MS && /^\d+$/.test(ARG.SETTLE_MS)) SETTLE_MS = parseInt(ARG.SETTLE_MS, 10);
+  if (ARG.DISMISS && /^\d+$/.test(ARG.DISMISS)) DISMISS = parseInt(ARG.DISMISS, 10);
+  if (ARG.TEST_TIMEOUT && /^\d+$/.test(ARG.TEST_TIMEOUT)) TEST_TIMEOUT = parseInt(ARG.TEST_TIMEOUT, 10);
+  if (ARG.V6_NODES) V6_NODES = ARG.V6_NODES.split(',').map(function(s){ return s.trim(); }).filter(Boolean);
+  if (ARG.V6_ONLY_GROUPS) V6_ONLY_GROUPS = ARG.V6_ONLY_GROUPS.split(',').map(function(s){ return s.trim(); }).filter(Boolean);
 
   var log = function(m) { console.log('[auto-reconnect/' + MODE + '] ' + m); };
   var delay = function(ms) { return new Promise(function(r) { setTimeout(r, ms); }); };
@@ -72,8 +75,9 @@ if (MODE === 'patrol') SETTLE_MS = 0; // 巡检时网络早已稳定，无需等
 
   async function getAvailable(name) {
     // POST /v1/policy_groups/test 触发整组测速
+    // 返回可用节点数组；测速无结果（超时/并发冲突导致 Surge 未返回 available 字段）→ 返回 null
     var r = await httpAPI('/v1/policy_groups/test', 'POST', { group_name: name }, TEST_TIMEOUT);
-    return r.available || [];
+    return (r && Array.isArray(r.available)) ? r.available : null;
   }
 
   function pickCandidate(options, available, t) {
@@ -131,6 +135,7 @@ if (MODE === 'patrol') SETTLE_MS = 0; // 巡检时网络早已稳定，无需等
     for (var j = 0; j < targets.length; j++) {
       var t = targets[j];
       var available = await getAvailable(t.name);
+      if (available === null) { log('  ' + t.name + ' ⚠️ 测速无结果(超时/冲突), 跳过不动'); continue; }
       log('  ' + t.name + ' 可用: ' + (available.length ? available.join(', ') : '(无)'));
       if (available.indexOf(t.selected) >= 0) continue; // 当前选中可用，不动（保持手动选择）
       // 当前选中不可用 → 切换
