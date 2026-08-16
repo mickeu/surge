@@ -1,0 +1,10 @@
+#!name=断线重连与定时巡检
+#!desc=断线自动重连 + 定时巡检（同一脚本 v6 双触发）：network-changed 触发立即处理；每 30 分钟 cron 兜底巡检，覆盖节点静默挂掉场景。仅在真正切换节点时推送通知。
+#!author=mickeu
+#!update-url=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/AutoReconnect/auto-reconnect.sgmodule
+
+[Script]
+# > 断线重连：网络变化（切换 Wi-Fi/蜂窝）时触发，等待 3 秒网络稳定后巡检所有叶子 select 组
+断线重连 = type=event,event-name=network-changed,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/AutoReconnect/auto-reconnect.js,script-update-interval=86400
+# > 定时巡检：每 30 分钟兜底（Wi-Fi 连着但节点静默挂掉时不触发 network-changed，靠它兜底）
+定时巡检 = type=cron,cronexp="0 */30 * * *",timeout=120,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/AutoReconnect/auto-reconnect.js,script-update-interval=86400
