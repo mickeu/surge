@@ -26,8 +26,10 @@ var V6_NODES = ['🇯🇵日本', '🇸🇬新加坡'];
 var V6_ONLY_GROUPS = ['Telegram'];
 
 // ===== 触发源判定 =====
-// 实测：cron 触发环境下 $cronexp 并不注入（Surge 文档与实机行为不一致）
-// 改用 $event：event 触发时必有 $event.name='network-changed'；cron/手动触发时无 $event
+// 实测（2026-08-17）：
+//   - evaluate(cron mock) / 真实 cron 触发：$cronexp、$event 均未注入 → 走 patrol
+//   - CLI script run 手动触发：注入 mock $event(name=network-changed) → 走 reconnect（调试观察用，无实际影响）
+//   - 真实 network-changed event 触发：$event.name='network-changed' → 走 reconnect
 var MODE = ($event && $event.name === 'network-changed') ? 'reconnect' : 'patrol';
 if (MODE === 'patrol') SETTLE_MS = 0; // 巡检时网络早已稳定，无需等待
 
@@ -40,7 +42,6 @@ if (MODE === 'patrol') SETTLE_MS = 0; // 巡检时网络早已稳定，无需等
   if (ARG.SETTLE_MS && /^\d+$/.test(ARG.SETTLE_MS)) SETTLE_MS = parseInt(ARG.SETTLE_MS, 10);
 
   var log = function(m) { console.log('[auto-reconnect/' + MODE + '] ' + m); };
-  log('[probe] typeof $event=' + (typeof $event) + ', $event=' + (typeof $event !== 'undefined' ? JSON.stringify($event) : '-') + ', typeof $cronexp=' + (typeof $cronexp));
   var delay = function(ms) { return new Promise(function(r) { setTimeout(r, ms); }); };
   var enc = encodeURIComponent;
 
