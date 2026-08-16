@@ -6,6 +6,7 @@
 [Script]
 # > 断线重连：网络变化（切换 Wi-Fi/蜂窝）时触发，等待 3 秒网络稳定后巡检所有叶子 select 组
 # > 下方 argument 为 v6 约束（Telegram 必须走 v6 节点）：不需要可整段删除
-断线重连 = type=event,event-name=network-changed,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/AutoReconnect/auto-reconnect.js,argument="V6_ONLY_GROUPS=Telegram&V6_NODES=🇯🇵日本,🇸🇬新加坡",script-update-interval=86400
+# > ?v=8 强制刷新：3819 下旧资源条目 update 为假更新，加参数换新条目（勿删）
+断线重连 = type=event,event-name=network-changed,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/AutoReconnect/auto-reconnect.js?v=8,argument="V6_ONLY_GROUPS=Telegram&V6_NODES=🇯🇵日本,🇸🇬新加坡",script-update-interval=86400
 # > 定时巡检：每 30 分钟兜底（Wi-Fi 连着但节点静默挂掉时不触发 network-changed，靠它兜底）
-定时巡检 = type=cron,cronexp="0 */30 * * *",timeout=120,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/AutoReconnect/auto-reconnect.js,argument="V6_ONLY_GROUPS=Telegram&V6_NODES=🇯🇵日本,🇸🇬新加坡",script-update-interval=86400
+定时巡检 = type=cron,cronexp="0 */30 * * *",timeout=120,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/AutoReconnect/auto-reconnect.js?v=8,argument="V6_ONLY_GROUPS=Telegram&V6_NODES=🇯🇵日本,🇸🇬新加坡",script-update-interval=86400
