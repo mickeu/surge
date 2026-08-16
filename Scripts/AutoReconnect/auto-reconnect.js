@@ -1,8 +1,8 @@
-// auto-reconnect.js v7
+// auto-reconnect.js v8
 // 断线自动重连 + 定时巡检（同一份脚本，双挂载点，完全自适应任意策略组配置）
 //   断线重连 = type=event,event-name=network-changed,script-path=...
 //   定时巡检 = type=cron,cronexp="0 */30 * * *",script-path=...
-// 触发源区分：event 触发时 $event.name 存在；cron 触发时无 $event（实测 $cronexp 不注入）
+// 触发源区分：$event 必须先 typeof 防护再引用（cron 环境未声明会 ReferenceError 静默崩溃）
 //
 // 通用性设计（不写死任何组名/数量）：
 //   1. 动态找出所有 select 组（GET /v1/policies/detail 判断类型），只看"叶子"组：
@@ -10,7 +10,11 @@
 //   2. 串行 POST /v1/policy_groups/test 测速（Surge 只支持单测速任务的并发限制）
 //   3. 当前选中不在可用列表 → 切换：优先选测速确认可用的候选，其次组内顺序候选 + 通知
 //   4. 测速无结果（超时/并发冲突）→ 跳过该组，绝不盲目切换
-//   5. v6 约束完全可选：V6_ONLY_GROUPS/V6_NODES 通过 $argument 传入（默认不限制）
+//   5. v6 约束自动判定：
+//      - 读 [MTProto] 段：无该段或 ipv6 != true → V6_ONLY_GROUPS 自动失效（不锁 v6）
+//      - 需锁 v6 且未显式指定 V6_NODES → 用 $httpClient 直连 IPv6 地址实测各候选节点，
+//        自动识别支持 v6 出口的节点（探索目标 https://[2606:4700:4700::1111]/）
+//   6. $argument 显式覆盖：V6_ONLY_GROUPS / V6_NODES（逗号分隔）传入后跳过自动逻辑
 //      例: argument="V6_ONLY_GROUPS=Telegram&V6_NODES=🇯🇵日本,🇸🇬新加坡"
 // 设计要点：
 //   - 用 /v1/policy_groups/test 而不是 /v1/policies/test（后者对 Trojan/H2 返回空，不可靠）
@@ -81,6 +85,41 @@ if (MODE === 'patrol') SETTLE_MS = 0; // 巡检时网络早已稳定，无需等
     return (r && Array.isArray(r.available)) ? r.available : null;
   }
 
+  // v8: MTProto IPv6 自动判定 —— 没有 MTProto 模块或未开 ipv6，则不需要 v6 节点
+  async function mtprotoIPv6Enabled() {
+    var r = await httpAPI('/v1/profiles/current?sensitive=0', 'GET');
+    var txt = r.profile || '';
+    var m = txt.match(/\[MTProto\]([\s\S]*?)(?=\n\[|\s*$)/);
+    if (!m) return false;                         // 无 MTProto 模块
+    return /^ipv6\s*=\s*true/m.test(m[1]);        // 开了 ipv6 才需要 v6 节点
+  }
+
+  // v8: 节点 v6 能力自动检测 —— 让节点直连 IPv6 地址(Cloudflare Anycast 443)，
+  // 能握手=支持 v6 出口；失败/超时=不支持
+  function probeV6(name) {
+    return new Promise(function(resolve) {
+      var done = false;
+      var timer = setTimeout(function() { if (!done) { done = true; resolve(false); } }, 4000);
+      try {
+        $httpClient.get('https://[2606:4700:4700::1111]/', { policy: name, timeout: 3500 }, function(err, resp) {
+          if (done) return;
+          done = true; clearTimeout(timer);
+          resolve(!err && resp && resp.status && resp.status >= 200 && resp.status < 500);
+        });
+      } catch (e) {
+        if (!done) { done = true; clearTimeout(timer); resolve(false); }
+      }
+    });
+  }
+
+  async function detectV6Nodes(names) {
+    var uniq = names.filter(function(v, i, a) { return a.indexOf(v) === i; });
+    var results = await Promise.all(uniq.map(function(n) {
+      return probeV6(n).then(function(ok) { return { name: n, ok: ok }; });
+    }));
+    return results.filter(function(x) { return x.ok; }).map(function(x) { return x.name; });
+  }
+
   function pickCandidate(options, available, t) {
     // 返回切换候选节点名；无候选返回 null
     // 优先用测速确认可用的（available），其次组内顺序（options）
@@ -130,6 +169,22 @@ if (MODE === 'patrol') SETTLE_MS = 0; // 巡检时网络早已稳定，无需等
     log('叶子 select 组: ' + targets.length + ' 个');
     targets.forEach(function(t) { log('  - ' + t.name + ' 选中: ' + t.selected); });
     if (!targets.length) { log('无需要处理的组'); $done(); return; }
+
+    // v8: v6 约束自动判定
+    //   1. MTProto 未启用或未开 ipv6 → V6_ONLY_GROUPS 自动失效（不锁 v6）
+    //   2. 需要锁 v6 且未显式指定 V6_NODES → 自动实测各候选节点的 v6 能力
+    var v6Active = V6_ONLY_GROUPS.length > 0 && await mtprotoIPv6Enabled();
+    log('v6 约束: ' + (v6Active ? '生效(' + V6_ONLY_GROUPS.join(',') + ' 锁定 v6 节点)' : '不生效(MTProto 无 ipv6 或未配置锁定)'));
+    if (v6Active && !ARG.V6_NODES && V6_NODES.length === 0) {
+      var allCandidates = [];
+      targets.forEach(function(t) {
+        (groupsRes[t.name] || []).forEach(function(o) {
+          if (!o.isGroup && o.name !== 'DIRECT' && o.name !== 'REJECT') allCandidates.push(o.name);
+        });
+      });
+      V6_NODES = await detectV6Nodes(allCandidates);
+      log('v6 节点自动检测: ' + (V6_NODES.length ? V6_NODES.join(', ') : '(候选均不支持 v6)'));
+    }
 
     // 串行组测速 + 判断 + 切换
     var switched = [];
