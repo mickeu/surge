@@ -62,3 +62,6 @@ GEOIP,CN,DIRECT,no-resolve
 
 # > Final 规则（DNS 查询失败时也走 Final）
 FINAL,PROXY,dns-failed
+
+# > [UPDATE-TEST] v1 链路测试
+DOMAIN,update-test-chain.example.com,REJECT
