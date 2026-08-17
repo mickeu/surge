@@ -4,6 +4,9 @@
 //
 //   网上国网[定时] = type=cron,cronexp=0 9 * * *,wake-system=1,timeout=120,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/95598/95598.js,argument=username=你的手机号&password=你的密码&debug=true&show_recent_usage=true&notify_all_accounts=true,script-update-interval=86400
 //
+// 参数值可在配置行中直接修改，示例：argument=username=你的手机号&password=你的密码&debug=true&show_recent_usage=true&notify_all_accounts=true
+// （替换 username/password 的占位符为你的实际账号密码即可）
+//
 // 参数说明：
 //   username=你的手机号—网上国网App登录手机号（必填）
 //   password=你的密码—网上国网App登录密码（必填）
