@@ -1,6 +1,6 @@
 // 网上国网（95598）签到与电费账单查询脚本
 // ===================================================
-// 配置文件挂载示例（在 Surge 配置 [Script] 段添加一行，复制时删除括号内中文注释）：
+// 将以下配置添加至 Surge 配置文件的 [Script] 段下（复制时删除括号内中文注释）：
 //
 //   网上国网[定时] = type=cron（定时触发）,cronexp=0 9 * * *（每天上午9点）,wake-system=1（到点唤醒）,timeout=120（最长120秒）,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/95598/95598.js（脚本地址）,argument=username=你的手机号（登录账号）&password=你的密码（登录密码）&debug=true（调试日志）&show_recent_usage=true（显示全部账单）&notify_all_accounts=true（推送全部户号）,script-update-interval=0（不自动更新）
 //
