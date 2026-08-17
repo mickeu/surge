@@ -21,21 +21,21 @@
 //   - 组测速必须串行（Surge 并发限制，并行会导致部分组返回空）
 //   - 只在"当前选中不可用"时才切，手动选择的节点不会被定时任务无故更改
 //
-// 配置示例：带账号密码的脚本挂载（以网上国网签到为例）
-//   网上国网[定时] = type=cron,cronexp=0 9 * * *,wake-system=1,timeout=120,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/95598/95598.js,argument=username=你的手机号&password=你的密码&debug=true&show_recent_usage=true&notify_all_accounts=true,script-update-interval=0
+// 配置示例：带账号密码的脚本挂载（以网上国网签到为例；复制时请删除括号内的中文注释）
+//   网上国网[定时] = type=cron（定时触发）,cronexp=0 9 * * *（每天上午9点）,wake-system=1（到点唤醒）,timeout=120（最长120秒）,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/95598/95598.js（脚本地址）,argument=username=你的手机号（登录账号）&password=你的密码（登录密码）&debug=true（调试日志）&show_recent_usage=true（显示全部账单）&notify_all_accounts=true（推送全部户号）,script-update-interval=0（不自动更新）
 //   —— 参数中文说明 ——
 //     type=cron              定时触发类型
 //     cronexp=0 9 * * *      执行时间：每天上午 9 点
 //     wake-system=1          到点唤醒系统后台执行
 //     timeout=120            脚本最长运行 120 秒
 //     script-path=<URL>      脚本文件 URL（须可公开访问）
-//     argument=              传给脚本的参数，多个 key=value 用 & 连接，中文直接填入：
+//     argument=              传给脚本的参数，多个 key=value 用 & 连接：
 //       username=你的手机号   网上国网 App 登录手机号（必填）
 //       password=你的密码     网上国网 App 登录密码（必填）
-//       debug=true            是否输出调试日志（可选，true/false）
-//       show_recent_usage=true  是否展示近期用电账单（可选）
-//       notify_all_accounts=true 是否推送全部绑定户号（可选）
-//     script-update-interval=0  远程脚本自动更新间隔秒数（0=不自动更新）
+//       debug=true            是否输出调试日志（可选）
+//       show_recent_usage=true  显示近期用电账单（可选）
+//       notify_all_accounts=true 推送全部绑定户号（可选）
+//     script-update-interval=0  自动更新间隔秒数（0=不自动更新）
 
 // ===== 可配置（$argument 可覆盖） =====
 var SETTLE_MS = 3000;        // 断线模式：网络稳定等待（巡检模式自动置 0）
