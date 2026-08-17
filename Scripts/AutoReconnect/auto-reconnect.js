@@ -20,6 +20,12 @@
 //   - 用 /v1/policy_groups/test 而不是 /v1/policies/test（后者对 Trojan/H2 返回空，不可靠）
 //   - 组测速必须串行（Surge 并发限制，并行会导致部分组返回空）
 //   - 只在"当前选中不可用"时才切，手动选择的节点不会被定时任务无故更改
+//
+// 配置示例：带账号密码的脚本挂载（以网上国网签到为例）
+//   网上国网[定时] = type=cron,cronexp=0 9 * * *,wake-system=1,timeout=120,\
+//     script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/95598/95598.js,\
+//     argument=username=your_phone&password=your_password&debug=true&show_recent_usage=true&notify_all_accounts=true,script-update-interval=0
+//   argument 参数用 & 连接多个 key=value，注意整行需要连续（实际配置一行，此处换行仅为阅读方便）
 
 // ===== 可配置（$argument 可覆盖） =====
 var SETTLE_MS = 3000;        // 断线模式：网络稳定等待（巡检模式自动置 0）
