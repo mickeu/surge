@@ -1,23 +1,16 @@
 // 网上国网（95598）签到与电费账单查询脚本
 // ===================================================
-// 将以下配置添加至 Surge 配置文件的 [Script] 段下（复制时删除括号内中文注释）：
+// 将以下配置添加至 Surge 配置文件的 [Script] 段下，替换中文占位符为你的实际信息：
 //
-//   网上国网[定时] = type=cron（定时触发）,cronexp=0 9 * * *（每天上午9点）,wake-system=1（到点唤醒）,timeout=120（最长120秒）,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/95598/95598.js（脚本地址）,argument=username=你的手机号（登录账号）&password=你的密码（登录密码）&debug=true（调试日志）&show_recent_usage=true（显示全部账单）&notify_all_accounts=true（推送全部户号）,script-update-interval=0（不自动更新）
+//   网上国网[定时] = type=cron,cronexp=0 9 * * *,wake-system=1,timeout=120,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/95598/95598.js,argument=username=你的手机号&password=你的密码&debug=true&show_recent_usage=true&notify_all_accounts=true,script-update-interval=86400
 //
-// 参数中文说明：
-//   type=cron                定时触发类型
-//   cronexp=0 9 * * *        执行时间：每天上午 9 点
-//   wake-system=1            到点唤醒系统后台执行
-//   timeout=120              脚本最长运行 120 秒
-//   script-path=<URL>        脚本文件地址（须可公开访问）
-//   argument=                传给脚本的参数，多个 key=value 用 & 连接：
-//     username=你的手机号     网上国网 App 登录手机号（必填）
-//     password=你的密码       网上国网 App 登录密码（必填）
-//     debug=true              是否输出调试日志（可选）
-//     show_recent_usage=true  显示近期用电账单（可选）
-//     notify_all_accounts=true 推送全部绑定户号（可选）
-//   script-update-interval=86400  自动更新间隔秒数（24小时自动检查；改完脚本立即生效需手动触发更新）
-//   —— 修改脚本后立即更新的方法 ——
+// 参数说明：
+//   username=你的手机号—网上国网App登录手机号（必填）
+//   password=你的密码—网上国网App登录密码（必填）
+//   debug=true—是否输出调试日志（可选）
+//   show_recent_usage=true—显示近期用电账单（可选）
+//   notify_all_accounts=true—推送全部绑定户号（可选）
+//   修改脚本后立即生效：surge-cli external-resource update <key>（key 从 external-resource list 查询）
 //   1. 推送代码到仓库
 //   2. surge-cli external-resource list  # 找到 95598.js 的 key
 //   3. surge-cli external-resource update <key>  # 触发立即下载新版
