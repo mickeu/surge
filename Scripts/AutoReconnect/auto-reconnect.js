@@ -25,7 +25,19 @@
 //   网上国网[定时] = type=cron,cronexp=0 9 * * *,wake-system=1,timeout=120,\
 //     script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/95598/95598.js,\
 //     argument=username=your_phone&password=your_password&debug=true&show_recent_usage=true&notify_all_accounts=true,script-update-interval=0
-//   argument 参数用 & 连接多个 key=value，注意整行需要连续（实际配置一行，此处换行仅为阅读方便）
+//   —— 参数中文说明（实际配置为完整一行）——
+//     type=cron              定时触发类型
+//     cronexp=0 9 * * *      执行时间：每天上午 9 点
+//     wake-system=1          到点唤醒系统后台执行
+//     timeout=120            脚本最长运行 120 秒
+//     script-path=<URL>      脚本文件地址（须可公开访问，或本地文件）
+//     argument=              传给脚本的参数，多个 key=value 用 & 连接：
+//       username=<手机号>     网上国网 App 登录账号（必填）
+//       password=<密码>       网上国网 App 登录密码（必填）
+//       debug=<true/false>    是否输出调试日志（可选）
+//       show_recent_usage=<true/false>  是否展示近期用电账单（可选）
+//       notify_all_accounts=<true/false> 是否推送全部绑定户号（可选）
+//     script-update-interval=0  远程脚本自动更新间隔秒数（0=不自动更新）
 
 // ===== 可配置（$argument 可覆盖） =====
 var SETTLE_MS = 3000;        // 断线模式：网络稳定等待（巡检模式自动置 0）
