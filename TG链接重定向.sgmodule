@@ -1,11 +1,11 @@
 #!name=TG链接重定向·Turrit默认
-#!desc=打开 t.me 链接直接跳转至 Turrit
+#!desc=打开 t.me 链接直接跳转至 Turrit（Surge 版脚本）
 #!author=自用（Surge适配）
 #!icon=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png
-#!homepage=https://funny-carp-11.deno.dev/tg.plugin
+#!homepage=https://github.com/mickeu/surge
 
 [MITM]
 hostname = %APPEND% t.me, telegram.me
 
 [Script]
-TG链接重定向 = type=http-request,pattern=^https?:\/\/(t\.me|telegram\.me)\/.+,script-path=https://funny-carp-11.deno.dev/tg.js,requires-body=false,timeout=10,argument=tme_redirect=Turrit&open_mode=html
+TG链接重定向 = type=http-request,pattern=^https?:\/\/(t\.me|telegram\.me)\/.+,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/TGRedirect/TGRedirect.js,requires-body=false,timeout=10,argument=tme_redirect=Turrit
