@@ -1,64 +1,67 @@
 [Rule]
-# > PingMe规则
-DOMAIN,api.pingmeapp.net,DIRECT // PingMe规则
-# > 银行拒绝
-DOMAIN,msmp.abchina.com.cn,REJECT
+# > PingMe 签到接口直连
+DOMAIN,api.pingmeapp.net,DIRECT // PingMe 签到 API 直连
+# > 银行恶意域名拦截
+DOMAIN,msmp.abchina.com.cn,REJECT // 农行 msmp 恶意域名拦截
 
 # > 广告拦截/隐私保护/病毒拦截/钓鱼和诈骗域名拦截（blackmatrix7 _All 全量版）
-RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Advertising/Advertising_All.list,REJECT
-RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Hijacking/Hijacking.list,REJECT
-RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Privacy/Privacy.list,REJECT
+RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Advertising/Advertising_All.list,REJECT // 广告全量拦截（blackmatrix7）
+RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Hijacking/Hijacking.list,REJECT // 域名劫持/中间人攻击防护
+RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Privacy/Privacy.list,REJECT // 隐私追踪/数据收集拦截
+RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Advertising_Supplement.list,REJECT // 广告拦截补充（blackmatrix7 漏覆盖）
 
-# > 广告拦截补充（blackmatrix7 漏覆盖的广告域名）
-RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Advertising_Supplement.list,REJECT
-
-# > 局域网地址（提至高优先级，确保本地设备、NAS、打印机不进行无谓的规则匹配）
-RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Lan/Lan.list,DIRECT
+# > 局域网地址（提至高优先级，确保本地服务不误走代理）
+RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Lan/Lan.list,DIRECT // 局域网直连（NAS/打印机/本地服务）
 
 # > AI 服务（OpenAI / Claude / Gemini）
-RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/OpenAI/OpenAI.list,AIGC
-RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Claude/Claude.list,AIGC
-RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Gemini/Gemini.list,AIGC
+RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/OpenAI/OpenAI.list,AIGC // OpenAI/ChatGPT 走 AI 策略组
+RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Claude/Claude.list,AIGC // Claude 走 AI 策略组
+RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Gemini/Gemini.list,AIGC // Gemini 走 AI 策略组
 
-# > 苹果服务（Apple_All 含 Apple 所有子域名 + iCloud + AppleProxy）
-RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Apple/Apple_All.list,Apple
+# > 苹果服务
+# Apple AI（走代理，须先于 Apple_All）
+RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/AppleIntelligence.list,AIGC // Apple AI 走代理
+RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Apple/Apple_All.list,Apple // 苹果服务走 Apple 策略组
 
 # > 微软服务
-RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Microsoft/Microsoft.list,Microsoft
+RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Microsoft/Microsoft.list,Microsoft // 微软服务走 Microsoft 策略组
 
 # > 社交平台（Telegram 流量全部走 Telegram 策略组）
-PROTOCOL,MTProto,Telegram
-RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Telegram/Telegram.list,Telegram
-RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/TelegramSG/TelegramSG.list,Telegram
+PROTOCOL,MTProto,Telegram // MTProto 协议直送 Telegram 组
+RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Telegram/Telegram.list,Telegram // Telegram 域名走 Telegram 组
+RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/TelegramSG/TelegramSG.list,Telegram // Telegram 新加坡节点分流
 
 # > 游戏平台
-RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Game/Game.list,Game
-RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Blizzard/Blizzard.list,Game
+RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Game/Game.list,Game // 游戏平台走 Game 组
+RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Blizzard/Blizzard.list,Game // 暴雪战网走 Game 组
 
 # > 流媒体
-RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/YouTube/YouTube.list,YouTube
-RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Netflix/Netflix.list,Netflix
-RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Disney/Disney.list,Disney+
-RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Spotify/Spotify.list,Spotify
-RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/TikTok/TikTok.list,TikTok
-RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/BiliBili/BiliBili.list,BiliBili
-RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/ChinaMedia/ChinaMedia.list,DIRECT
-RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/GlobalMedia/GlobalMedia.list,GlobalMedia
+RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/YouTube/YouTube.list,YouTube // YouTube 走 YouTube 组
+RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Netflix/Netflix.list,Netflix // Netflix 走 Netflix 组
+RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Disney/Disney.list,Disney+ // Disney+ 走 Disney+ 组
+RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Spotify/Spotify.list,Spotify // Spotify 走 Spotify 组
+RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/TikTok/TikTok.list,TikTok // TikTok 走 TikTok 组
+RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/BiliBili/BiliBili.list,BiliBili // B站走 BiliBili 组
+RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/ChinaMedia/ChinaMedia.list,DIRECT // 国内流媒体直连（腾讯/爱奇艺/优酷等）
+RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/GlobalMedia/GlobalMedia.list,GlobalMedia // 境外流媒体兜底走 GlobalMedia 组
 
 # > 补充国内直连（误走代理的国内业务域名，必须在 Global_All 之前）
-RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Direct_Supplement.list,DIRECT
+RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Direct_Supplement.list,DIRECT // 补充国内直连域名
+
+# > 网络信息模块数据源直连（xream net-lsp-x，spcn 国内 IP 查询）
+DOMAIN-SUFFIX,speedtest.cn,DIRECT // speedtest.cn 直连（网络信息面板数据源）
 
 # > 境外常规网站代理（Global_All 综合大表，覆盖所有未被以上规则匹配的境外域名/IP）
-RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Global/Global_All.list,PROXY
+RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Global/Global_All.list,PROXY // 境外网站代理兜底（综合大表）
 
 # > 🇨🇳 中国大陆直连（三层防线，逐层收紧，确保无泄漏）
 # 第一层：ChinaMax_Domain 域名白名单（精准匹配国内域名，优先于 IP 规则）
-RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/ChinaMax/ChinaMax_Domain.list,DIRECT
+RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/ChinaMax/ChinaMax_Domain.list,DIRECT // 国内域名白名单（精准匹配，先于 IP 规则）
 # 第二层：ChinaMax 综合大表（域名 + IP + ASN 全覆盖，捕获国内 IP 段流量）
-RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/ChinaMax/ChinaMax.list,DIRECT
+RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/ChinaMax/ChinaMax.list,DIRECT // 国内 IP 段/ASN 全覆盖
 
 # > GeoIP 中国大陆 IP 兜底（no-resolve 跳过已匹配流量的 DNS 解析，减少延迟）
-GEOIP,CN,DIRECT,no-resolve
+GEOIP,CN,DIRECT,no-resolve // 中国大陆 IP 兜底直连
 
 # > Final 规则（DNS 查询失败时也走 Final）
-FINAL,PROXY,dns-failed
+FINAL,PROXY,dns-failed // 未匹配流量走代理兜底
