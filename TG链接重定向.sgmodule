@@ -1,11 +1,13 @@
-#!name=TG链接重定向·Turrit默认
-#!desc=打开 t.me 链接直接跳转至 Turrit（Surge 版脚本）
+#!name=TG链接重定向·可编辑版
+#!desc=打开 t.me 链接直接跳转至你选择的 Telegram 客户端。模块参数里填客户端名即可切换
 #!author=自用（Surge适配）
 #!icon=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png
 #!homepage=https://github.com/mickeu/surge
+#!arguments=CLIENT:Turrit
+#!arguments-desc=跳转目标客户端名称（在下方文本框输入，输入后可改，改完 reload 生效）\n\n可选客户端与填写值说明：\n · 官方 Telegram —— 填 Telegram\n · Turrit —— 填 Turrit（默认）\n · Swiftgram —— 填 Swiftgram\n · iMe —— 填 iMe\n · Nicegram —— 填 Nicegram\n · Lingogram —— 填 Lingogram\n · Nagram —— 填 Nagram（注：Nagram 劫持官方 tg scheme，实际会仍跳官方）\n\n提示：输入框填上面任一名称即可，勿加空格
 
 [MITM]
 hostname = %APPEND% t.me, telegram.me
 
 [Script]
-TG链接重定向 = type=http-request,pattern=^https?:\/\/(t\.me|telegram\.me)\/.+,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/TGRedirect/TGRedirect.js,requires-body=false,timeout=10,argument=tme_redirect=Turrit
+TG链接重定向 = type=http-request,pattern=^https?:\/\/(t\.me|telegram\.me)\/.+,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/TGRedirect/TGRedirect.js,requires-body=false,timeout=10,argument=tme_redirect={{{CLIENT}}}
