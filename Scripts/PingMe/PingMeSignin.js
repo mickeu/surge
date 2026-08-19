@@ -31,7 +31,10 @@ const VIDEO_DELAY = 8000;
 const fakeDeviceId = genFakeDeviceId();
 
 // 执行开始
-startTasks().then(r => $.done());
+startTasks().then(r => {
+    try { $surge?.logbook(`PingMe签到完成`); } catch(e){}
+    $.done()
+});
 
 async function startTasks() {
     console.log("开始运行签到");
