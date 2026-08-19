@@ -35,6 +35,7 @@ if (typeof $request !== 'undefined') {
 } else {
   // —— 签到模式 ——
   mainSign().then(function() {
+    try { $surge?.logbook('百度贴吧签到完成'); } catch(e){}
     $done();
   }).catch(function(err) {
     console.log('❌ 签到异常: ' + err);
