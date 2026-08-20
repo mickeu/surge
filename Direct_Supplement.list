@@ -1,8 +1,8 @@
 # Surge 补充直连规则集
 # 补充被 FINAL 兜底误走代理的国内业务域名
-# 来源：Surge CLI rule explain 扫描发现
+# 来源：Surge CLI rule explain 扫描发现 + 规则集交叉冲突修复
 # 维护者：mickeu
-# 更新时间：2026-08-18
+# 更新时间：2026-08-20
 
 # 腾讯业务域名（误走代理）
 DOMAIN-SUFFIX,qqmail.com
@@ -13,3 +13,81 @@ DOMAIN-SUFFIX,content.weixin.qq.com
 DOMAIN-SUFFIX,didi.com
 DOMAIN-SUFFIX,unionpay.com
 DOMAIN-SUFFIX,gov.cn
+
+# --- 规则集交叉冲突修复（2026-08-20）---
+# 背景：ChinaMax_Domain 想直连的域名被 Global_All 的 DOMAIN-SUFFIX 覆盖 →
+# Global_All 位置靠前导致实际走代理。本段在 Global_All 之前补充直连，
+# 让这些国内可达的厂商更新站/CDN 节点真正直连。
+# 用 DOMAIN（精确）而非 DOMAIN-SUFFIX（宽）避免误伤厂商其他需代理的服务。
+# 排除：境外流媒体 HLS、Google 系（recaptcha/amp）、需要代理访问的服务。
+
+# 安全宽域（整个厂商国内直连合理）
+DOMAIN-SUFFIX,acer.com
+DOMAIN-SUFFIX,admob-cn.com
+DOMAIN-SUFFIX,amplifi.com
+DOMAIN-SUFFIX,angruo.com
+DOMAIN-SUFFIX,app-analytics-services.com
+DOMAIN-SUFFIX,bdn.dev
+DOMAIN-SUFFIX,crisp.chat
+DOMAIN-SUFFIX,eprintsw.com
+DOMAIN-SUFFIX,eset.com
+DOMAIN-SUFFIX,fantv.hk
+DOMAIN-SUFFIX,gonglchuangl.net
+DOMAIN-SUFFIX,kaspersky.com
+DOMAIN-SUFFIX,msi.com
+DOMAIN-SUFFIX,ntdimg.com
+DOMAIN-SUFFIX,ntp.org
+DOMAIN-SUFFIX,oasisfeng.com
+DOMAIN-SUFFIX,pki.goog
+DOMAIN-SUFFIX,pxcc.com
+DOMAIN-SUFFIX,qcomgeo2.com
+DOMAIN-SUFFIX,redhat.com
+DOMAIN-SUFFIX,samsungapps.com
+DOMAIN-SUFFIX,sc.com
+DOMAIN-SUFFIX,skymansion.net
+DOMAIN-SUFFIX,ssl-images-amazon.com
+DOMAIN-SUFFIX,tvb.com
+DOMAIN-SUFFIX,widevine.com
+DOMAIN-SUFFIX,xn--ngstr-lra8j.com
+DOMAIN-SUFFIX,xtracloud.net
+DOMAIN-SUFFIX,xuite.net
+DOMAIN-SUFFIX,co.kr
+DOMAIN-SUFFIX,com.tw
+DOMAIN-SUFFIX,gov.tw
+
+# 精确域名（厂商主域可能需要代理，只直连国内节点/更新站）
+DOMAIN,ccmdls.adobe.com
+DOMAIN,cdn.globalsigncdn.com.cdn.cloudflare.net
+DOMAIN,lenovo.com.cdn.cloudflare.net
+DOMAIN,oemssl.cn.cdn.cloudflare.net
+DOMAIN,qualcomm.cn.cdn.cloudflare.net
+DOMAIN,sectigochina.com.cdn.cloudflare.net
+DOMAIN,d4z1onkegyrs5.cloudfront.net
+DOMAIN,afcs.dell.com
+DOMAIN,clientperipherals.dell.com
+DOMAIN,customization-cdn.dell.com
+DOMAIN,dds.dell.com
+DOMAIN,dl.dell.com
+DOMAIN,ea2cn-dev-outlet.dell.com
+DOMAIN,firmware.dell.com
+DOMAIN,ftp.dell.com
+DOMAIN,i.dell.com
+DOMAIN,landing-cdn.dell.com
+DOMAIN,omsftp.dell.com
+DOMAIN,profiles.dell.com
+DOMAIN,r3dp-webapp.dell.com
+DOMAIN,support.dell.com
+DOMAIN,supportal.dell.com
+DOMAIN,tsmapi.dell.com
+DOMAIN,utility.dell.com
+DOMAIN,www.dell.com
+DOMAIN,cn.download.nvidia.com
+DOMAIN,cdn.samsung.com
+DOMAIN,images.samsung.com
+DOMAIN,support-cn.samsung.com
+DOMAIN,cdn.jetbrains.com
+DOMAIN,download.jetbrains.com
+DOMAIN,createpoint.qti.qualcomm.com
+DOMAIN,qcc.qualcomm.com
+DOMAIN,my.st.com
+DOMAIN,www.st.com
