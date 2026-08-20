@@ -98,3 +98,5 @@ DOMAIN-SUFFIX,speedtest.net
 DOMAIN-SUFFIX,ookla.com
 # Cloudflare 测速专用域（speedtest 下载测速常命中，极高概率是 cloudflare 节点）
 DOMAIN-SUFFIX,speed.cloudflare.com
+# Speedtest 测速服务器容器域（下载测速实际命中的域名，之前漏了导致走代理）
+DOMAIN-SUFFIX,speedtestcustom.com
