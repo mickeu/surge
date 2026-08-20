@@ -96,3 +96,5 @@ DOMAIN,www.st.com
 # Speedtest 国际版 + API 域名
 DOMAIN-SUFFIX,speedtest.net
 DOMAIN-SUFFIX,ookla.com
+# Cloudflare 测速专用域（speedtest 下载测速常命中，极高概率是 cloudflare 节点）
+DOMAIN-SUFFIX,speed.cloudflare.com
