@@ -260,7 +260,7 @@ function notify(title, body) {
 }
 
 function runAccount(acc, index, total) {
-  const tag = `[账号${index+1}/${total} ${acc.alias || '用户' + (index+1)}]`;
+  const tag = `[账号${index+1}/${total} ${(acc.alias && !/@/.test(acc.alias)) ? acc.alias : '用户' + (index+1)}]`;
   const ua = buildUA(acc.baseUA, acc.uaSeed);
   const headers = buildHeaders(acc.capture, ua);
   const fakeDeviceId = genFakeDeviceId();
