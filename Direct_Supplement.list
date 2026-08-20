@@ -91,3 +91,8 @@ DOMAIN,createpoint.qti.qualcomm.com
 DOMAIN,qcc.qualcomm.com
 DOMAIN,my.st.com
 DOMAIN,www.st.com
+
+# 测速站点直连（避免走代理测不出真实网速）
+# Speedtest 国际版 + API 域名
+DOMAIN-SUFFIX,speedtest.net
+DOMAIN-SUFFIX,ookla.com
