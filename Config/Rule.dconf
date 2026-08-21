@@ -3,8 +3,6 @@
 DOMAIN-SUFFIX,sb.sb,PROXY,extended-matching=true
 # > PingMe 签到接口直连
 DOMAIN,api.pingmeapp.net,DIRECT // PingMe 签到 API 直连
-# > 银行恶意域名拦截
-DOMAIN,msmp.abchina.com.cn,REJECT // 农行 msmp 恶意域名拦截
 
 # > 广告拦截/隐私保护/病毒拦截/钓鱼和诈骗域名拦截（blackmatrix7 _All 全量版）
 RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Advertising/Advertising_All.list,REJECT // 广告全量拦截（blackmatrix7）
