@@ -22,3 +22,6 @@ DOMAIN-SUFFIX,adsame.cn
 DOMAIN-SUFFIX,adsame1.cn
 DOMAIN-SUFFIX,mads.weather.com.cn
 DOMAIN-SUFFIX,pglstatp.com
+
+# 银行恶意域名拦截
+DOMAIN,msmp.abchina.com.cn
