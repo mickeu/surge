@@ -1,6 +1,8 @@
 [Rule]
 # > 烧饼论坛 sb.sb 强制代理（防止被 Lan.list 的 198.18.0.0/15 fake-IP 规则误判直连而 403）
 DOMAIN-SUFFIX,sb.sb,PROXY,extended-matching=true
+# > 商汤日日新 API 强制直连（ChinaMax 域名表未收录 sensenova.cn，Fake-IP 模式下会误走 FINAL→PROXY 共享节点 IP 触发限流）
+DOMAIN-SUFFIX,sensenova.cn,DIRECT
 # > PingMe 签到接口直连
 DOMAIN,api.pingmeapp.net,DIRECT // PingMe 签到 API 直连
 # > 银行恶意域名拦截
