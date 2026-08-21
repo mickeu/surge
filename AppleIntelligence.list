@@ -11,8 +11,10 @@
 #   - guzzoni-apple-com.v.aaplimg.com  CDN 内容缓存
 #
 # 维护者：mickeu
-# 更新时间：2026-08-18
+# 更新时间：2026-08-20
 
 DOMAIN-SUFFIX,guzzoni.apple.com
 DOMAIN-SUFFIX,smoot.apple.com
 DOMAIN-SUFFIX,guzzoni-apple-com.v.aaplimg.com
+# 苹果推送服务（APNs）走代理，避免被 Apple_All 拉直连
+DOMAIN-SUFFIX,push.apple.com
