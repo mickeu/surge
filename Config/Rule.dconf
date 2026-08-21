@@ -28,11 +28,6 @@ RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/r
 
 # > 社交平台（Telegram 流量全部走 Telegram 策略组）
 PROTOCOL,MTProto,Telegram // MTProto 协议直送 Telegram 组
-# 显式规则（双保险：RULE-SET 缓存未更新时也能正确匹配 Telegram CDN 域名）
-DOMAIN-SUFFIX,cdn-telegram.org,Telegram // Telegram 图片 CDN
-DOMAIN-SUFFIX,cdn-telegram.net,Telegram // Telegram 图片 CDN 备用
-DOMAIN-SUFFIX,cdn-telegram.ru,Telegram // Telegram 图片 CDN 备用
-DOMAIN-SUFFIX,telegram-cdn.org,Telegram // Telegram 图片 CDN 备用
 RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Telegram_All.list,Telegram // Telegram 完整规则集（合并 blackmatrix7 + 补充 CDN 域名）
 
 # > 游戏平台
