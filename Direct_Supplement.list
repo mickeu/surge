@@ -23,6 +23,8 @@ DOMAIN-SUFFIX,gov.cn
 
 # 安全宽域（整个厂商国内直连合理）
 DOMAIN-SUFFIX,acer.com
+# 商汤日日新 API（非代理可访问，防 Fake-IP 误走 FINAL→PROXY 触发限流）
+DOMAIN-SUFFIX,sensenova.cn
 DOMAIN-SUFFIX,admob-cn.com
 DOMAIN-SUFFIX,amplifi.com
 DOMAIN-SUFFIX,angruo.com
