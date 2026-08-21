@@ -45,7 +45,7 @@ startTasks().then(r => {
 
 async function startTasks() {
     console.log("开始运行签到");
-    console.log('PingMe 签到本次运行设备ID(伪装IP):' + fakeDeviceId);
+    console.log('PingMe 签到本次运行设备ID:' + fakeDeviceId);
     // const raw = $prefs.valueForKey(ckKey);
     const raw = isNode ? process.env[ckKey] : $.getdata(ckKey);
     if (!raw) {
@@ -69,8 +69,6 @@ async function startTasks() {
     const ua = buildUA(baseUA, Math.floor(Math.random() * 10000));
     const headers = buildHeaders(capture, ua);
     console.log('随机UA:', ua);
-
-    $.nodeNotifyMsg.push(`▶️ 开始执行... (伪装IP: ${fakeDeviceId})`);
 
     function fetchApi(path, overrideDeviceId) {
         // return $task.fetch({ url: buildUrl(path, capture, overrideDeviceId), method: 'GET', headers });
