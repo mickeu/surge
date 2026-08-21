@@ -64,11 +64,10 @@ async function startTasks() {
         $.done();
     }
 
-    console.log("组装请求头(含随机UA)");
+    console.log("组装请求头");
     const baseUA = capture.headers && (capture.headers['User-Agent'] || capture.headers['user-agent']);
     const ua = buildUA(baseUA, Math.floor(Math.random() * 10000));
     const headers = buildHeaders(capture, ua);
-    console.log('随机UA:', ua);
 
     function fetchApi(path, overrideDeviceId) {
         // return $task.fetch({ url: buildUrl(path, capture, overrideDeviceId), method: 'GET', headers });
