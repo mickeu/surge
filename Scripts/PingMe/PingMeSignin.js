@@ -110,14 +110,14 @@ async function startTasks() {
         return next();
     }
 
-    return fetchApi('queryBalanceAndBonus', fakeDeviceId).then(res => {
+    return fetchApi('queryBalanceAndBonus').then(res => {
         try {
             const d = JSON.parse(res.body);
             if (d.retcode === 0) $.nodeNotifyMsg.push(`💰 运行前余额：${d.result.balance} Coins`); else $.nodeNotifyMsg.push(`⚠️ 查询：${d.retmsg}`);
         } catch (e) {
             $.nodeNotifyMsg.push('❌ 查询：解析失败');
         }
-        return fetchApi('checkIn', fakeDeviceId);
+        return fetchApi('checkIn');
     }).then(res => {
         try {
             const d = JSON.parse(res.body);
@@ -127,7 +127,7 @@ async function startTasks() {
         }
         return doVideoLoop(MAX_VIDEO);
     }).then(() => {
-        return fetchApi('queryBalanceAndBonus', fakeDeviceId);
+        return fetchApi('queryBalanceAndBonus');
     }).then(async res => {
         try {
             const d = JSON.parse(res.body);
