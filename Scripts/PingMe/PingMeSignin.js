@@ -27,7 +27,14 @@ const SECRET = '0fOiukQq7jXZV2GRi9LGlO';
 const MAX_VIDEO = 5;
 const VIDEO_DELAY = 8000;
 
-// 每运行一次重新生成一个固定的伪造设备ID，整次运行所有视频都用同一个设备ID
+// UA 随机化（参考 WeTalk.js 伪装方案）
+const IOS_VERSIONS = ['17.5.1','17.6.1','17.4.1','17.2.1','16.7.8','17.6','17.3.1','18.0.1','17.1.2','16.6.1'];
+const IOS_SCALES = ['2.00','3.00','3.00','2.00','3.00'];
+const IPHONE_MODELS = ['iPhone14,3','iPhone13,3','iPhone15,3','iPhone16,1','iPhone14,7','iPhone13,2','iPhone15,2','iPhone12,1'];
+const CFN_VERS = ['1410.0.3','1494.0.7','1568.100.1','1209.1','1474.0.4','1568.200.2'];
+const DARWIN_VERS = ['22.6.0','23.5.0','23.6.0','24.0.0','22.4.0'];
+
+// 每运行一次重新生成一个固定的伪造设备ID，整次运行所有 API 请求都用同一个设备ID
 const fakeDeviceId = genFakeDeviceId();
 
 // 执行开始
@@ -38,7 +45,7 @@ startTasks().then(r => {
 
 async function startTasks() {
     console.log("开始运行签到");
-    console.log('PingMe 签到本次运行设备ID:' + fakeDeviceId);
+    console.log('PingMe 签到本次运行设备ID(伪装IP):' + fakeDeviceId);
     // const raw = $prefs.valueForKey(ckKey);
     const raw = isNode ? process.env[ckKey] : $.getdata(ckKey);
     if (!raw) {
@@ -57,8 +64,13 @@ async function startTasks() {
         $.done();
     }
 
-    console.log("组装请求头");
-    const headers = buildHeaders(capture);
+    console.log("组装请求头(含随机UA)");
+    const baseUA = capture.headers && (capture.headers['User-Agent'] || capture.headers['user-agent']);
+    const ua = buildUA(baseUA, Math.floor(Math.random() * 10000));
+    const headers = buildHeaders(capture, ua);
+    console.log('随机UA:', ua);
+
+    $.nodeNotifyMsg.push(`▶️ 开始执行... (伪装IP: ${fakeDeviceId})`);
 
     function fetchApi(path, overrideDeviceId) {
         // return $task.fetch({ url: buildUrl(path, capture, overrideDeviceId), method: 'GET', headers });
@@ -98,14 +110,14 @@ async function startTasks() {
         return next();
     }
 
-    return fetchApi('queryBalanceAndBonus').then(res => {
+    return fetchApi('queryBalanceAndBonus', fakeDeviceId).then(res => {
         try {
             const d = JSON.parse(res.body);
             if (d.retcode === 0) $.nodeNotifyMsg.push(`💰 运行前余额：${d.result.balance} Coins`); else $.nodeNotifyMsg.push(`⚠️ 查询：${d.retmsg}`);
         } catch (e) {
             $.nodeNotifyMsg.push('❌ 查询：解析失败');
         }
-        return fetchApi('checkIn');
+        return fetchApi('checkIn', fakeDeviceId);
     }).then(res => {
         try {
             const d = JSON.parse(res.body);
@@ -115,7 +127,7 @@ async function startTasks() {
         }
         return doVideoLoop(MAX_VIDEO);
     }).then(() => {
-        return fetchApi('queryBalanceAndBonus');
+        return fetchApi('queryBalanceAndBonus', fakeDeviceId);
     }).then(async res => {
         try {
             const d = JSON.parse(res.body);
@@ -156,6 +168,29 @@ function randHex(n) {
 
 function genFakeDeviceId() {
     return `${randHex(8)}-${randHex(4)}-${randHex(4)}-${randHex(4)}-${randHex(12)}PingMeIOS`;
+}
+
+function pickItem(arr, seed) {
+    return arr[seed % arr.length];
+}
+
+function buildUA(baseUA, seed) {
+    const iosVer = pickItem(IOS_VERSIONS, seed);
+    const scale = pickItem(IOS_SCALES, seed + 1);
+    const model = pickItem(IPHONE_MODELS, seed + 2);
+    const cfn = pickItem(CFN_VERS, seed + 3);
+    const darwin = pickItem(DARWIN_VERS, seed + 4);
+    if (baseUA && typeof baseUA === 'string') {
+        let ua = baseUA;
+        let changed = false;
+        if (/iOS \d+(\.\d+){0,2}/.test(ua)) { ua = ua.replace(/iOS \d+(\.\d+){0,2}/, `iOS ${iosVer}`); changed = true; }
+        if (/Scale\/\d+(\.\d+)?/.test(ua)) { ua = ua.replace(/Scale\/\d+(\.\d+)?/, `Scale/${scale}`); changed = true; }
+        if (/iPhone\d+,\d+/.test(ua)) { ua = ua.replace(/iPhone\d+,\d+/, model); changed = true; }
+        if (/CFNetwork\/[\d.]+/.test(ua)) { ua = ua.replace(/CFNetwork\/[\d.]+/, `CFNetwork/${cfn}`); changed = true; }
+        if (/Darwin\/[\d.]+/.test(ua)) { ua = ua.replace(/Darwin\/[\d.]+/, `Darwin/${darwin}`); changed = true; }
+        if (changed) return ua;
+    }
+    return `PingMe/3.0.0 (iPhone; iOS ${iosVer}) Alamofire/5.4.3`;
 }
 
 function MD5(string) {
@@ -283,12 +318,20 @@ function cloneHeaders(headers) {
     return out;
 }
 
-function buildHeaders(capture) {
+function buildHeaders(capture, ua) {
     const headers = cloneHeaders(capture.headers || {});
     delete headers['Content-Length']; delete headers['content-length'];
     delete headers[':authority']; delete headers[':method']; delete headers[':path']; delete headers[':scheme'];
     headers['Host'] = 'api.pingmeapp.net';
     headers['Accept'] = headers['Accept'] || 'application/json';
+    if (ua) {
+        Object.keys(headers).forEach(k => {
+            const lk = k.toLowerCase();
+            if (lk === 'user-agent' || lk === 'connection' || lk === 'proxy-connection' || lk === 'keep-alive') delete headers[k];
+        });
+        headers['User-Agent'] = ua;
+        headers['Connection'] = 'close';
+    }
     return headers;
 }
 
