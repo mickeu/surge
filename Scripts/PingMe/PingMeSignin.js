@@ -64,7 +64,7 @@ async function startTasks() {
         $.done();
     }
 
-    console.log("组装请求头");
+    console.log("组装请求头(随机UA)");
     const baseUA = capture.headers && (capture.headers['User-Agent'] || capture.headers['user-agent']);
     const ua = buildUA(baseUA, Math.floor(Math.random() * 10000));
     const headers = buildHeaders(capture, ua);
