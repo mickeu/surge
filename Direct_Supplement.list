@@ -103,6 +103,5 @@ DOMAIN-SUFFIX,speed.cloudflare.com
 # Speedtest 测速服务器容器域（下载测速实际命中的域名，之前漏了导致走代理）
 DOMAIN-SUFFIX,speedtestcustom.com
 
-# 苹果推送服务 APNs 直连（Apple 服务器国内可直连，长连接走直连最稳）
-# 注：之前尝试走代理导致蜂窝下收不到推送，改回直连
+# 苹果推送 APNs 直连（Apple 长连接，直连最稳定，不走代理）
 DOMAIN-SUFFIX,push.apple.com
