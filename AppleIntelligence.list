@@ -16,5 +16,3 @@
 DOMAIN-SUFFIX,guzzoni.apple.com
 DOMAIN-SUFFIX,smoot.apple.com
 DOMAIN-SUFFIX,guzzoni-apple-com.v.aaplimg.com
-# 苹果推送服务（APNs）走代理，避免被 Apple_All 拉直连
-DOMAIN-SUFFIX,push.apple.com
