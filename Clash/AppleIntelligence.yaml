@@ -1,0 +1,8 @@
+# Clash 格式规则集
+# 由 Surge .list 自动转换
+# 源文件: AppleIntelligence.list
+# 规则数: 3
+payload:
+  - 'DOMAIN-SUFFIX,guzzoni.apple.com'
+  - 'DOMAIN-SUFFIX,smoot.apple.com'
+  - 'DOMAIN-SUFFIX,guzzoni-apple-com.v.aaplimg.com'

@@ -1,0 +1,19 @@
+# Clash 格式规则集
+# 由 Surge .list 自动转换
+# 源文件: Advertising_Supplement.list
+# 规则数: 14
+payload:
+  - 'DOMAIN-SUFFIX,adservice.weixin.qq.com'
+  - 'DOMAIN-SUFFIX,adsdk.weixin.qq.com'
+  - 'DOMAIN-SUFFIX,adclick.weixin.qq.com'
+  - 'DOMAIN-SUFFIX,adclick.qq.com'
+  - 'DOMAIN-SUFFIX,wxbhzyl.weixin.qq.com'
+  - 'DOMAIN-SUFFIX,bzyapp.weixin.qq.com'
+  - 'DOMAIN-SUFFIX,adnet.qq.com'
+  - 'DOMAIN-SUFFIX,baiduadx.com'
+  - 'DOMAIN-SUFFIX,baidumobads.com'
+  - 'DOMAIN-SUFFIX,adsame.cn'
+  - 'DOMAIN-SUFFIX,adsame1.cn'
+  - 'DOMAIN-SUFFIX,mads.weather.com.cn'
+  - 'DOMAIN-SUFFIX,pglstatp.com'
+  - 'DOMAIN,msmp.abchina.com.cn'
