@@ -11,8 +11,12 @@
 #   - guzzoni-apple-com.v.aaplimg.com  CDN 内容缓存
 #
 # 维护者：mickeu
-# 更新时间：2026-08-20
+# 更新时间：2026-08-22
 
 DOMAIN-SUFFIX,guzzoni.apple.com
 DOMAIN-SUFFIX,smoot.apple.com
 DOMAIN-SUFFIX,guzzoni-apple-com.v.aaplimg.com
+# Apple 推送服务（APNs）走代理——蜂窝下直连 Apple 推送服务器失败，需走代理
+# 实测：xp.apple.com + push.apple.com 走代理后，蜂窝下官方 Telegram/X 推送正常
+DOMAIN-SUFFIX,xp.apple.com
+DOMAIN-SUFFIX,push.apple.com
