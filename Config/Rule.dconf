@@ -21,10 +21,7 @@ RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/r
 # > 苹果服务
 # Apple AI（走代理，须先于 Apple_All）
 RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/AppleIntelligence.list,AIGC // Apple AI 走代理
-RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Apple/Apple_All.list,Apple // 苹果服务走 Apple 策略组
-# Apple Music 流媒体域名补充（Apple_All.list 漏覆盖，否则掉 FINAL 走代理导致播放失败）
-DOMAIN-SUFFIX,music.apple.com,Apple // Apple Music 目录/歌词/播放接口
-DOMAIN,mtl-ssl.apple.com,Apple // Apple Music 音频流传输层（MTL）
+RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Apple_All.list,Apple // 苹果服务走 Apple 策略组（自维护，补充 Apple Music 流媒体域名）
 
 # > 微软服务
 RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Microsoft/Microsoft.list,Microsoft // 微软服务走 Microsoft 策略组
