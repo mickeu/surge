@@ -20,3 +20,9 @@ DOMAIN-SUFFIX,guzzoni-apple-com.v.aaplimg.com
 # 实测：xp.apple.com + push.apple.com 走代理后，蜂窝下官方 Telegram/X 推送正常
 DOMAIN-SUFFIX,xp.apple.com
 DOMAIN-SUFFIX,push.apple.com
+# APNs 服务器 IP 段（走 IP 时也走代理）
+IP-CIDR,17.249.0.0/16,no-resolve
+IP-CIDR,17.252.0.0/16,no-resolve
+IP-CIDR,17.57.144.0/22,no-resolve
+IP-CIDR,17.188.128.0/18,no-resolve
+IP-CIDR,17.188.20.0/23,no-resolve
