@@ -5,7 +5,8 @@
 # DOMAIN: 3
 # DOMAIN-KEYWORD: 3
 # DOMAIN-SUFFIX: 18
-# TOTAL: 27
+# DOMAIN: 10
+# TOTAL: 34
 # > 以下为 blackmatrix7 原版规则
 DOMAIN,ai.google.dev
 DOMAIN,alkalimakersuite-pa.clients6.google.com
@@ -39,3 +40,11 @@ DOMAIN-SUFFIX,firebaseio.com
 DOMAIN-SUFFIX,cloudclientservices.googleapis.com
 DOMAIN-SUFFIX,deviceinstall.googleapis.com
 DOMAIN-SUFFIX,cloudiplatform.googleapis.com
+# > 以下为 mickeu 补充 v3（2026-08-24 抓 dump recent 实际走 PROXY 的域名）
+DOMAIN,signaler-pa.googleapis.com
+DOMAIN,robinfrontend-pa.googleapis.com
+DOMAIN,accountcapabilities-pa.googleapis.com
+DOMAIN,notifications-pa.googleapis.com
+DOMAIN,oauthaccountmanager.googleapis.com
+DOMAIN,subscriptionsfirstparty-pa.googleapis.com
+DOMAIN,firebaselogging-pa.googleapis.com
