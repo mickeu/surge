@@ -4,8 +4,8 @@
 # UPDATED: 2025-06-06 09:20:02
 # DOMAIN: 3
 # DOMAIN-KEYWORD: 3
-# DOMAIN-SUFFIX: 10
-# TOTAL: 19
+# DOMAIN-SUFFIX: 18
+# TOTAL: 27
 # > 以下为 blackmatrix7 原版规则
 DOMAIN,ai.google.dev
 DOMAIN,alkalimakersuite-pa.clients6.google.com
@@ -26,3 +26,16 @@ DOMAIN-SUFFIX,aiplatform.googleapis.com
 DOMAIN-SUFFIX,generativelanguage.googleapis.com
 DOMAIN-SUFFIX,content-googleapis.googleapis.com
 DOMAIN-SUFFIX,clients6.google.com
+# > 以下为 mickeu 补充 v2（Gemini app 实际会访问的域名，之前漏到 PROXY）
+DOMAIN-SUFFIX,us-central1-aiplatform.googleapis.com
+DOMAIN-SUFFIX,accounts.google.com
+DOMAIN-SUFFIX,auth.googleapis.com
+DOMAIN-SUFFIX,oauth2.googleapis.com
+DOMAIN-SUFFIX,www.googleapis.com
+DOMAIN-SUFFIX,lh3.googleusercontent.com
+DOMAIN-SUFFIX,ssl.gstatic.com
+DOMAIN-SUFFIX,www.google.com
+DOMAIN-SUFFIX,firebaseio.com
+DOMAIN-SUFFIX,cloudclientservices.googleapis.com
+DOMAIN-SUFFIX,deviceinstall.googleapis.com
+DOMAIN-SUFFIX,cloudiplatform.googleapis.com
