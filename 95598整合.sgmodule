@@ -11,7 +11,7 @@
 # 签到（cron 定时任务）
 网上国网[定时] = type=cron,cronexp="{{{cron}}}",wake-system=1,timeout=120,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/95598/95598.js,argument=username={{{username}}}&password={{{password}}}&debug={{{debug}}}&show_recent_usage={{{show_recent_usage}}}&notify_all_accounts={{{notify_all_accounts}}},script-update-interval=86400
 # 面板签到（点面板刷新即执行签到，显示 G 图标）
-网上国网签到面板 = type=generic,timeout=120,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/95598/95598Panel-v2.js,argument=username={{{username}}}&password={{{password}}}&debug={{{debug}}}&show_recent_usage={{{show_recent_usage}}}&notify_all_accounts={{{notify_all_accounts}}}
+网上国网签到面板 = type=generic,timeout=120,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/95598/95598Panel-v3.js,argument=username={{{username}}}&password={{{password}}}&debug={{{debug}}}&show_recent_usage={{{show_recent_usage}}}&notify_all_accounts={{{notify_all_accounts}}}
 
 [Panel]
-网上国网签到面板 = script-name=网上国网签到面板,title="⚡ 网上国网",content="拉取最新通知",style=info,update-interval=0
+网上国网签到面板 = script-name=网上国网签到面板,title="⚡ 网上国网账单",content="点此查账单",style=info,update-interval=0

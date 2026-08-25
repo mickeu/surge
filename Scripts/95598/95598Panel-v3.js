@@ -29,7 +29,7 @@
     $done = function(o){
       try {
         var obj = o || {};
-        _o({ title: obj.title || "网上国网", content: obj.body || "点此查账单", icon: "g.circle", "icon-color": "#007AFF" });
+        _o({ title: obj.title || "网上国网账单", content: obj.body || "点此查账单", icon: "g.circle", "icon-color": "#007AFF" });
       } catch(e) { _o(o); }
     };
   }
