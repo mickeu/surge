@@ -4,8 +4,8 @@
 #!system=ios
 #!author=mickeu
 #!category=mickeu
-#!arguments=capture:true,PingMePolicy:PROXY
-#!arguments-desc=\n📌 参数说明\n\n1️⃣ capture 抓Cookie开关\n默认 true 开启抓参；设 false 关闭抓参\n\n2️⃣ PingMePolicy PingMe流量策略\n指定 api.pingmeapp.net 请求走哪个策略组（如 PROXY / AIGC / DIRECT）\n默认 PROXY\n\n每运行一次签到脚本自动生成随机设备ID防检测\n\n修改者：mickeu
+#!arguments=capture:true,PingMePolicy:PROXY,cron:0 */3 * * *
+#!arguments-desc=\n📌 参数说明\n\n1️⃣ capture 抓Cookie开关\n默认 true 开启抓参；设 false 关闭抓参\n\n2️⃣ PingMePolicy PingMe流量策略\n指定 api.pingmeapp.net 请求走哪个策略组（如 PROXY / AIGC / DIRECT）\n默认 PROXY\n\n3️⃣ cron 签到定时\ncron 表达式，默认 "0 */3 * * *"（每3小时）\n\n每运行一次签到脚本自动生成随机设备ID防检测\n\n修改者：mickeu
 
 [Rule]
 DOMAIN-SUFFIX,api.pingmeapp.net,{{{PingMePolicy}}}
@@ -14,7 +14,7 @@ DOMAIN-SUFFIX,api.pingmeapp.net,{{{PingMePolicy}}}
 # 抓 Cookie（http-request，拦截余额查询自动抓参）
 PingMe获取签到参数 = type=http-request,pattern=^https:\/\/api\.pingmeapp\.net\/app\/queryBalanceAndBonus,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/PingMe/pingme_capture.js?t=3,argument="capture={{{capture}}}",timeout=60
 # 签到+视频奖励（cron 定时任务，默认每3小时）
-PingMe签到 = type=cron,cronexp="0 */3 * * *",script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/PingMe/PingMeSignin.js,timeout=300,wake-system=1
+PingMe签到 = type=cron,cronexp="{{{cron}}}",script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/PingMe/PingMeSignin.js,timeout=300,wake-system=1
 # 同步参数开关到 persistentStore（供抓参脚本读取）
 PingMe参数同步 = type=generic,timeout=10,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/PingMe/pingme_sync.js,argument="capture={{{capture}}}"
 
