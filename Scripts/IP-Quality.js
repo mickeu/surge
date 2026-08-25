@@ -1,75 +1,70 @@
-// IP 纯净度检测 - 诊断版
-// 把所有关键中间结果输出到面板，一眼看出卡在哪一环
+// IP 纯净度检测
+// 检测指定策略组当前选中节点的出口 IP 纯净度（类型/风险/评分）
+// 规则法：模块 [Rule] 段让 ip-api.com 走指定策略组
+// 脚本不指定 policy，靠规则出站
 
 let groupName = "PROXY";
 if (typeof $argument !== "undefined" && $argument) {
   const params = String($argument).split("&");
   for (const p of params) {
     const idx = p.indexOf("=");
-    if (idx > 0) {
-      const k = p.slice(0, idx).trim();
-      if (k === "group") groupName = p.slice(idx + 1).trim();
-    }
+    if (idx > 0 && p.slice(0, idx).trim() === "group") groupName = p.slice(idx + 1).trim();
   }
 }
 
-const lines = [];
-lines.push("【诊断】");
-lines.push("参数 group: " + groupName);
+const apiURL = "http://ip-api.com/json?fields=status,query,country,countryCode,regionName,city,isp,org,as,proxy,hosting,mobile";
 
-// 1. 用 selectGroupDetails 读策略组
-let details;
-try {
-  details = $surge.selectGroupDetails();
-  lines.push("selectGroupDetails: " + (details ? "成功" : "返回空"));
-} catch (e) {
-  lines.push("selectGroupDetails 异常: " + String(e));
+let doneFlag = false;
+function finish(obj) {
+  if (doneFlag) return;
+  doneFlag = true;
+  try { $done(obj); } catch (e) {}
+}
+setTimeout(function () {
+  finish({ title: "超时", content: "策略组: " + groupName + "\nip-api 请求超时", icon: "exclamationmark.triangle", "icon-color": "#FF9500" });
+}, 10000);
+
+function getFlag(code) {
+  if (!code || code.length !== 2) return "🌐";
+  const map = { CN:"🇨🇳",HK:"🇭🇰",TW:"🇹🇼",JP:"🇯🇵",SG:"🇸🇬",US:"🇺🇸",KR:"🇰🇷",GB:"🇬🇧",DE:"🇩🇪",FR:"🇫🇷",CA:"🇨🇦",AU:"🇦🇺",IN:"🇮🇳",RU:"🇷🇺",BR:"🇧🇷",NL:"🇳🇱",TR:"🇹🇷",TH:"🇹🇭",VN:"🇻🇳",PH:"🇵🇭",MY:"🇲🇾",ID:"🇮🇩",AE:"🇦🇪",AR:"🇦🇷" };
+  return map[code.toUpperCase()] || "🌐";
 }
 
-if (details) {
-  const groups = details.groups;
-  const decisions = details.decisions;
-  lines.push("总策略组数: " + Object.keys(groups || {}).length);
-
-  lines.push("包含 AIGC: " + (groups && groupName in groups));
-  lines.push("包含 AlGC: " + (groups && "AlGC" in groups));
-  lines.push("包含 PROXY: " + (groups && "PROXY" in groups));
-
-  if (groups && groups[groupName]) {
-    const sel = decisions[groupName];
-    lines.push("「" + groupName + "」选中: " + (sel || "无"));
-    lines.push("子策略数: " + (groups[groupName] ? groups[groupName].length : "?"));
-
-    if (sel) {
-      // 2. 尝试用 policy 发请求
-      lines.push("→ 用 policy=" + sel + " 请求 ip-api");
-      $httpClient.get("http://ip-api.com/json?fields=status,query,country,isp,proxy,hosting", { policy: sel }, function(err, resp, data) {
-        if (err) {
-          lines.push("请求失败: " + JSON.stringify(err));
-          lines.push("响应状态: " + (resp && resp.status));
-          $done({ title: "诊断 - " + groupName, content: lines.join("\n"), icon: "wrench.and.screwdriver", "icon-color": "#FF9500" });
-          return;
-        }
-        try {
-          const d = JSON.parse(data);
-          lines.push("结果IP: " + (d.query || "?"));
-          lines.push("归属: " + (d.country || "?"));
-          lines.push("proxy: " + d.proxy + " | hosting: " + d.hosting);
-        } catch(e) {
-          lines.push("解析失败: " + (data || "").substring(0, 60));
-        }
-        $done({ title: "诊断 - " + groupName, content: lines.join("\n"), icon: "wrench.and.screwdriver", "icon-color": "#FF9500" });
-      });
-      return; // 异步等待回调
-    } else {
-      lines.push("该组无选中节点");
-    }
-  } else {
-    lines.push("⚠️ 找不到策略组「" + groupName + "」");
-    if (groups) {
-      lines.push("可用组(前15): " + Object.keys(groups).slice(0, 15).join(", "));
-    }
+// 不指定 policy，靠 [Rule] 段的 DOMAIN-SUFFIX,ip-api.com,{{{GROUP}}} 走指定策略组
+$httpClient.get(apiURL, function (error, response, data) {
+  if (error || !data) {
+    finish({ title: "请求失败", content: "策略组: " + groupName + "\n" + (error || "无数据"), icon: "exclamationmark.triangle", "icon-color": "#FF3B30" });
+    return;
   }
-}
 
-$done({ title: "诊断 - " + groupName, content: lines.join("\n"), icon: "wrench.and.screwdriver", "icon-color": "#FF9500" });
+  var d;
+  try { d = JSON.parse(data); } catch (e) {
+    finish({ title: "解析失败", content: "data: " + String(data).substring(0, 80), icon: "exclamationmark.triangle", "icon-color": "#FF9500" });
+    return;
+  }
+
+  if (d.status && d.status !== "success") {
+    finish({ title: "API异常", content: "status: " + d.status, icon: "exclamationmark.triangle", "icon-color": "#FF9500" });
+    return;
+  }
+
+  var flag = getFlag(d.countryCode);
+  var ipType = "🏠 住宅 IP";
+  if (d.hosting) ipType = "🏢 数据中心";
+  else if (d.proxy) ipType = "🔀 代理/VPN";
+  else if (d.mobile) ipType = "📱 移动网络";
+  var risk = "✅ 低风险";
+  if (d.hosting && d.proxy) risk = "🔴 高风险";
+  else if (d.hosting || d.proxy) risk = "🟡 中等风险";
+  var score = 100;
+  if (d.proxy) score -= 40;
+  if (d.hosting) score -= 30;
+  if (d.mobile) score -= 5;
+
+  finish({
+    title: flag + " " + d.query,
+    content: ["策略组: " + groupName, "IP: " + d.query, "归属: " + flag + d.country + " · " + (d.city || d.regionName || "未知"), "运营商: " + (d.isp || "未知"), "AS: " + (d.as || "未知"), "类型: " + ipType, "风险: " + risk, "纯净度: " + score + "/100"].join("\n"),
+    icon: score >= 70 ? "checkmark.shield.fill" : score >= 40 ? "exclamationmark.shield.fill" : "xmark.shield.fill",
+    "icon-color": score >= 70 ? "#34C759" : score >= 40 ? "#FF9500" : "#FF3B30"
+  });
+});
