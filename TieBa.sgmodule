@@ -1,11 +1,11 @@
 #!name=百度贴吧签到整合版
-#!desc=🔄 整合百度贴吧抓Cookie + 自动签到，支持定时参数，一个模块搞定
+#!desc=🔄 整合百度贴吧抓Cookie + 自动签到，一个模块搞定
 #!icon=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Action/Baidu_Tieba.png
 #!system=ios
 #!author=mickeu
 #!category=mickeu
-#!arguments=cookie_enabled:true,cron:30 0,12 * * *
-#!arguments-desc=\n📌 参数说明\n\n1️⃣ cookie_enabled 抓Cookie开关\n默认 true 开启抓参；设 false 关闭抓参\n打开百度贴吧App点"我的"自动抓到Cookie，成功后弹通知，再关掉即可\n\n2️⃣ cron 签到定时\ncron 表达式，默认 "30 0,12 * * *"（每天0:30和12:30签到）\n\n修改者：mickeu
+#!arguments=cookie_enabled:true
+#!arguments-desc=\n📌 参数说明\n\n1️⃣ cookie_enabled 抓Cookie开关\n默认 true 开启抓参；设 false 关闭抓参\n打开百度贴吧App点"我的"自动抓到Cookie，成功后弹通知，再关掉即可\n\n📌 签到定时\n\n签到任务默认每天0:30和12:30执行\n如需修改，在 Surge 脚本页面找到"百度贴吧签到"任务，修改 cronexp 即可\n\n修改者：mickeu
 
 [Rule]
 # 贴吧API直连
@@ -16,7 +16,7 @@ DOMAIN-SUFFIX,tiebac.baidu.com,DIRECT
 # 抓 Cookie（http-request，打开App点"我的"自动抓Cookie）
 百度贴吧[Cookie] = type=http-request,pattern=^https?:\/\/(c\.tieba|tiebac)\.baidu\.com\/c\/s\/login,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/TieBa/TieBa.js,argument="cookie_enabled={{{cookie_enabled}}}",timeout=60
 # 签到（cron 定时任务，用同一个 TieBa.js，靠 $request 自动分流到签到逻辑）
-百度贴吧签到 = type=cron,cronexp="{{{cron}}}",script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/TieBa/TieBa.js,timeout=600,wake-system=1
+百度贴吧签到 = type=cron,cronexp="30 0,12 * * *",script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/TieBa/TieBa.js,timeout=600,wake-system=1
 
 [MITM]
 hostname = %APPEND% c.tieba.baidu.com, tiebac.baidu.com
