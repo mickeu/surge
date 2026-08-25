@@ -1,10 +1,13 @@
 [Rule]
 # > 烧饼论坛 sb.sb 强制代理（防止被 Lan.list 的 198.18.0.0/15 fake-IP 规则误判直连而 403）
-DOMAIN-SUFFIX,sb.sb,PROXY,extended-matching=true
+DOMAIN-SUFFIX,sb.sb,PROXY
 # > PingMe 签到接口直连
 DOMAIN,api.pingmeapp.net,DIRECT // PingMe 签到 API 直连
 
 # > 广告拦截/隐私保护/病毒拦截/钓鱼和诈骗域名拦截（blackmatrix7 _All 全量版）
+# 规则集下载域名必须直连（否则走代理节点可能加载失败）
+DOMAIN,cdn.jsdelivr.net,DIRECT // jsdelivr CDN 规则集下载直连
+DOMAIN,raw.githubusercontent.com,DIRECT // GitHub raw 规则集下载直连
 RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Advertising/Advertising_All.list,REJECT // 广告全量拦截（blackmatrix7）
 RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Hijacking/Hijacking.list,REJECT // 域名劫持/中间人攻击防护
 RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Privacy/Privacy.list,REJECT // 隐私追踪/数据收集拦截
@@ -16,11 +19,11 @@ RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/r
 # > AI 服务（OpenAI / Claude / Gemini）
 RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/OpenAI/OpenAI.list,AIGC // OpenAI/ChatGPT 走 AI 策略组
 RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Claude/Claude.list,AIGC // Claude 走 AI 策略组
-RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Gemini/Gemini.list,AIGC // Gemini 走 AI 策略组
+RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Gemini.list,AIGC // Gemini 走 AI 策略组（自维护，含 blackmatrix7 原版 + 补充遗漏域名）
 
 # > 苹果服务
-# Apple AI（走代理，须先于 Apple_All）
-RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/AppleIntelligence.list,AIGC // Apple AI 走代理
+# Apple AI 必须走代理，须先于 Apple_All，否则被 Apple_All 拉直连
+RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/AppleIntelligence.list,AIGC // Apple AI + APNs + IP 段走代理
 RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Apple_All.list,Apple // 苹果服务走 Apple 策略组（自维护，补充 Apple Music 流媒体域名）
 
 # > 微软服务
