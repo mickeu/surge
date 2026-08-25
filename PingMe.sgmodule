@@ -16,12 +16,12 @@ PingMe获取签到参数 = type=http-request,pattern=^https:\/\/api\.pingmeapp\.
 # 签到+视频奖励（cron 定时任务，默认每3小时）
 PingMe签到 = type=cron,cronexp="{{{cron}}}",script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/PingMe/PingMeSignin.js,timeout=300,wake-system=1
 # 面板图标（只显示固定 P 图标，不触发签到，签到靠 cron）
-PingMe面板 = type=generic,timeout=10,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/PingMe/PingMePanel.js
+PingMe签到面板 = type=generic,timeout=10,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/PingMe/PingMePanel.js
 # 同步参数开关到 persistentStore（供抓参脚本读取）
 PingMe参数同步 = type=generic,timeout=10,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/PingMe/pingme_sync.js,argument="capture={{{capture}}}"
 
 [Panel]
-PingMe面板 = script-name=PingMe面板,title="🔄 PingMe 签到",content="运行签到",style=info,update-interval=0
+PingMe签到面板 = script-name=PingMe签到面板,title="🔄 PingMe 签到",content="运行签到",style=info,update-interval=0
 
 [MITM]
 hostname = %APPEND% api.pingmeapp.net
