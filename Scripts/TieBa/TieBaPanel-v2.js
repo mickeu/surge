@@ -103,13 +103,14 @@ async function run() {
       var r = results[k];
       if (r.errorCode === 0 || r.errorCode === 9999) successCount++;
       if (r.errorCode === 9999) {
-        lines.push('【' + r.bar + '】Lv' + r.level);
+        // 面板：省略"经验"，保留"已经签到，当前等级"
+        lines.push('【' + r.bar + '】已经签到，当前等级' + r.level);
         notifyLines.push('【' + r.bar + '】已经签到，当前等级' + r.level + ',经验' + r.exp);
       } else if (r.errorCode === 0) {
-        lines.push('【' + r.bar + '】' + r.errorMsg);
+        lines.push('【' + r.bar + '】签到成功，' + r.errorMsg);
         notifyLines.push('【' + r.bar + '】签到成功，' + r.errorMsg);
       } else {
-        lines.push('【' + r.bar + '】' + r.errorMsg);
+        lines.push('【' + r.bar + '】签到失败，原因：' + r.errorMsg);
         notifyLines.push('【' + r.bar + '】签到失败，原因：' + r.errorMsg);
       }
     }
