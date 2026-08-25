@@ -1,0 +1,9 @@
+#!name=Hide VPN Icon
+#!desc=隐藏VPN图标
+#!system=ios
+#!author=mickeu
+#!category=mickeu
+
+[General]
+hide-vpn-icon = true
+
