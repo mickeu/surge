@@ -1,0 +1,17 @@
+#!name=网上国网签到
+#!desc=⚡ 网上国网（95598）自动签到，查询电费账单，支持手动面板签到测试
+#!icon=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Server.png
+#!system=ios
+#!author=mickeu
+#!category=mickeu
+#!arguments=username:13800000000,password:123456,debug:true,show_recent_usage:true,notify_all_accounts:true,cron:1 13 * * *
+#!arguments-desc=\n📌 参数说明\n\n1️⃣ username 手机号（必填）\n网上国网App登录手机号\n\n2️⃣ password 密码（必填）\n网上国网App登录密码\n\n3️⃣ debug 调试日志\n默认 true\n\n4️⃣ show_recent_usage 近期用电\n默认 true\n\n5️⃣ notify_all_accounts 全部户号\n默认 true\n\n6️⃣ cron 签到定时\ncron 表达式，默认 "1 13 * * *"（每天13:01签到）\n\n修改者：mickeu
+
+[Script]
+# 签到（cron 定时任务）
+网上国网[定时] = type=cron,cronexp="{{{cron}}}",wake-system=1,timeout=120,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/95598/95598.js,argument=username={{{username}}}&password={{{password}}}&debug={{{debug}}}&show_recent_usage={{{show_recent_usage}}}&notify_all_accounts={{{notify_all_accounts}}},script-update-interval=86400
+# 面板手动签到（点面板刷新即执行）
+网上国网签到面板 = type=generic,timeout=120,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/95598/95598.js,argument=username={{{username}}}&password={{{password}}}&debug={{{debug}}}&show_recent_usage={{{show_recent_usage}}}&notify_all_accounts={{{notify_all_accounts}}}
+
+[Panel]
+网上国网签到面板 = script-name=网上国网签到面板,title="⚡ 网上国网",content="点击签到",style=info,update-interval=0
