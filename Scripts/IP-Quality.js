@@ -1,16 +1,19 @@
 // IP 纯净度检测脚本（支持策略组参数）
-// 数据源：ip-api.com（含 proxy/hosting/mobile 检测）
-// 参数：通过模块 $argument 传入，格式 group=策略组名
-// 用法：在模块 [Script] 行写 argument=group=PROXY
+// 数据源：ip-api.com
+// 参数：argument=group=策略组名（模块参数 GROUP 传入）
+// 读取策略组当前选中节点用 $surge.selectGroupDetails()，指定出站用 $httpClient policy 参数
 
 // ── 参数解析 ──
 let groupName = "PROXY"; // 默认值
 if (typeof $argument !== "undefined" && $argument) {
-  const params = $argument.split("&");
+  const params = String($argument).split("&");
   for (const p of params) {
-    const [k, ...v] = p.split("=");
-    if (k.trim() === "group") {
-      groupName = v.join("=").trim();
+    const idx = p.indexOf("=");
+    if (idx > 0) {
+      const k = p.slice(0, idx).trim();
+      if (k === "group") {
+        groupName = p.slice(idx + 1).trim();
+      }
     }
   }
 }
@@ -31,61 +34,42 @@ function getFlag(code) {
 
 // ── 主流程 ──
 function main() {
-  // 第一步：获取指定策略组当前选中的节点名
-  $httpAPI("GET", "/v1/policy_groups", null, function (error, response, data) {
-    if (error || !data) {
-      // 降级：直接检测当前出口 IP
-      detectIP(null, "无法读取策略组，检测当前出口");
-      return;
-    }
+  const details = $surge.selectGroupDetails();
+  const groups = details && details.groups;
+  const decisions = details && details.decisions;
 
-    // 兼容数组或对象格式
-    let groups = data;
-    if (!Array.isArray(groups) && data.groups) {
-      groups = data.groups;
-    }
-
-    if (!Array.isArray(groups)) {
-      detectIP(null, "策略组数据格式异常，检测当前出口");
-      return;
-    }
-
-    // 查找目标策略组
-    const targetGroup = groups.find((g) => g.name === groupName);
-    if (!targetGroup) {
-      $done({
-        title: "策略组未找到",
-        content: "找不到策略组「" + groupName + "」\n请检查模块参数是否正确（注意大小写）\n\n可用策略组：\n" + groups.map((g) => g.name).join("\n"),
-        icon: "exclamationmark.triangle",
-        "icon-color": "#FF9500"
-      });
-      return;
-    }
-
-    const selectedPolicy = targetGroup.selected;
-    if (!selectedPolicy) {
-      detectIP(null, "策略组「" + groupName + "」无选中节点");
-      return;
-    }
-
-    // 第二步：用选中节点作为出站策略发请求
-    detectIP(selectedPolicy, null);
-  });
-}
-
-// ── 通过指定策略发请求检测 IP ──
-function detectIP(policyName, fallbackMsg) {
-  const options = {};
-  if (policyName) {
-    // Surge $httpClient 支持 policy 指定出站策略
-    options.policy = policyName;
+  if (!groups || !decisions || typeof groups[groupName] === "undefined") {
+    $done({
+      title: "策略组未找到",
+      content: "找不到策略组「" + groupName + "」\n请检查模块参数是否正确（注意大小写）\n\n可用策略组：\n" + Object.keys(groups || {}).join("\n"),
+      icon: "exclamationmark.triangle",
+      "icon-color": "#FF9500"
+    });
+    return;
   }
 
-  $httpClient.get(apiURL, options, function (error, response, data) {
+  const selectedPolicy = decisions[groupName];
+  if (!selectedPolicy) {
+    $done({
+      title: "无选中节点",
+      content: "策略组「" + groupName + "」当前无选中节点",
+      icon: "exclamationmark.triangle",
+      "icon-color": "#FF9500"
+    });
+    return;
+  }
+
+  // 用选中节点作为出站策略发请求
+  detectIP(selectedPolicy, groupName);
+}
+
+// ── 通过指定 policy 发请求检测 IP ──
+function detectIP(policyName, groupName) {
+  $httpClient.get(apiURL, { policy: policyName }, function (error, response, data) {
     if (error || !data) {
       $done({
         title: "IP 检测失败",
-        content: (policyName ? "策略：" + policyName + "\n" : "") + (error || "无数据"),
+        content: "策略：" + policyName + "\n" + (error || "无数据"),
         icon: "exclamationmark.triangle",
         "icon-color": "#FF3B30"
       });
@@ -115,38 +99,31 @@ function detectIP(policyName, fallbackMsg) {
       return;
     }
 
-    renderResult(d, policyName, fallbackMsg);
+    renderResult(d, groupName, policyName);
   });
 }
 
 // ── 渲染结果 ──
-function renderResult(d, policyName, fallbackMsg) {
+function renderResult(d, groupName, policyName) {
   const flag = getFlag(d.countryCode);
 
-  // 类型判断
   let ipType = "🏠 住宅 IP";
   if (d.hosting) ipType = "🏢 数据中心";
   else if (d.proxy) ipType = "🔀 代理/VPN";
   else if (d.mobile) ipType = "📱 移动网络";
 
-  // 风险评级
   let risk = "✅ 低风险";
   if (d.hosting && d.proxy) risk = "🔴 高风险";
   else if (d.hosting || d.proxy) risk = "🟡 中等风险";
 
-  // 纯净度评分
   let score = 100;
   if (d.proxy) score -= 40;
   if (d.hosting) score -= 30;
   if (d.mobile) score -= 5;
 
   const lines = [];
-  if (policyName) {
-    lines.push("策略：" + policyName);
-  }
-  if (fallbackMsg) {
-    lines.push("⚠️ " + fallbackMsg);
-  }
+  lines.push("策略组：" + groupName);
+  lines.push("节点：" + policyName);
   lines.push("IP：" + d.query);
   lines.push("归属：" + flag + d.country + " · " + (d.city || d.regionName || "未知"));
   lines.push("运营商：" + (d.isp || "未知"));

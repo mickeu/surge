@@ -7,7 +7,7 @@
 #!arguments-desc=要检测的策略组名称（默认 PROXY）。输入你的目标策略组名（如 PROXY、Netflix、Telegram 等），改完 reload 生效。点击面板刷新即可检测该组当前选中节点的 IP 纯净度。
 
 [Script]
-IP-Quality = type=generic,engine=auto,timeout=10,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/IP-Quality.js,argument=group=AIGC
+IP-Quality = type=generic,engine=auto,timeout=10,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/IP-Quality.js,argument=group={{{GROUP}}}
 
 [Panel]
 IP-Quality = script-name=IP-Quality,title="IP 纯净度",content="点击刷新",style=info,update-interval=0
