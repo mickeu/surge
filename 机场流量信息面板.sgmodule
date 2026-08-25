@@ -1,0 +1,14 @@
+#!name=机场流量信息面板
+#!desc=直接填写订阅链接，编辑页保留 10 组参数，面板仅显示已填写的订阅
+#!author=mickeu
+#!category=mickeu
+#!arguments=面板名称:机场订阅信息,面板更新时间:off,机场名称1:机场1,URL1:订阅链接1,重置日1:可选,机场名称2:机场2,URL2:订阅链接2,重置日2:可选,机场名称3:机场3,URL3:订阅链接3,重置日3:可选,机场名称4:机场4,URL4:订阅链接4,重置日4:可选,机场名称5:机场5,URL5:订阅链接5,重置日5:可选,机场名称6:机场6,URL6:订阅链接6,重置日6:可选,机场名称7:机场7,URL7:订阅链接7,重置日7:可选,机场名称8:机场8,URL8:订阅链接8,重置日8:可选,机场名称9:机场9,URL9:订阅链接9,重置日9:可选,机场名称10:机场10,URL10:订阅链接10,重置日10:可选
+#!arguments-desc=[参数设置]\n\n1. 面板名称默认显示“机场订阅信息”；如果你手动打一个空格，面板标题就不显示名称。\n2. 面板更新时间默认是 off，表示显示时间；改成 on 后，面板标题里的时间会隐藏。\n3. 编辑页固定保留 10 组机场参数，方便随时新增、修改或替换机场信息。\n4. 直接填写原始机场订阅链接，不需要再做 URL 编码。\n5. 机场名称可留空，脚本会自动回退为订阅链接域名。\n6. 重置日可留空；填写 1-31 时显示距离下次重置的天数。\n7. 面板显示时只展示已填写 URL 的订阅，空项不会出现在面板中。\n8. 脚本会自动尝试 clash-verge-rev / clash-verge / mihomo 的请求方式提升兼容性。\n\n示例：\n- 面板名称：机场订阅信息\n- 面板更新时间：off\n- 机场名称1：机场 A\n- URL1：https://example.com/api/v1/client/subscribe?token=xxxxx\n- 重置日1：26
+# 更新日期：2026-03-08
+# 版本：2.0.1
+
+[Panel]
+机场订阅=script-name=机场订阅,update-interval=3600
+
+[Script]
+机场订阅=type=generic,timeout=20,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/Egern-Panel/Sub-info-Enhanced.js,script-update-interval=0,argument=panel_title={{{面板名称}}}&hide_update_time={{{面板更新时间}}}&payload={{{机场名称1}}}<<EgernPanelField>>{{{URL1}}}<<EgernPanelField>>{{{重置日1}}}<<EgernPanelSlot>>{{{机场名称2}}}<<EgernPanelField>>{{{URL2}}}<<EgernPanelField>>{{{重置日2}}}<<EgernPanelSlot>>{{{机场名称3}}}<<EgernPanelField>>{{{URL3}}}<<EgernPanelField>>{{{重置日3}}}<<EgernPanelSlot>>{{{机场名称4}}}<<EgernPanelField>>{{{URL4}}}<<EgernPanelField>>{{{重置日4}}}<<EgernPanelSlot>>{{{机场名称5}}}<<EgernPanelField>>{{{URL5}}}<<EgernPanelField>>{{{重置日5}}}<<EgernPanelSlot>>{{{机场名称6}}}<<EgernPanelField>>{{{URL6}}}<<EgernPanelField>>{{{重置日6}}}<<EgernPanelSlot>>{{{机场名称7}}}<<EgernPanelField>>{{{URL7}}}<<EgernPanelField>>{{{重置日7}}}<<EgernPanelSlot>>{{{机场名称8}}}<<EgernPanelField>>{{{URL8}}}<<EgernPanelField>>{{{重置日8}}}<<EgernPanelSlot>>{{{机场名称9}}}<<EgernPanelField>>{{{URL9}}}<<EgernPanelField>>{{{重置日9}}}<<EgernPanelSlot>>{{{机场名称10}}}<<EgernPanelField>>{{{URL10}}}<<EgernPanelField>>{{{重置日10}}}
