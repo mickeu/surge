@@ -1,29 +1,25 @@
 (function() {
-    try {
-        var groups = $surge.policyGroups();
-        console.log('=== 被🐶追的猫 调试数据 ===');
-        console.log(JSON.stringify(groups, null, 2));
-        var preview = JSON.stringify(groups, null, 2);
-        // 如果数据太长，截断
-        if (preview.length > 500) {
-            preview = preview.slice(0, 500) + '\n... (截断，完整数据请查看诊断日志)';
-        }
+    let param = $script.param || 'AIGC';
+    let result = $exec('surge-cli --raw policy-group get ' + param);
+    if (result.status !== 0) {
         return {
-            title: '🐱 被🐶追的猫 (调试)',
-            content: '数据已输出到诊断日志\n请打开 诊断 → 日志\n搜索 "被🐶追的猫"\n\n预览:\n' + preview,
-            style: 'info',
-            icon: '🐱',
-            'icon-color': 'orange'
-        };
-    } catch (e) {
-        console.log('=== 被🐶追的猫 错误 ===');
-        console.log(e.message);
-        return {
-            title: '🐱 被🐶追的猫 (错误)',
-            content: '错误: ' + e.message + '\n详情请查看诊断日志',
+            title: '🐱 被🐶追的猫',
+            content: '获取策略组失败: ' + (result.stderr || '未知错误'),
             style: 'info',
             icon: '🐱',
             'icon-color': 'red'
         };
     }
+    let data = JSON.parse(result.stdout);
+    let group = data.group;
+    let selected = group.selected || '无';
+    let total = group.options ? group.options.length : 0;
+    let content = '策略组: ' + group.name + '\n当前节点: ' + selected + '\n节点总数: ' + total;
+    return {
+        title: '🐱 被🐶追的猫',
+        content: content,
+        style: 'info',
+        icon: '🐱',
+        'icon-color': 'orange'
+    };
 })();
