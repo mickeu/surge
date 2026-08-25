@@ -63,9 +63,12 @@ $httpAPI("GET", "/v1/policy_groups", null, function (result) {
     $done({ title: "读取失败", content: LINES.concat(["$httpAPI 返回空"]).join("\n"), icon: "wrench", "icon-color": "#FF9500" });
     return;
   }
+  let raw = JSON.stringify(result);
+  LINES.push("返回类型: " + typeof result);
+  LINES.push("原始JSON: " + raw.substring(0, 400));
   let groups = Array.isArray(result) ? result : (result.groups || result);
   if (!Array.isArray(groups)) {
-    $done({ title: "读取失败", content: LINES.concat(["返回值: ", JSON.stringify(result).substring(0,80)]).join("\n"), icon: "wrench", "icon-color": "#FF9500" });
+    $done({ title: "读取失败", content: LINES.concat(["groups非数组"]).join("\n"), icon: "wrench", "icon-color": "#FF9500" });
     return;
   }
   LINES.push("总组数: " + groups.length);
