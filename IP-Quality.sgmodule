@@ -1,0 +1,8 @@
+#!name=IP 纯净度检测
+#!desc=显示 IP 类型、风险及纯净度评分
+
+[Script]
+IP-Quality = type=generic,timeout=10,script-path=https://raw.githubusercontent.com/ybb963416867/surge_pannel/refs/heads/main/main/pannel/IP-Quality.js
+
+[Panel]
+IP-Quality = script-name=IP-Quality,title="IP 纯净度",content="点击刷新",style=info,update-interval=0
