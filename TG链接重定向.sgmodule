@@ -1,6 +1,7 @@
-#!name=TG链接重定向·可编辑版
+#!name=TG链接重定向
 #!desc=打开 t.me 链接直接跳转至你选择的 Telegram 客户端。模块参数里填客户端名即可切换
-#!author=自用（Surge适配）
+#!author=mickeu
+#!category=mickeu
 #!icon=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png
 #!homepage=https://github.com/mickeu/surge
 #!arguments=CLIENT:Turrit
