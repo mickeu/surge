@@ -1,8 +1,0 @@
-#!name=被🐶追的猫
-#!desc=显示AIGC策略组状态（当前节点、节点总数）
-
-[Script]
-被🐶追的猫 = type=generic,timeout=10,script-path=https://raw.githubusercontent.com/mickeu/surge/main/%E8%A2%AB%F0%9F%90%B6%E8%BF%BD%E7%9A%84%E7%8C%AB.js
-
-[Panel]
-被🐶追的猫 = script-name=被🐶追的猫,title="🐱被🐶追的猫",content="点击刷新",style=info,update-interval=0
