@@ -104,26 +104,31 @@ async function run() {
       for (var i = 0; i < forums.length; i++) { results.push(await signBar(forums[i], tbs)); }
     }
 
-    var successCount = 0, lines = [];
+    var successCount = 0, lines = [], notifyLines = [];
     for (var k = 0; k < results.length; k++) {
       var r = results[k];
       if (r.errorCode === 0 || r.errorCode === 9999) successCount++;
+      // 面板精简版：贴吧名+等级
       if (r.errorCode === 9999) {
-        lines.push('【' + r.bar + '】已签到·Lv' + r.level);
+        lines.push('【' + r.bar + '】Lv' + r.level);
+        notifyLines.push('【' + r.bar + '】已经签到，当前等级' + r.level + ',经验' + r.exp);
       } else if (r.errorCode === 0) {
-        lines.push('【' + r.bar + '】签到成功，' + r.errorMsg);
+        lines.push('【' + r.bar + '】' + r.errorMsg);
+        notifyLines.push('【' + r.bar + '】签到成功，' + r.errorMsg);
       } else {
-        lines.push('【' + r.bar + '】签到失败，原因：' + r.errorMsg);
+        lines.push('【' + r.bar + '】' + r.errorMsg);
+        notifyLines.push('【' + r.bar + '】签到失败，原因：' + r.errorMsg);
       }
     }
 
-    var content = "✅ 签到" + results.length + "个,成功" + successCount + "个\n" + lines.join("\n");
-    console.log('📬 签到完成: ' + content);
+    var panelContent = "✅ 签到" + results.length + "个,成功" + successCount + "个\n" + lines.join("\n");
+    var notifyContent = "✅ 签到" + results.length + "个,成功" + successCount + "个\n" + notifyLines.join("\n");
+    console.log('📬 签到完成: ' + notifyContent);
 
-    // 弹通知
-    try { $notification.post('贴吧签到', '', content, { url: undefined }); } catch(e) {}
-    // 面板显示
-    $done({ title: "🀄 贴吧签到", content: content, icon: successCount > 0 ? "checkmark.circle" : "exclamationmark.triangle", "icon-color": successCount > 0 ? "#34C759" : "#FF3B30" });
+    // 弹通知（完整版）
+    try { $notification.post('贴吧签到', '', notifyContent, { url: undefined }); } catch(e) {}
+    // 面板显示（精简版：贴吧名+等级）
+    $done({ title: "🀄 贴吧签到", content: panelContent, icon: successCount > 0 ? "checkmark.circle" : "exclamationmark.triangle", "icon-color": successCount > 0 ? "#34C759" : "#FF3B30" });
 
   } catch (e) {
     console.log('❌ 签到异常: ' + e);
