@@ -45,7 +45,7 @@ startTasks().then(r => {
     if (isPanel) {
         $.done({
             title: "🔄 PingMe 签到",
-            content: (r && Array.isArray(r) && r.length ? r.join("\n") : "签到完成，详见通知"),
+            content: "点击签到",
             icon: "p.circle",
             "icon-color": "#007AFF"
         });
