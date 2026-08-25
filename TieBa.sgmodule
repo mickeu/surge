@@ -17,11 +17,11 @@ DOMAIN-SUFFIX,tiebac.baidu.com,DIRECT
 百度贴吧[Cookie] = type=http-request,pattern=^https?:\/\/(c\.tieba|tiebac)\.baidu\.com\/c\/s\/login,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/TieBa/TieBa.js,argument="cookie_enabled={{{cookie_enabled}}}",timeout=60
 # 签到（cron 定时任务，用同一个 TieBa.js，靠 $request 自动分流到签到逻辑）
 百度贴吧签到 = type=cron,cronexp="{{{cron}}}",script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/TieBa/TieBa.js,timeout=600,wake-system=1
-# 面板手动签到（点面板刷新即执行签到，结果直接显示在面板）
-百度贴吧签到面板 = type=generic,timeout=600,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/TieBa/TieBaPanel-v2.js,argument="cookie_enabled={{{cookie_enabled}}}"
+# 面板签到（点面板即签到，详情走通知，面板显示固定图标）
+百度贴吧签到面板 = type=generic,timeout=600,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/TieBa/TieBaPanel-v3.js,argument="cookie_enabled={{{cookie_enabled}}}"
 
 [Panel]
-百度贴吧签到面板 = script-name=百度贴吧签到面板,title="🀄 贴吧签到",content="拉取最新通知",style=info,update-interval=0
+百度贴吧签到面板 = script-name=百度贴吧签到面板,title="百度贴吧签到",content="点击签到",style=info,update-interval=0
 
 [MITM]
 hostname = %APPEND% c.tieba.baidu.com, tiebac.baidu.com
