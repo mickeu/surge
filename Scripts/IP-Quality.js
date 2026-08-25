@@ -53,7 +53,12 @@ function main() {
     // 查找目标策略组
     const targetGroup = groups.find((g) => g.name === groupName);
     if (!targetGroup) {
-      detectIP(null, "未找到策略组「" + groupName + "」");
+      $done({
+        title: "策略组未找到",
+        content: "找不到策略组「" + groupName + "」\n请检查模块参数是否正确（注意大小写）\n\n可用策略组：\n" + groups.map((g) => g.name).join("\n"),
+        icon: "exclamationmark.triangle",
+        "icon-color": "#FF9500"
+      });
       return;
     }
 
@@ -72,9 +77,8 @@ function main() {
 function detectIP(policyName, fallbackMsg) {
   const options = {};
   if (policyName) {
-    options["policy-path"] = policyName;
-    // 备用：也设置 header 方式
-    options.headers = { "X-Surge-Policy": policyName };
+    // Surge $httpClient 支持 policy 指定出站策略
+    options.policy = policyName;
   }
 
   $httpClient.get(apiURL, options, function (error, response, data) {
