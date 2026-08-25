@@ -1,9 +1,13 @@
 #!name=IP 纯净度检测
-#!desc=检测指定策略组当前选中节点的出口 IP 纯净度（IP 类型/风险/评分）
-#!arguments=group,策略组名称,默认填 PROXY
+#!desc=检测指定策略组当前选中节点的出口 IP 纯净度（类型/风险/评分）
+#!author=自用（Surge适配）
+#!icon=https://raw.githubusercontent.com/Limexm/ClashXiOn/master/icons/Checkmark.png
+#!homepage=https://github.com/mickeu/surge
+#!arguments=GROUP:PROXY
+#!arguments-desc=要检测的策略组名称（默认 PROXY）。输入你的目标策略组名（如 PROXY、Netflix、Telegram 等），改完 reload 生效。点击面板刷新即可检测该组当前选中节点的 IP 纯净度。
 
 [Script]
-IP-Quality = type=generic,timeout=10,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/IP-Quality.js, argument=group=PROXY, script-update-interval=0
+IP-Quality = type=generic,timeout=10,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/IP-Quality.js,argument=group={{{GROUP}}}
 
 [Panel]
 IP-Quality = script-name=IP-Quality,title="IP 纯净度",content="点击刷新",style=info,update-interval=0
