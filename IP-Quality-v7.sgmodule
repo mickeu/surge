@@ -1,0 +1,13 @@
+#!name=IP 纯净度 v7
+#!desc=检测指定策略组当前选中节点的出口 IP 纯净度（临时切换 PROXY 出站）
+#!author=自用
+#!icon=https://raw.githubusercontent.com/Limexm/ClashXiOn/master/icons/Checkmark.png
+#!homepage=https://github.com/mickeu/surge
+#!arguments=GROUP:PROXY
+#!arguments-desc=要检测的策略组名称（默认 PROXY）。输入你的目标策略组名（如 PROXY、AIGC、Netflix 等），改完 reload 生效。
+
+[Script]
+IP-Quality-v7 = type=generic,engine=auto,timeout=15,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/IP-Quality-v7.js,script-update-interval=0,argument=group={{{GROUP}}}
+
+[Panel]
+IP-Quality-v7 = script-name=IP-Quality-v7,title="IP 纯净度",content="点击刷新",style=info,update-interval=0
