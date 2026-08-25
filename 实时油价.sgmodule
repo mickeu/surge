@@ -1,13 +1,14 @@
-#!name=实时油价模块
-#!desc=🔗 [2026/3/25 20:57:31] 显示本省实时油价
-#!auther= @RS0485 由 @keywos进行surge和Loon兼容性修改。复制到本地后argument=后面接本省/城市 名称拼音，或者去http://m.qiyoujiage.com/shanxi-3.shtml 查看自己省份拼音（陕西和山西比较特殊）
-
-# 🔗 模块链接
-#SUBSCRIBED https://raw.githubusercontent.com/QingRex/LoonKissSurge/refs/heads/main/Surge/Official/%E5%AE%9E%E6%97%B6%E6%B2%B9%E4%BB%B7%E9%9D%A2%E6%9D%BF.official.sgmodule
-
-
+#!name=实时油价
+#!desc=⛽ 查询全国主要城市实时油价（中文城市名，如：北京、深圳、长沙）
+#!author=mickeu
+#!category=mickeu
+#!icon=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Server.png
+#!homepage=https://github.com/mickeu/surge
+#!arguments=CITY:北京
+#!arguments-desc=输入城市名（中文，如：北京、深圳、长沙、西安），查看当地实时油价
 
 [Panel]
-YJ = script-name=YJ,update-interval=43200
+youjia-cn = script-name=youjia-cn,title="⛽ 实时油价",content="刷新",style=info,update-interval=43200
+
 [Script]
-YJ = type=generic,timeout=5,script-path=https://raw.githubusercontent.com/getsomecat/GetSomeCats/Surge/script/youjia.js,argument=hunan/shaoyang
+youjia-cn = type=generic,timeout=5,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/youjia-cn.js,argument={{{CITY}}}
