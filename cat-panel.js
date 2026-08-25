@@ -3,7 +3,7 @@
 
 const url = "http://ip-api.com/json?fields=status,query,country,countryCode,regionName,city,isp,org,as,proxy,hosting,mobile";
 
-$httpClient.get(url, function(error, response, data) {
+$httpClient.get({url: url, noProxy: true, timeout: 10}, function(error, response, data) {
   if (error || !data) {
     $done({ title: "IP 检测失败", content: error || "无数据", icon: "exclamationmark.triangle" });
     return;
