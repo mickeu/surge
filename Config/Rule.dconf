@@ -9,7 +9,7 @@ DOMAIN,raw.githubusercontent.com,DIRECT // GitHub raw 规则集下载直连
 RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Advertising/Advertising_All.list,REJECT // 广告全量拦截（blackmatrix7）
 RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Hijacking/Hijacking.list,REJECT // 域名劫持/中间人攻击防护
 RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Privacy/Privacy.list,REJECT // 隐私追踪/数据收集拦截
-RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Advertising_Supplement.list,REJECT // 广告拦截补充（blackmatrix7 漏覆盖）
+RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Advertising_Supplement.list,REJECT // 广告拦截补充（blackmatrix7 漏覆盖）
 
 # > 局域网地址（提至高优先级，确保本地服务不误走代理）
 RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Lan/Lan.list,DIRECT // 局域网直连（NAS/打印机/本地服务）
@@ -17,19 +17,19 @@ RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/r
 # > AI 服务（OpenAI / Claude / Gemini）
 RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/OpenAI/OpenAI.list,AIGC // OpenAI/ChatGPT 走 AI 策略组
 RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Claude/Claude.list,AIGC // Claude 走 AI 策略组
-RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Gemini.list,AIGC // Gemini 走 AI 策略组（自维护，含 blackmatrix7 原版 + 补充遗漏域名）
+RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Gemini.list,AIGC // Gemini 走 AI 策略组（自维护，含 blackmatrix7 原版 + 补充遗漏域名）
 
 # > 苹果服务
 # Apple AI 必须走代理，须先于 Apple_All，否则被 Apple_All 拉直连
-RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/AppleIntelligence.list,AIGC // Apple AI + APNs + IP 段走代理
-RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Apple_All.list,Apple // 苹果服务走 Apple 策略组（自维护，补充 Apple Music 流媒体域名）
+RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/AppleIntelligence.list,AIGC // Apple AI + APNs + IP 段走代理
+RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Apple_All.list,Apple // 苹果服务走 Apple 策略组（自维护，补充 Apple Music 流媒体域名）
 
 # > 微软服务
 RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Microsoft/Microsoft.list,Microsoft // 微软服务走 Microsoft 策略组
 
 # > 社交平台（Telegram 流量全部走 Telegram 策略组）
 PROTOCOL,MTProto,Telegram // MTProto 协议直送 Telegram 组
-RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Telegram_All.list,Telegram // Telegram 完整规则集（合并 blackmatrix7 + 补充 CDN 域名）
+RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Telegram_All.list,Telegram // Telegram 完整规则集（合并 blackmatrix7 + 补充 CDN 域名）
 
 # > 游戏平台
 RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Game/Game.list,Game // 游戏平台走 Game 组
@@ -46,7 +46,7 @@ RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/r
 RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/GlobalMedia/GlobalMedia.list,GlobalMedia // 境外流媒体兜底走 GlobalMedia 组
 
 # > 补充国内直连（误走代理的国内业务域名，必须在 Global_All 之前）
-RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Direct_Supplement.list,DIRECT // 补充国内直连域名
+RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Direct_Supplement.list,DIRECT // 补充国内直连域名
 
 # > 网络信息模块数据源直连（xream net-lsp-x，spcn 国内 IP 查询）
 DOMAIN-SUFFIX,speedtest.cn,DIRECT // speedtest.cn 直连（网络信息面板数据源）
