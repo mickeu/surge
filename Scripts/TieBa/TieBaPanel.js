@@ -109,7 +109,7 @@ async function run() {
       var r = results[k];
       if (r.errorCode === 0 || r.errorCode === 9999) successCount++;
       if (r.errorCode === 9999) {
-        lines.push('【' + r.bar + '】已经签到，当前等级' + r.level + ',经验' + r.exp);
+        lines.push('【' + r.bar + '】已签到·Lv' + r.level);
       } else if (r.errorCode === 0) {
         lines.push('【' + r.bar + '】签到成功，' + r.errorMsg);
       } else {
