@@ -166,13 +166,12 @@ if (!REGION) {
       return;
     }
 
-    const lines = prices.map(p => `${p.name}：${p.value}`);
-    const trendText = adjust_date ? `上次调整：${adjust_date} ${adjust_trend} ${adjust_value}` : "";
-    if (trendText) lines.push("");
-    if (trendText) lines.push(trendText);
+    const lines = prices.map(p => `${p.name}  ${p.value}`);
+    const friendly_tips = adjust_date ? `${adjust_date} ${adjust_trend} ${adjust_value}` : "";
+    if (friendly_tips) lines.push(friendly_tips);
 
     $done({
-      title: `⛽ ${cityName} 油价`,
+      title: `${cityName} 实时油价`,
       content: lines.join("\n"),
       icon: "fuelpump.fill",
       "icon-color": "#FF9500"
