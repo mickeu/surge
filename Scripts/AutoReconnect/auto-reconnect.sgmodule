@@ -1,6 +1,7 @@
 #!name=断线重连与定时巡检
 #!desc=断线自动重连 + 定时巡检（同一脚本 v8 双触发）：自动检测所有"叶子 select 组"（不写死组名/数量，适配任意策略组配置）。v6 约束智能判定：MTProto 未开 ipv6 时自动不锁 v6 节点；需要锁定时自动实测候选节点的 v6 能力（无需手写 V6_NODES）。仅在真正切换节点时推送通知。可选 $argument 覆盖：V6_ONLY_GROUPS=需要锁 v6 的组(逗号分隔)、V6_NODES=手动指定 v6 节点(逗号分隔，不传则自动检测)。
 #!author=mickeu
+#!category=mickeu
 #!update-url=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/AutoReconnect/auto-reconnect.sgmodule
 
 [Script]
