@@ -3,7 +3,7 @@
 DOMAIN-SUFFIX,sb.sb,PROXY
 
 # > 广告拦截/隐私保护/病毒拦截/钓鱼和诈骗域名拦截（blackmatrix7 _All 全量版）
-# 规则集下载域名必须直连（否则走代理节点可能加载失败）
+# 规则集下载域名走兜底策略
 DOMAIN,cdn.jsdelivr.net,DIRECT // jsdelivr CDN 规则集下载直连
 RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Advertising/Advertising_All.list,REJECT // 广告全量拦截（blackmatrix7）
 RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Hijacking/Hijacking.list,REJECT // 域名劫持/中间人攻击防护
