@@ -1,8 +1,6 @@
 [Rule]
 # > 烧饼论坛 sb.sb 强制代理（防止被 Lan.list 的 198.18.0.0/15 fake-IP 规则误判直连而 403）
 DOMAIN-SUFFIX,sb.sb,PROXY
-# > PingMe 签到接口直连
-DOMAIN,api.pingmeapp.net,DIRECT // PingMe 签到 API 直连
 
 # > 广告拦截/隐私保护/病毒拦截/钓鱼和诈骗域名拦截（blackmatrix7 _All 全量版）
 # 规则集下载域名必须直连（否则走代理节点可能加载失败）
