@@ -1,11 +1,13 @@
 #!name=MTProto_Proxy
-#!desc=MTProto 代理模块，支持 Telegram 加速。
+#!desc=MTProto 代理模块，支持 Telegram 加速。ipv6 参数可编辑（true 启用 IPv6，false 禁用）
 #!author=mickeu
 #!category=mickeu
 #!icon=https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/Telegram_05.png
+#!arguments=IPv6:true
+#!arguments-desc=ipv6 开关：true 启用 IPv6，false 禁用 IPv6
 
 [MTProto]
 interface = 0.0.0.0
 port = 5753
 secret = 0c28a2f5a59025491c6bea2805ad1a4c
-ipv6 = true
+ipv6 = {{{IPv6}}}
