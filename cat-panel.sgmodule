@@ -2,7 +2,7 @@
 #!desc=显示 IP 类型、风险及纯净度评分
 
 [Script]
-cat-panel = type=generic,timeout=10,script-path=https://raw.githubusercontent.com/ybb963416867/surge_pannel/refs/heads/main/main/pannel/cat-panel.js
+cat-panel = type=generic,timeout=10,script-path=https://raw.githubusercontent.com/mickeu/surge/main/cat-panel.js
 
 [Panel]
 cat-panel = script-name=cat-panel,title="🐱被🐶追的猫",content="点击刷新",style=info,update-interval=0
