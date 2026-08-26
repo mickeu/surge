@@ -9,7 +9,7 @@ const ckKey = 'CookieTB';
 var cookieVal = $persistentStore.read(ckKey);
 
 function noDataDone(msg) {
-  $done({ title: "百度贴吧签到", content: msg || "点击签到", icon: "checkmark.circle.fill", "icon-color": "#34C759" });
+  $done({ title: "百度贴吧签到", content: msg || "点击签到", icon: "t.square.fill", "icon-color": "#34C759" });
 }
 
 if (!cookieVal) {
@@ -121,7 +121,7 @@ async function run() {
 
     try { $notification.post('百度贴吧签到', '', notifyContent, { url: undefined }); } catch(e) {}
     // 面板固定显示（不显示签到详情，详情走通知）
-    $done({ title: "百度贴吧签到", content: "点击签到", icon: "checkmark.circle.fill", "icon-color": "#34C759" });
+    $done({ title: "百度贴吧签到", content: "点击签到", icon: "t.square.fill", "icon-color": "#34C759" });
 
   } catch (e) {
     console.log('❌ 签到异常: ' + e);
