@@ -1,0 +1,13 @@
+#!name=蛋蛋不语VIP解锁
+#!desc=蛋蛋不语 - 解锁会员，复刻自 curtinp118/Scripthub（防上游删库）
+#!author=mickeu
+#!category=mickeu
+
+[Rule]
+RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/DanDan.list,DIRECT // 蛋蛋不语域名直连（复刻）
+
+[Script]
+蛋蛋不语VIP解锁 = type=http-response,pattern=^http:\/\/38\.76\.202\.248:8000\/.*profiles.*,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/DanDan/dandanvip_unlock.js,requires-body=1,max-size=1048576,binary-body-mode=0,timeout=888
+
+[MITM]
+hostname = %APPEND% 38.76.202.248
