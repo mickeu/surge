@@ -46,7 +46,7 @@ startTasks().then(r => {
         $.done({
             title: "🔄 PingMe 签到",
             content: "点击签到",
-            icon: "apple.logo.pin.point.of.interest",
+            icon: "network.badge.shield.half.filled",
             "icon-color": "#007AFF"
         });
     } else {
