@@ -1,0 +1,12 @@
+#!name=节假日信息
+#!desc=显示节假日的信息
+#!author=mickeu
+#!category=mickeu
+#!icon=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Server.png
+#!homepage=https://github.com/mickeu/surge
+
+[Panel]
+Timecard = script-name=Timecard,title="节假日信息",content="刷新",style=info,update-interval=3600
+
+[Script]
+Timecard = type=generic,timeout=10,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/Timecard/timecard.js
