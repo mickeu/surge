@@ -17,22 +17,22 @@ YouTube = smart, 🇯🇵日本, 🇸🇬新加坡, include-other-group=🌍我�
 🇺🇸 美国节点 = smart, include-other-group=🌍我的节点, policy-regex-filter=(🇺🇸)|(美国)|(States)|(US), icon-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/LA.png
 🇯🇵 日本节点 = smart, include-other-group=🌍我的节点, policy-regex-filter=(🇯🇵)|(日本)|(Japan)|(JP), icon-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/JP.png
 🇸🇬 新加坡节点 = smart, include-other-group=🌍我的节点, policy-regex-filter=(🇸🇬)|(新加坡)|(Singapore)|(SG), icon-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/SG.png
-🌍我的节点 = smart, policy-path=https://sub.store/download/collection/ZDY?target=Surge, update-interval=0, no-alert=1, hidden=0, icon-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/MY.png, include-all-proxies=0
-Apple = select, DIRECT, PROXY, "🇭🇰 香港节点", "🇺🇸 美国节点", "🇯🇵 日本节点", "🇰🇷 韩国节点", "🇸🇬 新加坡节点", icon-url=https://raw.githubusercontent.com/Rabbit-Spec/Surge/Master/Conf/icon/Apple_Arcade.png, no-alert=0, hidden=1, include-all-proxies=0
+🇰🇷 韩国节点 = smart, include-other-group=🌍我的节点, policy-regex-filter=(🇰🇷)|(韩国)|(Korea)|(\bKR), icon-url=https://raw.githubusercontent.com/Rabbit-Spec/Surge/Master/Conf/icon/Country-South_Korea.png, hidden=1
+🇨🇳 台湾节点 = smart, include-other-group=🌍我的节点, policy-regex-filter=(🇨🇳)|(台湾)|(Tai)|(TW), icon-url=https://raw.githubusercontent.com/Rabbit-Spec/Surge/Master/Conf/icon/Country-China.png, hidden=1
 
 # > 微软服务
-Netflix = select, PROXY, "🇭🇰 香港节点", "🇺🇸 美国节点", "🇯🇵 日本节点", "🇰🇷 韩国节点", "🇸🇬 新加坡节点", icon-url=https://raw.githubusercontent.com/Rabbit-Spec/Surge/Master/Conf/icon/Netflix.png, no-alert=0, hidden=1, include-all-proxies=0
+🌍我的节点 = smart, policy-path=https://sub.store/download/collection/ZDY?target=Surge, update-interval=0, no-alert=1, hidden=0, icon-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/MY.png, include-all-proxies=0
 
 # > 游戏平台
-Disney+ = select, PROXY, "🇭🇰 香港节点", "🇺🇸 美国节点", "🇯🇵 日本节点", "🇰🇷 韩国节点", "🇸🇬 新加坡节点", icon-url=https://raw.githubusercontent.com/Rabbit-Spec/Surge/Master/Conf/icon/Disney.png, no-alert=0, hidden=1, include-all-proxies=0
+Apple = select, DIRECT, PROXY, "🇭🇰 香港节点", "🇺🇸 美国节点", "🇯🇵 日本节点", "🇰🇷 韩国节点", "🇸🇬 新加坡节点", icon-url=https://raw.githubusercontent.com/Rabbit-Spec/Surge/Master/Conf/icon/Apple_Arcade.png, no-alert=0, hidden=1, include-all-proxies=0
 
 # > 地区策略组（从订阅中按正则筛选）
+Netflix = select, PROXY, "🇭🇰 香港节点", "🇺🇸 美国节点", "🇯🇵 日本节点", "🇰🇷 韩国节点", "🇸🇬 新加坡节点", icon-url=https://raw.githubusercontent.com/Rabbit-Spec/Surge/Master/Conf/icon/Netflix.png, no-alert=0, hidden=1, include-all-proxies=0
+Disney+ = select, PROXY, "🇭🇰 香港节点", "🇺🇸 美国节点", "🇯🇵 日本节点", "🇰🇷 韩国节点", "🇸🇬 新加坡节点", icon-url=https://raw.githubusercontent.com/Rabbit-Spec/Surge/Master/Conf/icon/Disney.png, no-alert=0, hidden=1, include-all-proxies=0
 Spotify = select, PROXY, "🇭🇰 香港节点", "🇺🇸 美国节点", "🇯🇵 日本节点", "🇰🇷 韩国节点", "🇸🇬 新加坡节点", icon-url=https://raw.githubusercontent.com/Rabbit-Spec/Surge/Master/Conf/icon/Spotify.png, no-alert=0, hidden=1, include-all-proxies=0
 TikTok = select, "🇭🇰 香港节点", "🇺🇸 美国节点", "🇯🇵 日本节点", "🇰🇷 韩国节点", "🇸🇬 新加坡节点", icon-url=https://raw.githubusercontent.com/Rabbit-Spec/Surge/Master/Conf/icon/TikTok.png, no-alert=0, hidden=1, include-all-proxies=0
 BiliBili = select, DIRECT, "🇭🇰 香港节点", "🇨🇳 台湾节点", icon-url=https://raw.githubusercontent.com/Rabbit-Spec/Surge/Master/Conf/icon/Bilibili.png, no-alert=0, hidden=1, include-all-proxies=0
 Microsoft = select, DIRECT, PROXY, "🇭🇰 香港节点", "🇺🇸 美国节点", "🇯🇵 日本节点", "🇰🇷 韩国节点", "🇸🇬 新加坡节点", icon-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Windows.png, no-alert=0, hidden=1, include-all-proxies=0
-Game = select, DIRECT, PROXY, "🇭🇰 香港节点", "🇺🇸 美国节点", "🇯🇵 日本节点", "🇰🇷 韩国节点", "🇸🇬 新加坡节点", icon-url=https://raw.githubusercontent.com/Rabbit-Spec/Surge/Master/Conf/icon/Game.png, no-alert=0, hidden=1, include-all-proxies=0
-🇨🇳 台湾节点 = smart, include-other-group=🌍我的节点, policy-regex-filter=(🇨🇳)|(台湾)|(Tai)|(TW), icon-url=https://raw.githubusercontent.com/Rabbit-Spec/Surge/Master/Conf/icon/Country-China.png, hidden=1
 
 # > 订阅源
-🇰🇷 韩国节点 = smart, include-other-group=🌍我的节点, policy-regex-filter=(🇰🇷)|(韩国)|(Korea)|(\bKR), icon-url=https://raw.githubusercontent.com/Rabbit-Spec/Surge/Master/Conf/icon/Country-South_Korea.png, hidden=1
+Game = select, DIRECT, PROXY, "🇭🇰 香港节点", "🇺🇸 美国节点", "🇯🇵 日本节点", "🇰🇷 韩国节点", "🇸🇬 新加坡节点", icon-url=https://raw.githubusercontent.com/Rabbit-Spec/Surge/Master/Conf/icon/Game.png, no-alert=0, hidden=1, include-all-proxies=0
