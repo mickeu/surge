@@ -7,4 +7,4 @@
 SurgeMonitor = title="Surge Monitor",content="正在获取数据...",style=info,script-name=surge-monitor,update-interval=10
 
 [Script]
-surge-monitor = type=generic,script-path=Scripts/SurgeMonitor.js
+surge-monitor = type=generic,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/SurgeMonitor.js
