@@ -1,0 +1,92 @@
+# 视频采集站/资源站 · 直连规则集（mickeu 自维护）
+# 说明：这些是中国大陆视频采集/资源站域名，走 DIRECT 直连（不走代理，避免 403/404/加载慢）
+# 由 Rule.dconf 通过 RULE-SET 引用
+# 维护：新域名直接加在下面，推送到 mickeu/surge
+
+# ---- 统一关键词兜底（国内视频采集站通用特征，防漏） ----
+DOMAIN-KEYWORD,ffzy
+DOMAIN-KEYWORD,bdzy
+DOMAIN-KEYWORD,zuida
+DOMAIN-KEYWORD,guangsu
+DOMAIN-KEYWORD,69mini
+DOMAIN-KEYWORD,bfvvs
+DOMAIN-KEYWORD,ymuuy
+DOMAIN-KEYWORD,dytt
+DOMAIN-KEYWORD,hongniu
+DOMAIN-KEYWORD,baofeng
+DOMAIN-KEYWORD,jisuzy
+DOMAIN-KEYWORD,jisuimage
+DOMAIN-KEYWORD,jiexi
+DOMAIN-KEYWORD,caiji
+DOMAIN-KEYWORD,zyapi
+DOMAIN-KEYWORD,zypic
+DOMAIN-KEYWORD,zym3u8
+DOMAIN-KEYWORD,fengbao
+
+# ---- 飞飞/图片系列 ----
+DOMAIN-SUFFIX,feifeiimg.vip
+DOMAIN-SUFFIX,feifei-kan.com
+
+# ---- 北度资源系列 ----
+DOMAIN-SUFFIX,apibdzy.com
+DOMAIN-SUFFIX,bdzyimg1.com
+
+# ---- 广速资源 ----
+DOMAIN-SUFFIX,guangsuapi.com
+
+# ---- 69迷你/其他资源站 ----
+DOMAIN-SUFFIX,69mini.com
+DOMAIN-SUFFIX,bfvvs.com
+DOMAIN-SUFFIX,ymuuy.com
+
+# ---- 电影天堂系列 ----
+DOMAIN-SUFFIX,dyttimage.com
+DOMAIN-SUFFIX,dytt-cine.com
+DOMAIN-SUFFIX,dytt-tupian.com
+DOMAIN-SUFFIX,dytt-network.com
+DOMAIN-SUFFIX,dytt-tvs.com
+DOMAIN-SUFFIX,dytt-see.com
+DOMAIN-SUFFIX,dyttnetwork.com
+DOMAIN-SUFFIX,dytt-ok.com
+DOMAIN-SUFFIX,hongniuzy2.com
+
+# ---- 暴风/风暴系列 ----
+DOMAIN-SUFFIX,baofeng11.com
+DOMAIN-SUFFIX,fengbao11.com
+
+# ---- 极速/图片系列 ----
+DOMAIN-SUFFIX,jisuzyv.com
+DOMAIN-SUFFIX,jisuimage.com
+DOMAIN-SUFFIX,jisuts.com
+DOMAIN-SUFFIX,jisuimg.com
+
+# ---- 采集 API 系列 ----
+DOMAIN-SUFFIX,jszyapi.com
+DOMAIN-SUFFIX,xgzyapi.com
+DOMAIN-SUFFIX,maotaizy.cc
+DOMAIN-SUFFIX,rycjapi.com
+DOMAIN-SUFFIX,lziapi.com
+DOMAIN-SUFFIX,mdzyapi.com
+DOMAIN-SUFFIX,maoyanapi.top
+DOMAIN-SUFFIX,huyaapi.com
+DOMAIN-SUFFIX,wyvod.com
+DOMAIN-SUFFIX,lfthirtytwo.com
+
+# ---- CDN / 图片域名 ----
+DOMAIN-SUFFIX,lz-cdn3.com
+DOMAIN-SUFFIX,lz-cdn.com
+DOMAIN-SUFFIX,ppqrrs.com
+DOMAIN-SUFFIX,bvvvvvvvvv1f.com
+DOMAIN-SUFFIX,lzipic.com
+DOMAIN-SUFFIX,ryzypics.com
+DOMAIN-SUFFIX,bfzypic.com
+DOMAIN-SUFFIX,imgzy360.com
+DOMAIN-SUFFIX,phimgood.com
+DOMAIN-SUFFIX,maowushi.com
+DOMAIN-SUFFIX,360zy.com
+DOMAIN-SUFFIX,jimxtc.com
+
+# ---- 综合兜底 ----
+DOMAIN-SUFFIX,imarkr.com
+DOMAIN-SUFFIX,i95.me
+DOMAIN-SUFFIX,xi-xu.me
