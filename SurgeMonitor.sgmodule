@@ -1,0 +1,10 @@
+#!name=内存
+#!desc=Surge 运行内存、运行时间、流量统计监控面板
+#!author=mickeu
+#!category=mickeu
+
+[Panel]
+SurgeMonitor = title="Surge Monitor",content="正在获取数据...",style=info,script-name=surge-monitor,update-interval=10
+
+[Script]
+surge-monitor = type=generic,script-path=Scripts/SurgeMonitor.js
