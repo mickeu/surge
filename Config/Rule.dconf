@@ -47,71 +47,8 @@ RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/r
 # > 补充国内直连（误走代理的国内业务域名，必须在 Global_All 之前）
 RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Direct_Supplement.list,DIRECT // 补充国内直连域名
 
-# > 视频采集站/资源站域名直连（no-resolve 后不再靠 IP-CIDR 匹配，需域名规则直连）
-# 飞飞资源 ffzy
-DOMAIN-KEYWORD,ffzy,DIRECT
-DOMAIN-SUFFIX,feifeiimg.vip,DIRECT
-# 北度资源 bdzy
-DOMAIN-KEYWORD,bdzy,DIRECT
-DOMAIN-SUFFIX,apibdzy.com,DIRECT
-DOMAIN-SUFFIX,bdzyimg1.com,DIRECT
-# 最大资源 zuida
-DOMAIN-KEYWORD,zuida,DIRECT
-# 广速资源
-DOMAIN-SUFFIX,guangsuapi.com,DIRECT
-# 69迷你
-DOMAIN-SUFFIX,69mini.com,DIRECT
-# 其他采集站
-DOMAIN-SUFFIX,bfvvs.com,DIRECT
-DOMAIN-SUFFIX,ymuuy.com,DIRECT
-DOMAIN-SUFFIX,dyttimage.com,DIRECT
-DOMAIN-SUFFIX,dytt-cine.com,DIRECT
-DOMAIN-SUFFIX,dytt-tupian.com,DIRECT
-DOMAIN-SUFFIX,hongniuzy2.com,DIRECT
-DOMAIN-SUFFIX,imarkr.com,DIRECT
-DOMAIN-SUFFIX,i95.me,DIRECT
-DOMAIN-SUFFIX,xi-xu.me,DIRECT
-DOMAIN-SUFFIX,huyaapi.com,DIRECT
-DOMAIN-SUFFIX,wyvod.com,DIRECT
-DOMAIN-SUFFIX,maoyanapi.top,DIRECT
-DOMAIN-SUFFIX,mdzyapi.com,DIRECT
-DOMAIN-SUFFIX,jszyapi.com,DIRECT
-DOMAIN-SUFFIX,xgzyapi.com,DIRECT
-DOMAIN-SUFFIX,maotaizy.cc,DIRECT
-DOMAIN-SUFFIX,rycjapi.com,DIRECT
-DOMAIN-SUFFIX,lziapi.com,DIRECT
-DOMAIN-SUFFIX,jisuzyv.com,DIRECT
-DOMAIN-SUFFIX,lz-cdn3.com,DIRECT
-DOMAIN-SUFFIX,lz-cdn.com,DIRECT
-DOMAIN-SUFFIX,jisuts.com,DIRECT
-DOMAIN-SUFFIX,dytt-network.com,DIRECT
-DOMAIN-SUFFIX,feifei-kan.com,DIRECT
-DOMAIN-SUFFIX,jimxtc.com,DIRECT
-DOMAIN-SUFFIX,dytt-tvs.com,DIRECT
-DOMAIN-SUFFIX,dytt-see.com,DIRECT
-DOMAIN-SUFFIX,maowushi.com,DIRECT
-DOMAIN-SUFFIX,360zy.com,DIRECT
-DOMAIN-SUFFIX,imgzy360.com,DIRECT
-DOMAIN-SUFFIX,jisuimage.com,DIRECT
-DOMAIN-SUFFIX,baofeng11.com,DIRECT
-DOMAIN-SUFFIX,phimgood.com,DIRECT
-# 视频采集站通用关键词兜底（国内资源站，走直连不走代理）
-DOMAIN-KEYWORD,ffzy,DIRECT
-DOMAIN-KEYWORD,bdzy,DIRECT
-DOMAIN-KEYWORD,zuida,DIRECT
-DOMAIN-KEYWORD,dytt,DIRECT
-DOMAIN-KEYWORD,baofeng,DIRECT
-DOMAIN-KEYWORD,jisuzy,DIRECT
-DOMAIN-KEYWORD,jisuimage,DIRECT
-DOMAIN-KEYWORD,maotai,DIRECT
-DOMAIN-KEYWORD,maowu,DIRECT
-DOMAIN-KEYWORD,jiexi,DIRECT
-DOMAIN-KEYWORD,caiji,DIRECT
-DOMAIN-KEYWORD,zyapi,DIRECT
-DOMAIN-KEYWORD,zym3u8,DIRECT
-DOMAIN-KEYWORD,hongniu,DIRECT
-DOMAIN-KEYWORD,imgzy,DIRECT
-DOMAIN-KEYWORD,phim,DIRECT
+# > 视频采集站/资源站域名直连（no-resolve 后不再靠 IP-CIDR 匹配，统一收进 Video_RESOURCE.list 维护）
+RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Video_RESOURCE.list,DIRECT // 视频采集站/资源站直连（mickeu 自维护）
 
 # > 网络信息模块数据源直连（xream net-lsp-x，spcn 国内 IP 查询）
 DOMAIN-SUFFIX,speedtest.cn,DIRECT // speedtest.cn 直连（网络信息面板数据源）
@@ -129,6 +66,9 @@ RULE-SET,https://raw.githubusercontent.com/VirgilClyne/GetSomeFries/main/ruleset
 
 # > GeoIP 中国大陆 IP 兜底（no-resolve 跳过已匹配流量的 DNS 解析，减少延迟）
 GEOIP,CN,DIRECT,no-resolve // 中国大陆 IP 兜底直连
+
+# > HTTP 流量兜底直连（视频采集站几乎全是 HTTP，HTTPS 已被前面规则匹配走代理）
+URL-REGEX,^http://,DIRECT // 未被以上规则匹配的 HTTP 流量走直连（视频采集站兜底）
 
 # > Final 规则（DNS 查询失败时也走 Final）
 FINAL,PROXY,dns-failed // 未匹配流量走代理兜底
