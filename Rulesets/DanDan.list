@@ -1,4 +1,5 @@
 # 蛋蛋不语
+# 原有域名
 DOMAIN-SUFFIX,one.one.one.one
 DOMAIN-SUFFIX,api.wwzy.tv
 DOMAIN-SUFFIX,bfzyapi.com
@@ -11,3 +12,37 @@ DOMAIN-SUFFIX,s1.fengbao9.com
 DOMAIN-SUFFIX,develop202.github.io
 DOMAIN-SUFFIX,s2.bfllvip.com
 IP-CIDR,38.76.202.248/32
+
+# 补充：视频资源站域名（no-resolve 后 IP-CIDR 不再触发 DNS 解析，
+# 这些域名原本靠 ChinaMax IP-CIDR 匹配走 DIRECT，现在用域名规则直连）
+# 飞飞资源 ffzy
+DOMAIN-SUFFIX,ffzy5.tv
+DOMAIN-SUFFIX,ffzy-online.com
+DOMAIN-SUFFIX,ffzy-play.com
+DOMAIN-SUFFIX,ffzy-bofang.com
+DOMAIN-SUFFIX,feifeiimg.vip
+DOMAIN-KEYWORD,ffzy-
+
+# 北度资源 bdzy
+DOMAIN-SUFFIX,bdzybf22.com
+DOMAIN-SUFFIX,apibdzy.com
+DOMAIN-SUFFIX,bdzyimg1.com
+
+# 最大资源 zuida
+DOMAIN-SUFFIX,zuidapi.com
+DOMAIN-SUFFIX,zuidazym3u8.com
+
+# 广速资源
+DOMAIN-SUFFIX,guangsuapi.com
+
+# 69迷你
+DOMAIN-SUFFIX,69mini.com
+
+# 其他视频资源站
+DOMAIN-SUFFIX,bfvvs.com
+DOMAIN-SUFFIX,ymuuy.com
+DOMAIN-SUFFIX,dyttimage.com
+DOMAIN-SUFFIX,hongniuzy2.com
+DOMAIN-SUFFIX,imarkr.com
+DOMAIN-SUFFIX,i95.me
+DOMAIN-SUFFIX,xi-xu.me
