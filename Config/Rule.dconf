@@ -47,6 +47,43 @@ RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/r
 # > 补充国内直连（误走代理的国内业务域名，必须在 Global_All 之前）
 RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Direct_Supplement.list,DIRECT // 补充国内直连域名
 
+# > 视频采集站/资源站域名直连（no-resolve 后不再靠 IP-CIDR 匹配，需域名规则直连）
+# 飞飞资源 ffzy
+DOMAIN-KEYWORD,ffzy,DIRECT
+DOMAIN-SUFFIX,feifeiimg.vip,DIRECT
+# 北度资源 bdzy
+DOMAIN-KEYWORD,bdzy,DIRECT
+DOMAIN-SUFFIX,apibdzy.com,DIRECT
+DOMAIN-SUFFIX,bdzyimg1.com,DIRECT
+# 最大资源 zuida
+DOMAIN-KEYWORD,zuida,DIRECT
+# 广速资源
+DOMAIN-SUFFIX,guangsuapi.com,DIRECT
+# 69迷你
+DOMAIN-SUFFIX,69mini.com,DIRECT
+# 其他采集站
+DOMAIN-SUFFIX,bfvvs.com,DIRECT
+DOMAIN-SUFFIX,ymuuy.com,DIRECT
+DOMAIN-SUFFIX,dyttimage.com,DIRECT
+DOMAIN-SUFFIX,dytt-cine.com,DIRECT
+DOMAIN-SUFFIX,dytt-tupian.com,DIRECT
+DOMAIN-SUFFIX,hongniuzy2.com,DIRECT
+DOMAIN-SUFFIX,imarkr.com,DIRECT
+DOMAIN-SUFFIX,i95.me,DIRECT
+DOMAIN-SUFFIX,xi-xu.me,DIRECT
+DOMAIN-SUFFIX,huyaapi.com,DIRECT
+DOMAIN-SUFFIX,wyvod.com,DIRECT
+DOMAIN-SUFFIX,maoyanapi.top,DIRECT
+DOMAIN-SUFFIX,mdzyapi.com,DIRECT
+DOMAIN-SUFFIX,jszyapi.com,DIRECT
+DOMAIN-SUFFIX,xgzyapi.com,DIRECT
+DOMAIN-SUFFIX,maotaizy.cc,DIRECT
+DOMAIN-SUFFIX,rycjapi.com,DIRECT
+DOMAIN-SUFFIX,lziapi.com,DIRECT
+DOMAIN-SUFFIX,jisuzyv.com,DIRECT
+DOMAIN-SUFFIX,lz-cdn3.com,DIRECT
+DOMAIN-SUFFIX,lz-cdn.com,DIRECT
+
 # > 网络信息模块数据源直连（xream net-lsp-x，spcn 国内 IP 查询）
 DOMAIN-SUFFIX,speedtest.cn,DIRECT // speedtest.cn 直连（网络信息面板数据源）
 
