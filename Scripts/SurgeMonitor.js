@@ -11,7 +11,7 @@
  * API: GET /v1/metrics
  */
 
-const API_KEY = "123456";
+const API_KEY = "surgetest";
 const METRICS_URL = "http://127.0.0.1:6171/v1/metrics";
 
 function isFiniteNumber(value) {
