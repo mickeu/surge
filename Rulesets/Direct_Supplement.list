@@ -9,6 +9,13 @@ DOMAIN-SUFFIX,qqmail.com
 DOMAIN-SUFFIX,hapv.qq.com
 DOMAIN-SUFFIX,content.weixin.qq.com
 
+# 天气数据源域名（iRingo WeatherKit 脚本请求，误走代理导致超时）
+# 彩云天气（Weather.Provider=ColorfulClouds）
+DOMAIN-SUFFIX,caiyunapp.com
+DOMAIN-SUFFIX,caiyun.com
+# 和风天气（Weather.Provider=QWeather）
+DOMAIN-SUFFIX,qweather.com
+
 # 补充直连（扫描发现走兜底的国内域名）
 DOMAIN-SUFFIX,didi.com
 DOMAIN-SUFFIX,unionpay.com
