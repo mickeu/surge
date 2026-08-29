@@ -10,8 +10,10 @@ RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/r
 RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Privacy/Privacy.list,REJECT,no-resolve // 隐私追踪/数据收集拦截
 RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Advertising_Supplement.list,REJECT // 广告拦截补充（blackmatrix7 漏覆盖）
 
-# > 局域网地址（提至高优先级，确保本地服务不误走代理）
+# > LAN 安全 + IPv6 DNS 阻断
 RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Lan/Lan.list,DIRECT,no-resolve // 局域网直连（NAS/打印机/本地服务，no-resolve 防 DNS 泄露）
+# 阻断所有 IPv6 DNS 查询（防止 IPv6 DNS 绕过 Surge DoH 泄漏到运营商）
+IP-CIDR6,::/0,REJECT,no-resolve // 强制所有 IPv6 DNS 走 Surge DoH，防止泄漏
 
 # > AI 服务（OpenAI / Claude / Gemini）
 RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/OpenAI/OpenAI.list,AIGC,no-resolve // OpenAI/ChatGPT 走 AI 策略组
