@@ -109,4 +109,6 @@ DOMAIN-SUFFIX,ookla.com
 DOMAIN-SUFFIX,speed.cloudflare.com
 # Speedtest 测速服务器容器域（下载测速实际命中的域名，之前漏了导致走代理）
 DOMAIN-SUFFIX,speedtestcustom.com
+# 国内 App 后端（阿里云北京，误走代理修复）
+DOMAIN-SUFFIX,xfinfr.com
 
