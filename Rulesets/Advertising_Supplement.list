@@ -2,7 +2,7 @@
 # 补充 blackmatrix7 Advertising_All.list 未覆盖的广告域名
 # 来源：Surge CLI rule explain 扫描发现
 # 维护者：mickeu
-# 更新时间：2026-08-14
+# 更新时间：2026-09-01（已删除2条被blackmatrix7覆盖的规则：adnet.qq.com / pglstatp.com）
 
 # 微信广告域名
 DOMAIN-SUFFIX,adservice.weixin.qq.com
@@ -11,7 +11,6 @@ DOMAIN-SUFFIX,adclick.weixin.qq.com
 DOMAIN-SUFFIX,adclick.qq.com
 DOMAIN-SUFFIX,wxbhzyl.weixin.qq.com
 DOMAIN-SUFFIX,bzyapp.weixin.qq.com
-DOMAIN-SUFFIX,adnet.qq.com
 
 # 百度广告平台
 DOMAIN-SUFFIX,baiduadx.com
@@ -21,7 +20,6 @@ DOMAIN-SUFFIX,baidumobads.com
 DOMAIN-SUFFIX,adsame.cn
 DOMAIN-SUFFIX,adsame1.cn
 DOMAIN-SUFFIX,mads.weather.com.cn
-DOMAIN-SUFFIX,pglstatp.com
 
 # 银行恶意域名拦截
 DOMAIN,msmp.abchina.com.cn
