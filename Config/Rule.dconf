@@ -2,12 +2,10 @@
 # > 烧饼论坛 sb.sb 强制代理（防止被 Lan.list 的 198.18.0.0/15 fake-IP 规则误判直连而 403）
 DOMAIN-SUFFIX,sb.sb,PROXY
 
-# > 广告拦截/隐私保护/病毒拦截/钓鱼和诈骗域名拦截（blackmatrix7 _All 全量版）
+# > 广告拦截（blackmatrix7 _All 全量版 + mickeu 补充）
 # 规则集下载域名走兜底策略
 DOMAIN,cdn.jsdelivr.net,DIRECT // jsdelivr CDN 规则集下载直连
 RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Advertising/Advertising_All.list,REJECT,no-resolve // 广告全量拦截（blackmatrix7）
-RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Hijacking/Hijacking.list,REJECT,no-resolve // 域名劫持/中间人攻击防护
-RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Privacy/Privacy.list,REJECT,no-resolve // 隐私追踪/数据收集拦截
 RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Advertising_Supplement.list,REJECT // 广告拦截补充（blackmatrix7 漏覆盖）
 
 # > LAN 安全 + IPv6 DNS 阻断
@@ -33,8 +31,7 @@ PROTOCOL,MTProto,Telegram // MTProto 协议直送 Telegram 组
 RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Telegram_All.list,Telegram,no-resolve // Telegram 完整规则集（合并 blackmatrix7 + 补充 CDN 域名，no-resolve 防 DNS 泄露）
 
 # > 游戏平台
-RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Game/Game.list,Game,no-resolve // 游戏平台走 Game 组
-RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Blizzard/Blizzard.list,Game,no-resolve // 暴雪战网走 Game 组
+RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Game/Game.list,Game,no-resolve // 游戏平台走 Game 组（含暴雪战网）
 
 # > 流媒体
 RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/YouTube/YouTube.list,YouTube,no-resolve // YouTube 走 YouTube 组
