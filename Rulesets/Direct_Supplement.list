@@ -33,6 +33,9 @@ DOMAIN-SUFFIX,douyinpic.com
 DOMAIN-SUFFIX,douyinvod.com
 DOMAIN-SUFFIX,douyinstatic.com
 DOMAIN-SUFFIX,ixigua.com
+DOMAIN-SUFFIX,bytegecko.com // 字节 CDN（lf9-cj-cdn-tos-ncdn 等）
+DOMAIN-SUFFIX,zijieapi.com // 字节 API（polaris5-normal 等）
+DOMAIN-SUFFIX,bytetos.com // 字节对象存储
 
 # 天气数据源域名（iRingo WeatherKit 脚本请求，误走代理导致超时）
 # 彩云天气（Weather.Provider=ColorfulClouds）
