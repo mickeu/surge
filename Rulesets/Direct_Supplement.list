@@ -5,6 +5,12 @@
 # 更新时间：2026-08-20
 
 # 腾讯业务域名（误走代理）
+# qq.com 顶级域：覆盖微信(short/szshort/szextshort/mp/support/minorshort.weixin.qq.com 长连接与 API)、
+# QQ、QQ邮箱(mail.qq.com)、网页微信(wx.qq.com)等全部子域，漏走代理会导致微信一直"收取中"
+DOMAIN-SUFFIX,qq.com
+DOMAIN-SUFFIX,tenpay.com // 微信支付/财付通
+DOMAIN-SUFFIX,weixinbridge.com // 微信网页桥接
+DOMAIN-SUFFIX,weixin.com // 微信扩展域
 DOMAIN-SUFFIX,qqmail.com
 DOMAIN-SUFFIX,hapv.qq.com
 DOMAIN-SUFFIX,content.weixin.qq.com
