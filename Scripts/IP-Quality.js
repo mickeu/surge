@@ -147,9 +147,14 @@ function normIpwho(d) {
     return;
   }
 
-  // 交叉验证：不同源 IP 不一致 = 可能分流/中间人
-  const ips = new Set([ipapi && ipapi.ip, ipinfo && ipinfo.ip, ipwho && ipwho.ip, ipsb, ipcfg].filter(Boolean));
-  const ipMismatch = ips.size > 1 ? " ⚠️多源IP不一致" : "";
+  // 交叉验证：IPv4/IPv6 分组对比，同族不一致才是分流风险；v4+v6 双栈正常
+  const allIPs = [ipapi && ipapi.ip, ipinfo && ipinfo.ip, ipwho && ipwho.ip, ipsb, ipcfg].filter(Boolean);
+  const v4 = allIPs.filter(x => x && x.includes("."));
+  const v6 = allIPs.filter(x => x && x.includes(":"));
+  const v4Mis = new Set(v4).size > 1;
+  const v6Mis = new Set(v6).size > 1;
+  const dualStack = v4.length > 0 && v6.length > 0;
+  const ipMismatch = (v4Mis || v6Mis) ? " ⚠️IP不一致" : (dualStack ? " 🔀双栈" : "");
 
   // 归属交叉：备源补全主源缺失字段
   const geo = ipinfo || ipwho || {};
@@ -167,14 +172,16 @@ function normIpwho(d) {
   const loc = [country, main.region || geo.region || "", main.city || geo.city || ""].filter(Boolean).join(" · ");
   const sources = [ipapi && "ip-api", ipinfo && "ipinfo", ipwho && "ipwho", ipsb && "ip.sb", ipcfg && "ifconfig"].filter(Boolean).join("/");
 
-  // 面板精简版
+  // 面板详细版
   const panelLines = [
     "策略组: " + groupName,
     "IP: " + main.ip + ipMismatch,
-    "归属: " + f + loc,
+    "归属: " + f + loc + (code ? " (" + code + ")" : ""),
     "ISP: " + isp,
+    "AS: " + as,
     "类型: " + r.type,
-    "风险: " + r.risk + (r.score > 0 ? "  " + r.score + "/100" : "")
+    "风险: " + r.risk,
+    "纯净度: " + (r.score > 0 ? r.score + "/100" : "无数据")
   ];
 
   // 通知完整版
