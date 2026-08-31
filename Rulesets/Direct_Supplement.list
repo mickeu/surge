@@ -17,6 +17,23 @@ DOMAIN-SUFFIX,qqmail.com
 DOMAIN-SUFFIX,hapv.qq.com
 DOMAIN-SUFFIX,content.weixin.qq.com
 
+# 字节系/抖音域名（ChinaMax 未收录，全漏到 FINAL→代理，导致抖音加载缓慢/评论区卡）
+# amemv.com = 抖音核心 API/直播/搜索域名族（api3-social/frontier100-aweme/webcast-core 等）
+# douyin.com = 抖音主站；snssdk.com = SDK/统计；bytedance.com = 字节主域
+# pstatp.com/byteimg.com/douyinpic.com = 图片 CDN；douyinvod.com/douyinstatic.com = 视频/静态资源
+DOMAIN-SUFFIX,amemv.com
+DOMAIN-SUFFIX,douyin.com
+DOMAIN-SUFFIX,snssdk.com
+DOMAIN-SUFFIX,bytedance.com
+DOMAIN-SUFFIX,pstatp.com
+DOMAIN-SUFFIX,ibytedapm.com
+DOMAIN-SUFFIX,byteimg.com
+DOMAIN-SUFFIX,iesdouyin.com
+DOMAIN-SUFFIX,douyinpic.com
+DOMAIN-SUFFIX,douyinvod.com
+DOMAIN-SUFFIX,douyinstatic.com
+DOMAIN-SUFFIX,ixigua.com
+
 # 天气数据源域名（iRingo WeatherKit 脚本请求，误走代理导致超时）
 # 彩云天气（Weather.Provider=ColorfulClouds）
 DOMAIN-SUFFIX,caiyunapp.com
