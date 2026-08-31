@@ -8,7 +8,7 @@
 #!arguments-desc=要检测的策略组名称（默认 PROXY）。输入目标策略组名（如 PROXY、AIGC、Netflix 等），改完 reload 生效。所有 IP 检测域名走你填的策略组。
 
 [Rule]
-RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/IPCheck.list,{{{GROUP}}}
+RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/IPCheck.list?v=2,{{{GROUP}}}
 
 [Script]
 IP-Quality = type=generic,timeout=15,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/IP-Quality.js,script-update-interval=0,argument=group={{{GROUP}}}
