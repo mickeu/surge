@@ -1,5 +1,5 @@
 #!name=IP 纯净度检测
-#!desc=多源并发检测指定策略组节点的出口 IP 纯净度（规则法，RULE-SET 控制检测域名走指定策略组）。ip-api/ipinfo/ipwho/ip.sb 多源交叉验证，面板精简+通知完整。
+#!desc=多源并发检测指定策略组节点的出口 IP 纯净度（规则法，RULE-SET 控制检测域名走指定策略组）。Scamalytics 真实评分+黑名单/代理检测，无 key 时降级 ip-api 估算。环境变量 SCAMALYTICS_API_KEY。
 #!author=mickeu
 #!category=mickeu
 #!icon=https://raw.githubusercontent.com/Limexm/ClashXiOn/master/icons/Checkmark.png
@@ -11,7 +11,7 @@
 RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/IPCheck.list,{{{GROUP}}}
 
 [Script]
-IP-Quality = type=generic,timeout=15,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/IP-Quality.js?v=3,script-update-interval=0,argument=group={{{GROUP}}}
+IP-Quality = type=generic,timeout=15,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/IP-Quality.js?v=4,script-update-interval=0,argument=group={{{GROUP}}}
 
 [Panel]
 IP-Quality = script-name=IP-Quality,title="IP 纯净度",content="点击刷新",style=info,update-interval=0
