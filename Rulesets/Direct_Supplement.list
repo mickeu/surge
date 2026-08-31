@@ -12,6 +12,7 @@ DOMAIN-SUFFIX,tenpay.com // 微信支付/财付通
 DOMAIN-SUFFIX,weixinbridge.com // 微信网页桥接
 DOMAIN-SUFFIX,weixin.com // 微信扩展域（szilinkshort.weixin.com 等，非 qq.com 子域）
 DOMAIN-SUFFIX,tencent-cloud.net // 腾讯云统计/PCDN（apd-pcdnwxstat.teg.tencent-cloud.net）
+DOMAIN-SUFFIX,jd.com // 京东（ChinaMax 未收录，之前漏到代理）
 DOMAIN-SUFFIX,qqmail.com
 DOMAIN-SUFFIX,hapv.qq.com
 DOMAIN-SUFFIX,content.weixin.qq.com
