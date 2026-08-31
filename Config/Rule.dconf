@@ -47,10 +47,6 @@ RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/r
 RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/GlobalMedia/GlobalMedia.list,GlobalMedia,no-resolve // 境外流媒体兜底走 GlobalMedia 组
 
 # > 补充国内直连（误走代理的国内业务域名，必须在 Global_All 之前）
-# 临时直连：远程 Direct_Supplement.list 已收录但 CDN 缓存延迟未即时生效，等同步后此条可删
-DOMAIN-SUFFIX,qq.com,DIRECT // 腾讯/微信全子域直连
-DOMAIN-SUFFIX,weixin.com,DIRECT // 微信扩展域（szilinkshort.weixin.com 等，非 qq.com 子域）
-DOMAIN-SUFFIX,tencent-cloud.net,DIRECT // 腾讯云统计/PCDN（apd-pcdnwxstat.teg.tencent-cloud.net）
 RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Direct_Supplement.list,DIRECT // 补充国内直连域名
 
 # > 视频采集站/资源站域名直连（no-resolve 后不再靠 IP-CIDR 匹配，统一收进 Video_RESOURCE.list 维护）
