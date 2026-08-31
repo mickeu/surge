@@ -37,15 +37,12 @@ DOMAIN-SUFFIX,ipcheck.ing
 DOMAIN,myip.ipip.net
 DOMAIN,ip.skk.moe
 
-# IP 泄露/纯净度检测
-DOMAIN-SUFFIX,browserleaks.com
-DOMAIN-SUFFIX,ipleak.net
-DOMAIN-SUFFIX,dnsleaktest.com
-DOMAIN-SUFFIX,test-ipv6.com
-DOMAIN-SUFFIX,whoer.net
-DOMAIN-SUFFIX,browserscan.net
-DOMAIN-SUFFIX,pixelscan.net
-DOMAIN-SUFFIX,iphey.com
+# 注：不收录 browserleaks.com / ipleak.net / dnsleaktest.com / test-ipv6.com / whoer.net /
+# browserscan.net / pixelscan.net / iphey.com 等"用户日常泄露测试站"。
+# 原因：这类站若被 RULE-SET 强制走 {{{GROUP}}}，会污染用户测泄露时的出口 IP 结果
+# （例：GROUP 填 AIGC 时 browserleaks 走日本节点，IP 与 PROXY 组实际出口不一致，2026-08-31 实测）。
+# 让这类站走默认规则（FINAL→PROXY），IP 才反映真实代理出口。
+# IP-Quality 面板只用 ip.sb / ip-api.com / ipinfo.io / ipwho.is 检测，不依赖以上域名。
 
 # IP 风险评分
 DOMAIN-SUFFIX,scamalytics.com
