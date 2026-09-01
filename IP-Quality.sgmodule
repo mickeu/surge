@@ -11,7 +11,7 @@
 RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/IPCheck.list,{{{GROUP}}}
 
 [Script]
-IP-Quality = type=generic,timeout=15,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/IP-Quality.js?v=5,script-update-interval=0,argument=group={{{GROUP}}}&user={{{SCAMUSER}}}&key={{{SCAMKEY}}}
+IP-Quality = type=generic,timeout=15,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/IP-Quality.js?v=6,script-update-interval=0,argument=group={{{GROUP}}}&user={{{SCAMUSER}}}&key={{{SCAMKEY}}}
 
 [Panel]
 IP-Quality = script-name=IP-Quality,title="IP 纯净度",content="点击刷新",style=info,update-interval=0

@@ -23,7 +23,6 @@ if (typeof $argument !== "undefined" && $argument) {
     if (k === "user") scamUser = v;
   }
 }
-// "选填" 占位符 → 当空处理
 if (scamKey === "选填") scamKey = "";
 if (scamUser === "选填") scamUser = "";
 const SCAM_KEY = scamKey;
@@ -220,10 +219,10 @@ function normIpwho(d) {
     };
   } else if (SCAM_KEY) {
     r = riskLevelLegacy(ipapi || {});
-    scamDisplay = { proxyStatus: "API失败 user=" + SCAM_USER + " key=" + (SCAM_KEY ? SCAM_KEY.slice(0,4) + "..." + SCAM_KEY.slice(-4) : "空"), blacklisted: false, scoreLabel: r.score + "/100(估算)", riskLabel: "" };
+    scamDisplay = { proxyStatus: "API失败", blacklisted: false, scoreLabel: r.score + "/100(估算)", riskLabel: "" };
   } else {
     r = ipapi ? riskLevelLegacy(ipapi) : { type: "无信号", risk: "未知", score: 0 };
-    scamDisplay = { proxyStatus: "[debug] user=" + SCAM_USER + " key=" + (SCAM_KEY ? "有" : "空") + " arg=" + (typeof $argument !== "undefined" ? $argument.slice(0,60) : "无"), blacklisted: false, scoreLabel: (r.score > 0 ? r.score + "/100" : "无数据"), riskLabel: "" };
+    scamDisplay = { proxyStatus: "", blacklisted: false, scoreLabel: (r.score > 0 ? r.score + "/100" : "无数据"), riskLabel: "" };
   }
 
   // 面板详细版
