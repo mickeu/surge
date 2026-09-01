@@ -4,14 +4,14 @@
 #!category=mickeu
 #!icon=https://raw.githubusercontent.com/Limexm/ClashXiOn/master/icons/Checkmark.png
 #!homepage=https://github.com/mickeu/surge
-#!arguments=GROUP:PROXY,KEY:
-#!arguments-desc=\n📌 参数说明\n\n1️⃣ GROUP 策略组名称（默认 PROXY）\n输入目标策略组名（如 PROXY、AIGC、Netflix 等），所有 IP 检测域名走你填的策略组\n\n2️⃣ KEY Scamalytics API Key（选填）\n填了启用真实评分（Fraud Score + 黑名单 + 代理/VPN 检测），不填则用 ip-api 估算\nAPI Key 从 scamalytics.com 注册免费获取（每月 5000 次免费额度）
+#!arguments=GROUP:PROXY,SCAMUSER:,SCAMKEY:
+#!arguments-desc=\n📌 参数说明\n\n1️⃣ GROUP 策略组名称（默认 PROXY）\n输入目标策略组名（如 PROXY、AIGC、Netflix 等），所有 IP 检测域名走你填的策略组\n\n2️⃣ SCAMUSER Scamalytics 用户名（选填）\n注册 scamalytics.com 时用的用户名/账号（如 2683035833）\n填了才启用真实评分，不填则用 ip-api 估算\n\n3️⃣ SCAMKEY Scamalytics API Key（选填）\n从 scamalytics.com 注册后获取的 API Key\n填了启用真实评分（Fraud Score + 黑名单 + 代理/VPN 检测），不填则用 ip-api 估算\nAPI Key 从 scamalytics.com 注册免费获取（每月 5000 次免费额度）
 
 [Rule]
 RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/IPCheck.list,{{{GROUP}}}
 
 [Script]
-IP-Quality = type=generic,timeout=15,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/IP-Quality.js?v=4,script-update-interval=0,argument=group={{{GROUP}}}&key={{{KEY}}}
+IP-Quality = type=generic,timeout=15,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/IP-Quality.js?v=4,script-update-interval=0,argument=group={{{GROUP}}}&user={{{SCAMUSER}}}&key={{{SCAMKEY}}}
 
 [Panel]
 IP-Quality = script-name=IP-Quality,title="IP 纯净度",content="点击刷新",style=info,update-interval=0

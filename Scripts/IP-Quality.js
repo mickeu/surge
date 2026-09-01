@@ -13,17 +13,18 @@
 const META = "IP 纯净度 v3";
 
 // ---------- 参数解析 ----------
-let groupName = "PROXY", scamKey = "";
+let groupName = "PROXY", scamKey = "", scamUser = "";
 if (typeof $argument !== "undefined" && $argument) {
   for (const p of String($argument).split("&")) {
     const i = p.indexOf("=");
     const k = p.slice(0, i).trim(), v = p.slice(i + 1).trim();
     if (k === "group") groupName = v;
     if (k === "key") scamKey = v;
+    if (k === "user") scamUser = v;
   }
 }
 const SCAM_KEY = scamKey;
-const SCAM_USER = "2683035833";
+const SCAM_USER = scamUser;
 
 // ---------- 单次完成守卫 ----------
 let settled = false;
