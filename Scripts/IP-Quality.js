@@ -118,10 +118,14 @@ function parseScamalytics(s) {
   if (p.is_datacenter || x4b.is_datacenter) type = "🏢 数据中心";
   else if (p.is_vpn || x4b.is_vpn) type = "🔀 代理/VPN";
   else type = "🏠 住宅 IP";
+
+  return {
+    type: type,
+    risk: riskEmoji,
+    score: score,
+    riskLabel: riskLabel,
     proxyStatus: proxyStatus,
-    blacklisted: blacklisted,
-    vpn: String(s.anonymizing_vpn || "").toLowerCase(),
-    tor: String(s.tor_exit_node || "").toLowerCase()
+    blacklisted: blacklisted
   };
 }
 
