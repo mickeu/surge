@@ -1,16 +1,15 @@
 /**
- * IP 纯净度检测 v3 — Scamalytics 真实评分 + 多源兜底
+ * IP 纯净度检测 — Scamalytics 真实评分 + 多源兜底
  *
  * 架构：
  *  Phase 1: 多源并发获取出口 IP（ip-api/ipinfo/ipwho/ip.sb/ifconfig）
- *  Phase 2: 若有 SCAMALYTICS_API_KEY 环境变量，调 Scamalytics API 取真实评分
+ *  Phase 2: 若有 key 参数，调 Scamalytics API 取真实评分
  *  Phase 3: 无 key 时降级到 ip-api 布尔信号估算（旧逻辑）
  *
  * 规则法：不指定 policy，靠模块 [Rule] 段 RULE-SET 让检测域名走 {{{GROUP}}}
- * 环境变量：SCAMALYTICS_API_KEY（Minis 环境变量，脚本通过 $environment 读取）
  */
 
-const META = "IP 纯净度 v3";
+const META = "IP 纯净度";
 
 // ---------- 参数解析 ----------
 let groupName = "PROXY", scamKey = "", scamUser = "";
