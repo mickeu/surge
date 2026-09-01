@@ -13,16 +13,17 @@
 const META = "IP 纯净度 v3";
 
 // ---------- 参数解析 ----------
-let groupName = "PROXY";
+let groupName = "PROXY", scamKey = "";
 if (typeof $argument !== "undefined" && $argument) {
   for (const p of String($argument).split("&")) {
     const i = p.indexOf("=");
-    if (i > 0 && p.slice(0, i).trim() === "group") groupName = p.slice(i + 1).trim();
+    const k = p.slice(0, i).trim(), v = p.slice(i + 1).trim();
+    if (k === "group") groupName = v;
+    if (k === "key") scamKey = v;
   }
 }
-
-// ---------- Scamalytics API Key ----------
-const SCAM_KEY = ($environment && $environment.SCAMALYTICS_API_KEY) || "";
+const SCAM_KEY = scamKey;
+const SCAM_USER = "2683035833";
 
 // ---------- 单次完成守卫 ----------
 let settled = false;
@@ -67,19 +68,17 @@ function fetchText(url) {
 // ---------- Scamalytics API ----------
 function fetchScamalytics(ip) {
   if (!SCAM_KEY || !ip) return Promise.resolve(null);
-  const encIP = encodeURIComponent(ip);
-  const url = "https://api.scamalytics.com/v1.0/" + encIP + "?key=" + SCAM_KEY;
+  const url = "https://api11.scamalytics.com/v3/" + SCAM_USER + "/?key=" + SCAM_KEY + "&ip=" + encodeURIComponent(ip);
   return fetchJson(url).then(d => {
-    if (!d || d.error) return null;
-    if (!d.ip) return null;
-    return d;
+    if (!d || !d.scamalytics || d.scamalytics.status !== "ok") return null;
+    return d.scamalytics;
   });
 }
 
 // ---------- Scamalytics 数据解析 ----------
 function parseScamalytics(s) {
-  const score = parseInt(s.score) || 0;
-  const riskLabel = s.risk || "";
+  const score = parseInt(s.scamalytics_score) || 0;
+  const riskLabel = s.scamalytics_risk || "";
   const riskLevel = String(riskLabel).toLowerCase();
   let riskEmoji;
   if (riskLevel.includes("high")) riskEmoji = "🔴 高风险";
@@ -87,24 +86,34 @@ function parseScamalytics(s) {
   else if (riskLevel.includes("low")) riskEmoji = "🟢 低风险";
   else riskEmoji = "⚪ " + (riskLabel || "未知");
 
-  // 代理/VPN 状态（聚合）
-  const proxySignals = ["anonymizing_vpn", "tor_exit_node", "public_proxy", "web_proxy", "search_engine_robot"];
-  let proxyStatus = "No";
-  proxySignals.forEach(k => { if (String(s[k]).toLowerCase() === "yes") proxyStatus = "Yes"; });
+  // 代理/VPN 状态（scamalytics_proxy 对象）
+  const p = s.scamalytics_proxy || {};
+  const proxyFlags = [];
+  if (p.is_vpn) proxyFlags.push("VPN");
+  if (p.is_datacenter) proxyFlags.push("机房");
+  if (p.is_apple_icloud_private_relay) proxyFlags.push("iCloud中继");
+  if (p.is_amazon_aws) proxyFlags.push("AWS");
+  if (p.is_google) proxyFlags.push("Google");
+  const proxyStatus = proxyFlags.length > 0 ? "⚠️ " + proxyFlags.join("/") : "✅ 无";
 
-  // 数据中心/服务器
-  const isServer = String(s.server || s.data_center || "").toLowerCase() === "yes";
+  // 外部数据源交叉验证
+  const ext = s.external_datasources || {};
+  const x4b = ext.x4bnet || {};
+  if (x4b.is_datacenter && !p.is_datacenter) proxyFlags.push("机房(x4b)");
+  if (x4b.is_vpn && !p.is_vpn) proxyFlags.push("VPN(x4b)");
 
-  // 黑名单（聚合）
-  const blacklists = ["blacklisted", "blacklisted_firehol", "blacklisted_ip2proxy", "blacklisted_ipsum", "blacklisted_3core", "blacklisted_cins", "blacklisted_talos", "blacklisted_spamhaus", "blacklisted_spambot"];
-  let blacklisted = false;
-  blacklists.forEach(k => { if (String(s[k]).toLowerCase() === "yes") blacklisted = true; });
+  // 黑名单
+  const blacklisted = !!s.is_blacklisted_external;
+  const blExt = ext.firehol || {}, blIp = ext.ipsum || {}, blSpam = ext.spamhaus_drop || {};
+  if (blIp.ip_blacklisted || (blExt.ip_blacklisted_1day) || (blExt.ip_blacklisted_30)) {
+    // 补充外部黑名单检测
+  }
 
-  return {
-    type: isServer ? "🏢 数据中心" : "🏠 住宅 IP",
-    risk: riskEmoji,
-    score: score,
-    riskLabel: riskLabel,
+  // 类型判定
+  let type;
+  if (p.is_datacenter || x4b.is_datacenter) type = "🏢 数据中心";
+  else if (p.is_vpn || x4b.is_vpn) type = "🔀 代理/VPN";
+  else type = "🏠 住宅 IP";
     proxyStatus: proxyStatus,
     blacklisted: blacklisted,
     vpn: String(s.anonymizing_vpn || "").toLowerCase(),
