@@ -14,6 +14,8 @@ DOMAIN-SUFFIX,weixin.com // 微信扩展域（szilinkshort.weixin.com 等，非 
 DOMAIN-SUFFIX,tencent-cloud.net // 腾讯云统计/PCDN（apd-pcdnwxstat.teg.tencent-cloud.net）
 DOMAIN-SUFFIX,jd.com // 京东（ChinaMax 未收录，之前漏到代理）
 DOMAIN-SUFFIX,360buyimg.com // 京东图片 CDN（商品详情页图片，漏走代理导致加载缓慢）
+DOMAIN-SUFFIX,manmanbuy.com // 慢慢买比价（京东商品详情页价格走势组件，走代理反复重试拖慢加载）
+DOMAIN-SUFFIX,300hu.com // 商品视频 CDN（京东商品详情页主图视频，走代理拖慢加载）
 DOMAIN-SUFFIX,qqmail.com
 DOMAIN-SUFFIX,hapv.qq.com
 DOMAIN-SUFFIX,content.weixin.qq.com
