@@ -140,3 +140,6 @@ DOMAIN-SUFFIX,speedtestcustom.com
 # 国内 App 后端（阿里云北京，误走代理修复）
 DOMAIN-SUFFIX,xfinfr.com
 
+
+# 极点云 PolarNode（VPS 预约站，走代理 500，直连正常）
+DOMAIN-SUFFIX,polarnode.vip
