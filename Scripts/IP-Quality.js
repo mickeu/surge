@@ -9,7 +9,7 @@
  * 规则法：不指定 policy，靠模块 [Rule] 段 RULE-SET 让检测域名走 {{{GROUP}}}
  */
 
-const META = "IP 纯净度";
+const META = "IP 纯净度检测";
 
 // ---------- 参数解析 ----------
 let groupName = "PROXY", scamKey = "", scamUser = "";
