@@ -23,6 +23,9 @@ if (typeof $argument !== "undefined" && $argument) {
     if (k === "user") scamUser = v;
   }
 }
+// "选填" 占位符 → 当空处理
+if (scamKey === "选填") scamKey = "";
+if (scamUser === "选填") scamUser = "";
 const SCAM_KEY = scamKey;
 const SCAM_USER = scamUser;
 
