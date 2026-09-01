@@ -191,7 +191,8 @@ function normIpwho(d) {
   const v4 = allIPs.filter(x => x && x.includes("."));
   const v6 = allIPs.filter(x => x && x.includes(":"));
   const dualStack = v4.length > 0 && v6.length > 0;
-  const ipMismatch = (new Set(v4).size > 1 || new Set(v6).size > 1) ? " ⚠️IP不一致" : (dualStack ? " 🔀双栈" : "");
+  const realMismatch = new Set(v4).size > 1 || new Set(v6).size > 1;
+  const ipMismatch = realMismatch ? " ⚠️IP不一致" : (dualStack ? " 🔀双栈" : "");
 
   // 归属
   const geo = ipinfo || ipwho || {};
@@ -256,10 +257,18 @@ function normIpwho(d) {
   ];
   try { $notification.post(META, main.ip + " " + r.risk, notifyLines.join("\n")); } catch (e) {}
 
+  // 图标三色跟随风险等级（🔴🟡🟢），不依赖 score 方向
+  const riskStr = String(r.risk || "");
+  let iconColor, iconName;
+  if (riskStr.includes("🔴")) { iconColor = "#FF3B30"; iconName = "xmark.shield.fill"; }
+  else if (riskStr.includes("🟡")) { iconColor = "#FF9500"; iconName = "exclamationmark.shield.fill"; }
+  else if (riskStr.includes("🟢")) { iconColor = "#34C759"; iconName = "checkmark.shield.fill"; }
+  else { iconColor = "#8E8E93"; iconName = "questionmark.shield"; }
+
   done({
-    title: f + " " + main.ip + (ipMismatch ? " ⚠️" : ""),
+    title: f + " " + main.ip + (realMismatch ? " ⚠️" : ""),
     content: panelLines.join("\n"),
-    icon: r.score >= 70 ? "checkmark.shield.fill" : r.score >= 40 ? "exclamationmark.shield.fill" : (r.score > 0 ? "xmark.shield.fill" : "questionmark.shield"),
-    "icon-color": r.score >= 70 ? "#34C759" : r.score >= 40 ? "#FF9500" : (r.score > 0 ? "#FF3B30" : "#8E8E93")
+    icon: iconName,
+    "icon-color": iconColor
   });
 })();
