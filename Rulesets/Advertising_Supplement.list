@@ -28,5 +28,12 @@ IP-CIDR,111.175.220.164/32,no-resolve
 IP-CIDR,175.6.223.15/32,no-resolve
 IP-CIDR,221.179.140.145/32,no-resolve
 
+# 京东广告域名（blackmatrix7 Advertising_All 仅收录 x.jd.com，以下子域走 jd.com 直连漏网）
+DOMAIN-SUFFIX,ads1.jd.com
+DOMAIN-SUFFIX,ads.jd.com
+DOMAIN-SUFFIX,dsp.jd.com
+DOMAIN-SUFFIX,jdhmediajd.com
+DOMAIN-SUFFIX,media.jd.com
+
 # 银行恶意域名拦截
 DOMAIN,msmp.abchina.com.cn
