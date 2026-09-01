@@ -5,7 +5,7 @@
 #!icon=https://raw.githubusercontent.com/Limexm/ClashXiOn/master/icons/Checkmark.png
 #!homepage=https://github.com/mickeu/surge
 #!arguments=GROUP:PROXY,SCAMUSER:,SCAMKEY:
-#!arguments-desc=\n📌 参数说明\n\n1️⃣ GROUP 策略组名称（默认 PROXY）\n输入目标策略组名（如 PROXY、AIGC、Netflix 等），所有 IP 检测域名走你填的策略组\n\n2️⃣ SCAMUSER Scamalytics 用户名（选填）\n注册 scamalytics.com 时用的用户名/账号（如 2683035833）\n填了才启用真实评分，不填则用 ip-api 估算\n\n3️⃣ SCAMKEY Scamalytics API Key（选填）\n从 scamalytics.com 注册后获取的 API Key\n填了启用真实评分（Fraud Score + 黑名单 + 代理/VPN 检测），不填则用 ip-api 估算\nAPI Key 从 scamalytics.com 注册免费获取（每月 5000 次免费额度）
+#!arguments-desc=\n📌 参数说明\n\n1️⃣ GROUP 策略组名称（默认 PROXY）\n输入目标策略组名（如 PROXY、AIGC、Netflix 等），所有 IP 检测域名走你填的策略组\n\n2️⃣ SCAMUSER Scamalytics 用户名（选填）\n注册 scamalytics.com 时用的用户名/账号（如 2683035833）\n填了才启用真实评分，不填则用 ip-api 估算\n\n3️⃣ SCAMKEY Scamalytics API Key（选填）\n从 scamalytics.com 注册后获取的 API Key\n填了启用真实评分（Fraud Score + 黑名单 + 代理/VPN 检测），不填则用 ip-api 估算\nAPI Key 从 scamalytics.com 注册免费获取（每月 5000 次免费额度）\n\n⚠️ 参数传入说明\n三个参数会以 & 连接传入脚本（group=xxx&user=xxx&key=xxx），脚本按 & 拆分解析。填完后必须 reload（Surge 配置→Reload Profile）让脚本重新加载参数；否则面板仍用旧参数。
 
 [Rule]
 RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/IPCheck.list,{{{GROUP}}}
