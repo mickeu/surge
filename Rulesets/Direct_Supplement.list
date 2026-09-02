@@ -21,6 +21,7 @@ DOMAIN-SUFFIX,hapv.qq.com
 DOMAIN-SUFFIX,content.weixin.qq.com
 DOMAIN-SUFFIX,wxgateway.com // 微信数据上报域名（report-online.sh.wxgateway.com 漏走代理）
 DOMAIN-SUFFIX,servicewechat.com // 微信小程序服务域名（sh.servicewechat.com 漏走代理）
+DOMAIN-SUFFIX,huaweicloud.com // 华为云登录/控制台（auth/developer/codearts 等子域，国内服务漏走代理导致 Safari 打不开）
 
 # 字节系/抖音域名（ChinaMax 未收录，全漏到 FINAL→代理，导致抖音加载缓慢/评论区卡）
 # amemv.com = 抖音核心 API/直播/搜索域名族（api3-social/frontier100-aweme/webcast-core 等）
