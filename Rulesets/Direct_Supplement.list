@@ -149,3 +149,10 @@ DOMAIN-SUFFIX,xfinfr.com
 
 # 极点云 PolarNode（VPS 预约站，走代理 500，直连正常）
 DOMAIN-SUFFIX,polarnode.vip
+
+# OpenXLab / InternLM（上海AI Lab 平台，被 blackmatrix7 Advertising_All 误判广告拦截）
+# openxlab.org.cn = OpenXLab 平台主域，sso.openxlab.org.cn = SSO 登录域，被 Advertising_All.list 收录导致 REJECT
+# internlm.intern-ai.org.cn = InternLM 大模型平台主站
+# sensenova.cn = 商汤日日新（也在本规则集，此处补充同属上海AI Lab 系域名）
+DOMAIN-SUFFIX,openxlab.org.cn
+DOMAIN-SUFFIX,intern-ai.org.cn
