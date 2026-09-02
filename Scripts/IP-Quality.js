@@ -81,12 +81,12 @@ function fetchScamalytics(ip) {
 function parseScamalytics(s) {
   const score = parseInt(s.scamalytics_score) || 0;
   const riskLabel = s.scamalytics_risk || "";
-  const riskLevel = String(riskLabel).toLowerCase();
+  // 4 档风险（score 越低越安全）
   let riskEmoji;
-  if (riskLevel.includes("high")) riskEmoji = "🔴 高风险";
-  else if (riskLevel.includes("medium")) riskEmoji = "🟡 中风险";
-  else if (riskLevel.includes("low")) riskEmoji = "🟢 低风险";
-  else riskEmoji = "⚪ " + (riskLabel || "未知");
+  if (score >= 90) riskEmoji = "🔴 极高风险";
+  else if (score >= 60) riskEmoji = "🟠 高风险";
+  else if (score >= 20) riskEmoji = "🟡 中风险";
+  else riskEmoji = "🟢 低风险";
 
   // 代理/VPN 状态（scamalytics_proxy 对象）
   const p = s.scamalytics_proxy || {};
@@ -131,9 +131,9 @@ function parseScamalytics(s) {
 function riskLevelLegacy(d) {
   const hosting = !!d.hosting, proxy = !!d.proxy, mobile = !!d.mobile;
   let type, risk, score = 100;
-  if (hosting && proxy) { type = "🏢🔀 机房+代理"; risk = "🔴 高风险"; score = 25; }
+  if (hosting && proxy) { type = "🏢🔀 机房+代理"; risk = "🔴 极高风险"; score = 25; }
+  else if (proxy)       { type = "🔀 代理/VPN";    risk = "🟠 高风险"; score = 55; }
   else if (hosting)     { type = "🏢 数据中心";   risk = "🟡 中风险"; score = 60; }
-  else if (proxy)       { type = "🔀 代理/VPN";    risk = "🟡 中风险"; score = 55; }
   else if (mobile)     { type = "📱 移动网络";    risk = "🟢 低风险"; score = 90; }
   else                  { type = "🏠 住宅 IP";     risk = "🟢 低风险"; score = 95; }
   return { type, risk, score };
@@ -256,11 +256,12 @@ function normIpwho(d) {
   ];
   try { $notification.post(META, main.ip + " " + r.risk, notifyLines.join("\n")); } catch (e) {}
 
-  // 图标三色跟随风险等级（🔴🟡🟢），不依赖 score 方向
+  // 图标 4 色盾牌跟随风险等级（🔴🟠🟡🟢）
   const riskStr = String(r.risk || "");
   let iconColor, iconName;
   if (riskStr.includes("🔴")) { iconColor = "#FF3B30"; iconName = "xmark.shield.fill"; }
-  else if (riskStr.includes("🟡")) { iconColor = "#FF9500"; iconName = "exclamationmark.shield.fill"; }
+  else if (riskStr.includes("🟠")) { iconColor = "#FF9500"; iconName = "exclamationmark.shield.fill"; }
+  else if (riskStr.includes("🟡")) { iconColor = "#FFCC00"; iconName = "exclamationmark.shield"; }
   else if (riskStr.includes("🟢")) { iconColor = "#34C759"; iconName = "checkmark.shield.fill"; }
   else { iconColor = "#8E8E93"; iconName = "questionmark.shield"; }
 
