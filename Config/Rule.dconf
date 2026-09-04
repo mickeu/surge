@@ -45,17 +45,8 @@ RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/r
 RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/ChinaMedia/ChinaMedia.list,DIRECT,no-resolve // 国内流媒体直连（腾讯/爱奇艺/优酷等）
 RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/GlobalMedia/GlobalMedia.list,GlobalMedia,no-resolve // 境外流媒体兜底走 GlobalMedia 组
 
-# > 补充国内直连（误走代理的国内业务域名，必须在 Global_All 之前）
-# > 以下为 Direct_Supplement.list 中已包含的冗余行，保留以防规则集加载异常时兜底
-DOMAIN-SUFFIX,wxgateway.com,DIRECT // 微信数据上报域名，漏走代理修复
-DOMAIN-SUFFIX,servicewechat.com,DIRECT // 微信小程序服务域名，漏走代理修复
-DOMAIN-SUFFIX,huaweicloud.com,DIRECT // 华为云登录/控制台，漏走代理修复
-
 # > 视频采集站/资源站域名直连（no-resolve 后不再靠 IP-CIDR 匹配，统一收进 Video_RESOURCE.list 维护）
 RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Video_RESOURCE.list,DIRECT // 视频采集站/资源站直连（mickeu 自维护）
-
-# > 网络信息模块数据源直连（xream net-lsp-x，spcn 国内 IP 查询）
-DOMAIN-SUFFIX,speedtest.cn,DIRECT // speedtest.cn 直连（网络信息面板数据源）
 
 # > 境外常规网站代理（Global_All 综合大表，覆盖所有未被以上规则匹配的境外域名/IP）
 RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Global/Global_All.list,PROXY,no-resolve // 境外网站代理兜底（综合大表，no-resolve 防 DNS 泄露）

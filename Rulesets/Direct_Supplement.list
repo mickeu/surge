@@ -145,6 +145,8 @@ DOMAIN-SUFFIX,speed.cloudflare.com
 DOMAIN-SUFFIX,speedtestcustom.com
 # 国内 App 后端（阿里云北京，误走代理修复）
 DOMAIN-SUFFIX,xfinfr.com
+# speedtest.cn 国内测速站（网络信息面板数据源，xream net-lsp-x）
+DOMAIN-SUFFIX,speedtest.cn
 
 
 # 极点云 PolarNode（VPS 预约站，走代理 500，直连正常）
