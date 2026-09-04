@@ -3,8 +3,10 @@
 DOMAIN-SUFFIX,sb.sb,PROXY
 
 # > 广告拦截（blackmatrix7 _All 全量版 + mickeu 补充）
-# 规则集下载域名走兜底策略
+# 直连补充规则集（白名单）必须排在广告规则之前，防止白名单域名被误判广告拦截
+# > 规则集下载域名走兜底策略
 DOMAIN,cdn.jsdelivr.net,DIRECT // jsdelivr CDN 规则集下载直连
+RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Direct_Supplement.list,DIRECT // 直连白名单（必须在广告/Global 之前，防误杀）
 RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Advertising/Advertising_All.list,REJECT,no-resolve // 广告全量拦截（blackmatrix7）
 RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Advertising_Supplement.list,REJECT // 广告拦截补充（blackmatrix7 漏覆盖）
 
@@ -44,7 +46,10 @@ RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/r
 RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/GlobalMedia/GlobalMedia.list,GlobalMedia,no-resolve // 境外流媒体兜底走 GlobalMedia 组
 
 # > 补充国内直连（误走代理的国内业务域名，必须在 Global_All 之前）
-RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Direct_Supplement.list,DIRECT // 补充国内直连域名
+# > 以下为 Direct_Supplement.list 中已包含的冗余行，保留以防规则集加载异常时兜底
+DOMAIN-SUFFIX,wxgateway.com,DIRECT // 微信数据上报域名，漏走代理修复
+DOMAIN-SUFFIX,servicewechat.com,DIRECT // 微信小程序服务域名，漏走代理修复
+DOMAIN-SUFFIX,huaweicloud.com,DIRECT // 华为云登录/控制台，漏走代理修复
 
 # > 视频采集站/资源站域名直连（no-resolve 后不再靠 IP-CIDR 匹配，统一收进 Video_RESOURCE.list 维护）
 RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Video_RESOURCE.list,DIRECT // 视频采集站/资源站直连（mickeu 自维护）
