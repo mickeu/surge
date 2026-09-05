@@ -2,7 +2,7 @@
 # 补充被 FINAL 兜底误走代理的国内业务域名
 # 来源：Surge CLI rule explain 扫描发现 + 规则集交叉冲突修复
 # 维护者：mickeu
-# 更新时间：2026-08-20
+# 更新时间：2026-09-06
 
 # 腾讯业务域名（误走代理）
 # qq.com 顶级域：覆盖微信(short/szshort/szextshort/mp/support/minorshort.weixin.qq.com 长连接与 API)、
@@ -147,6 +147,20 @@ DOMAIN-SUFFIX,speedtestcustom.com
 DOMAIN-SUFFIX,xfinfr.com
 # speedtest.cn 国内测速站（网络信息面板数据源，xream net-lsp-x）
 DOMAIN-SUFFIX,speedtest.cn
+# 国内运营商自建测速节点（Loon SpeedtestChina 规则集，kelee.one，2026-09-06）
+# 浙江电信 / 上海电信 / 江苏电信 / 江苏联通 / 上海联通 / 北京联通 官方测速服务器
+# 精确 DOMAIN 点名，防被 FINAL 兜底误走代理测不出真实带宽
+DOMAIN,cesu-hz.zjtelecom.com.cn
+DOMAIN,cesu-nb.zjtelecom.com.cn
+DOMAIN,speedtest1.online.sh.cn
+DOMAIN,speedtest.jsqiuying.com
+DOMAIN,mobile.shunicomtest.com
+DOMAIN,beijing.unicomtest.com
+DOMAIN,4gsuzhou1.speedtest.jsinfo.net
+DOMAIN,5gzhenjiang.speedtest.jsinfo.net
+DOMAIN,mobile.shunicomtest.com.prod.hosts.ooklaserver.net
+DOMAIN,4gsuzhou1.speedtest.jsinfo.net.prod.hosts.ooklaserver.net
+DOMAIN,5gzhenjiang.speedtest.jsinfo.net.prod.hosts.ooklaserver.net
 
 
 # 极点云 PolarNode（VPS 预约站，走代理 500，直连正常）
