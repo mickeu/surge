@@ -180,3 +180,11 @@ DOMAIN-SUFFIX,intern-ai.org.cn
 DOMAIN-SUFFIX,smartmidea.com
 DOMAIN-SUFFIX,midea-mcc.com
 DOMAIN-SUFFIX,did-cloud.com
+
+# 拼多多 CDN/API 域名（多多买菜/拼多多 App 资源加载）
+# ta.pinduoduo.com / th.pinduoduo.com = 拼多多 CDN 静态资源域，被 blackmatrix7 Advertising_All 误判为广告 REJECT（历史误判），必须在此白名单前置直连绕过
+# th-a/th-b.pinduoduo.com、ta-a.pinduoduo.com、api.pinduoduo.com = CDN 备用域/接口域，漏到 FINAL→美国代理导致加载缓慢
+# 必须在广告拦截(RULE-SET Advertising_All)之前匹配才能绕过 REJECT
+DOMAIN-SUFFIX,pinduoduo.com
+DOMAIN-SUFFIX,yangkeduo.com
+DOMAIN-SUFFIX,pddpic.com
