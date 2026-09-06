@@ -177,7 +177,11 @@ DOMAIN-SUFFIX,intern-ai.org.cn
 # smartmidea.com = 美居 App 核心域（登录/短信验证码/用户中心，最关键，必须直连）
 # midea-mcc.com = 美的会员中心/商城登录
 # did-cloud.com = 美的工业互联网平台
+# midea.com = 美的集团顶级域（ChinaMax_Domain 虽收录但实测未拦住 iotsdk.midea.com，白名单冗余保险）
+# smartmidea.net = 美居 App .net 域族（sse 设备消息推送 / mp-prod 小程序接口 / dsdcp 设备控制平台，全漏到代理导致加载慢）
+DOMAIN-SUFFIX,midea.com
 DOMAIN-SUFFIX,smartmidea.com
+DOMAIN-SUFFIX,smartmidea.net
 DOMAIN-SUFFIX,midea-mcc.com
 DOMAIN-SUFFIX,did-cloud.com
 
