@@ -172,3 +172,11 @@ DOMAIN-SUFFIX,polarnode.vip
 # sensenova.cn = 商汤日日新（也在本规则集，此处补充同属上海AI Lab 系域名）
 DOMAIN-SUFFIX,openxlab.org.cn
 DOMAIN-SUFFIX,intern-ai.org.cn
+
+# 美的智能家居（美居/Midea Smart Home App，ChinaMax 未收录以下 .com 域，漏到 FINAL→美国代理导致 App 内登录/验证码失败）
+# smartmidea.com = 美居 App 核心域（登录/短信验证码/用户中心，最关键，必须直连）
+# midea-mcc.com = 美的会员中心/商城登录
+# did-cloud.com = 美的工业互联网平台
+DOMAIN-SUFFIX,smartmidea.com
+DOMAIN-SUFFIX,midea-mcc.com
+DOMAIN-SUFFIX,did-cloud.com
