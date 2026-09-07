@@ -12,10 +12,6 @@ DOMAIN-SUFFIX,smartmidea.com,DIRECT // 美居 App 核心域（登录/验证码�
 DOMAIN-SUFFIX,smartmidea.net,DIRECT // 美居 .net 域族（sse/mp-prod/dsdcp.smartmidea.net 设备控制/推送，漏到代理导致加载慢）
 DOMAIN-SUFFIX,midea-mcc.com,DIRECT // 美的会员中心
 DOMAIN-SUFFIX,did-cloud.com,DIRECT // 美的工业互联网平台（保险）
-# Speedtest 测速服务器关键字直连临时规则（已在 Direct_Supplement.list，但 Surge 规则集按周期自动刷新、reload 不强制刷新，等规则集同步后删除即可）
-DOMAIN-KEYWORD,speedtest,DIRECT // Speedtest 测速服务器关键字（hkspeedtest.netvigator.com / speedtest.hk.chinamobile.com 等）
-DOMAIN-KEYWORD,ookla,DIRECT // Speedtest 测速服务器关键字（ookla-speedtest.hgconair.hgc.com.hk 等）
-DOMAIN,hk.mymonitor.space,DIRECT // Speedtest 测速服务器（不含关键字，单独点名）
 RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Direct_Supplement.list,DIRECT // 直连白名单（必须在广告/Global 之前，防误杀）
 RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Advertising/Advertising_All.list,REJECT,no-resolve // 广告全量拦截（blackmatrix7）
 RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Advertising_Supplement.list,REJECT // 广告拦截补充（blackmatrix7 漏覆盖）
