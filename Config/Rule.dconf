@@ -23,6 +23,10 @@ DOMAIN-SUFFIX,ziffstatic.com,DIRECT // Speedtest 测速脚本 CDN（Ziff Davis �
 DOMAIN-SUFFIX,cdnst.net,DIRECT // Speedtest 测速引擎/结果 CDN
 # Speedtest 测速服务器宿主域（App 自动选的 xxx.prod.hosts.ooklaserver.net，之前漏到 FINAL→美国代理，单线程测不动）
 DOMAIN-SUFFIX,ooklaserver.net,DIRECT // Speedtest 测速服务器全域直连
+# Speedtest 测速服务器关键字直连（App 自动选的测速服务器域名后缀杂：netvigator.com/hgc.com.hk/as6453.net 等，逐个SUFFIX会误伤这些公司正常业务。含 speedtest/ookla 关键字的域基本全是测速用途，关键字匹配精准且安全）
+DOMAIN-KEYWORD,speedtest,DIRECT // Speedtest 测速服务器关键字（hkspeedtest.netvigator.com / speedtest.hk.chinamobile.com 等）
+DOMAIN-KEYWORD,ookla,DIRECT // Speedtest 测速服务器关键字（ookla-speedtest.hgconair.hgc.com.hk / ookla.hk2.as6453.net 等）
+DOMAIN,hk.mymonitor.space,DIRECT // Speedtest 测速服务器（不含关键字，单独点名；mymonitor.space 是IDC测速站）
 RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Direct_Supplement.list,DIRECT // 直连白名单（必须在广告/Global 之前，防误杀）
 RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Advertising/Advertising_All.list,REJECT,no-resolve // 广告全量拦截（blackmatrix7）
 RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Advertising_Supplement.list,REJECT // 广告拦截补充（blackmatrix7 漏覆盖）
