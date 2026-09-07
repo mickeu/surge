@@ -149,6 +149,10 @@ DOMAIN-SUFFIX,ziffstatic.com
 DOMAIN-SUFFIX,cdnst.net
 # Speedtest 测速服务器宿主域（Speedtest App 自动选的测速服务器 xxx.prod.hosts.ooklaserver.net，后缀匹配不到走 FINAL→美国代理，单线程/多线程都测不出真实带宽。必须全域直连）
 DOMAIN-SUFFIX,ooklaserver.net
+# Speedtest 测速服务器关键字直连（App 自动选的测速服务器域名后缀杂：netvigator.com/hgc.com.hk/as6453.net 等，逐个 SUFFIX 会误伤这些公司正常业务。含 speedtest/ookla 关键字的域基本全是测速用途，关键字匹配精准且安全）
+DOMAIN-KEYWORD,speedtest
+DOMAIN-KEYWORD,ookla
+DOMAIN,hk.mymonitor.space
 # 国内 App 后端（阿里云北京，误走代理修复）
 DOMAIN-SUFFIX,xfinfr.com
 # speedtest.cn 国内测速站（网络信息面板数据源，xream net-lsp-x）
