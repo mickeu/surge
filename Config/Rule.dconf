@@ -21,6 +21,7 @@ RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Gemini.lis
 # > 苹果服务
 # Apple AI 必须走代理，须先于 Apple_All，否则被 Apple_All 拉直连
 RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/AppleIntelligence.list,AIGC,no-resolve // Apple AI + APNs + IP 段走代理（no-resolve 防止代理域名本地DNS解析泄露）
+RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Apple_Services.list,AIGC,no-resolve // Apple 海外系统服务（GSP/GDMF/iTunes沙盒）蜂窝+WiFi 直连被 QoS 阻断，走代理
 RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Apple_All.list,Apple,no-resolve // 苹果服务走 Apple 策略组（自维护，补充 Apple Music 流媒体域名，no-resolve 防 DNS 泄露）
 
 # > 微软服务
