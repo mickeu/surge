@@ -21,6 +21,8 @@ DOMAIN-SUFFIX,pddpic.com,DIRECT // 拼多多图片 CDN
 DOMAIN-SUFFIX,ziffstatic.com,DIRECT // Speedtest 测速脚本 CDN（Ziff Davis 系）
 # r.cdnst.net = speedtest 测速引擎/结果服务（实测命中 Global_All→美国代理，测速初始化失败）
 DOMAIN-SUFFIX,cdnst.net,DIRECT // Speedtest 测速引擎/结果 CDN
+# Speedtest 测速服务器宿主域（App 自动选的 xxx.prod.hosts.ooklaserver.net，之前漏到 FINAL→美国代理，单线程测不动）
+DOMAIN-SUFFIX,ooklaserver.net,DIRECT // Speedtest 测速服务器全域直连
 RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Direct_Supplement.list,DIRECT // 直连白名单（必须在广告/Global 之前，防误杀）
 RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Advertising/Advertising_All.list,REJECT,no-resolve // 广告全量拦截（blackmatrix7）
 RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Advertising_Supplement.list,REJECT // 广告拦截补充（blackmatrix7 漏覆盖）
