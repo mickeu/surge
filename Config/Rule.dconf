@@ -6,6 +6,21 @@ DOMAIN-SUFFIX,sb.sb,PROXY
 # 直连补充规则集（白名单）必须排在广告规则之前，防止白名单域名被误判广告拦截
 # > 规则集下载域名走兜底策略
 DOMAIN,cdn.jsdelivr.net,DIRECT // jsdelivr CDN 规则集下载直连
+# # 美的智能家居临时直连（已在 Direct_Supplement.list 白名单，此临时规则等 CDN 同步后冗余但无害）
+DOMAIN-SUFFIX,midea.com,DIRECT // 美的集团顶级域（iotsdk.midea.com IoT SDK 漏到代理，ChinaMax 实测未拦住）
+DOMAIN-SUFFIX,smartmidea.com,DIRECT // 美居 App 核心域（登录/验证码，漏到代理会登录失败）
+DOMAIN-SUFFIX,smartmidea.net,DIRECT // 美居 .net 域族（sse/mp-prod/dsdcp.smartmidea.net 设备控制/推送，漏到代理导致加载慢）
+DOMAIN-SUFFIX,midea-mcc.com,DIRECT // 美的会员中心
+DOMAIN-SUFFIX,did-cloud.com,DIRECT // 美的工业互联网平台（保险）
+# # 拼多多临时直连（ta/th.pinduoduo.com 被 Advertising_All 误判广告 REJECT，必须前置直连绕过；其余 CDN 域漏到 FINAL→代理）
+DOMAIN-SUFFIX,pinduoduo.com,DIRECT // 拼多多 CDN/API 全域直连（含 th/ta/th-a/th-b/api，绕过广告误杀）
+DOMAIN-SUFFIX,yangkeduo.com,DIRECT // 拼多多商品页域名
+DOMAIN-SUFFIX,pddpic.com,DIRECT // 拼多多图片 CDN
+# # Speedtest 网页版测速核心 CDN 临时直连（已在 Direct_Supplement.list 白名单，此临时规则等规则集同步后冗余但无害）
+# cdn.ziffstatic.com = speedtest 测速主 JS 库（页面加载实测命中 FINAL→美国代理，导致卡在"Finding optimal server"不动）
+DOMAIN-SUFFIX,ziffstatic.com,DIRECT // Speedtest 测速脚本 CDN（Ziff Davis 系）
+# r.cdnst.net = speedtest 测速引擎/结果服务（实测命中 Global_All→美国代理，测速初始化失败）
+DOMAIN-SUFFIX,cdnst.net,DIRECT // Speedtest 测速引擎/结果 CDN
 RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Direct_Supplement.list,DIRECT // 直连白名单（必须在广告/Global 之前，防误杀）
 RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Advertising/Advertising_All.list,REJECT,no-resolve // 广告全量拦截（blackmatrix7）
 RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Advertising_Supplement.list,REJECT // 广告拦截补充（blackmatrix7 漏覆盖）
