@@ -147,6 +147,8 @@ DOMAIN-SUFFIX,speedtestcustom.com
 DOMAIN-SUFFIX,ziffstatic.com
 # Speedtest 网页版测速引擎/结果服务域（实测页面加载时命中 Global_All→美国代理，测速初始化失败）
 DOMAIN-SUFFIX,cdnst.net
+# Speedtest 测速服务器宿主域（Speedtest App 自动选的测速服务器 xxx.prod.hosts.ooklaserver.net，后缀匹配不到走 FINAL→美国代理，单线程/多线程都测不出真实带宽。必须全域直连）
+DOMAIN-SUFFIX,ooklaserver.net
 # 国内 App 后端（阿里云北京，误走代理修复）
 DOMAIN-SUFFIX,xfinfr.com
 # speedtest.cn 国内测速站（网络信息面板数据源，xream net-lsp-x）
