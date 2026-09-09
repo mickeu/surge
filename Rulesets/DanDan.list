@@ -46,30 +46,3 @@ DOMAIN-SUFFIX,hongniuzy2.com
 DOMAIN-SUFFIX,imarkr.com
 DOMAIN-SUFFIX,i95.me
 DOMAIN-SUFFIX,xi-xu.me
-
-# 补充：视频资源站常用 CDN（不在 ChinaMax 中，兜底走美国代理导致卡顿）
-# 七牛云 CDN
-DOMAIN-SUFFIX,qiniucdn.com
-DOMAIN-SUFFIX,qnssl.com
-DOMAIN-SUFFIX,qiniudns.com
-# 腾讯云 CDN / VOD
-DOMAIN-SUFFIX,qcloud.com
-DOMAIN-SUFFIX,myqcloud.com
-DOMAIN-SUFFIX,vodup.ai
-DOMAIN-SUFFIX,mycdn.me
-# 又拍云 CDN
-DOMAIN-SUFFIX,upaiyun.com
-DOMAIN-SUFFIX,upcdn.com
-DOMAIN-SUFFIX,upimg.com
-DOMAIN-SUFFIX,uservod.com
-# 速联科技 CDN
-DOMAIN-SUFFIX,kuaizhan.com
-# 百度云 CDN
-DOMAIN-SUFFIX,bdximg.com
-DOMAIN-SUFFIX,imgcdn.cn
-# 其他通用视频 CDN
-DOMAIN-SUFFIX,cdngslb.com
-DOMAIN-SUFFIX,myqcloud.com
-DOMAIN-SUFFIX,myalicdn.com
-DOMAIN-SUFFIX,vfcdn.net
-DOMAIN-SUFFIX,vfimg.com
