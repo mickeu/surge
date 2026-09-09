@@ -203,6 +203,10 @@ DOMAIN-SUFFIX,pinduoduo.com
 DOMAIN-SUFFIX,yangkeduo.com
 DOMAIN-SUFFIX,pddpic.com
 
+# 豆瓣（影视海报/评分/图片 CDN，ChinaMax 未收录）
+DOMAIN-SUFFIX,douban.com
+DOMAIN-SUFFIX,doubanio.com
+
 # 视频资源站通用 CDN（不在 ChinaMax 中，兜底走美国代理导致播放卡顿）
 # 七牛云 CDN
 DOMAIN-SUFFIX,qiniucdn.com
