@@ -39,13 +39,14 @@ const fakeDeviceId = genFakeDeviceId();
 
 // 执行开始
 startTasks().then(r => {
-    try { $surge?.logbook(`PingMe签到完成`); } catch(e){}
+    try { $surge?.logbook(`PingMe签到 ${$.balanceSummary || '完成'}`); } catch(e){}
     $.done()
 });
 
 async function startTasks() {
     console.log("开始运行签到");
     console.log('PingMe 签到本次运行设备ID:' + fakeDeviceId);
+    let balanceBefore = null;
     // const raw = $prefs.valueForKey(ckKey);
     const raw = isNode ? process.env[ckKey] : $.getdata(ckKey);
     if (!raw) {
@@ -110,7 +111,7 @@ async function startTasks() {
     return fetchApi('queryBalanceAndBonus').then(res => {
         try {
             const d = JSON.parse(res.body);
-            if (d.retcode === 0) $.nodeNotifyMsg.push(`💰 运行前余额：${d.result.balance} Coins`); else $.nodeNotifyMsg.push(`⚠️ 查询：${d.retmsg}`);
+            if (d.retcode === 0) { balanceBefore = d.result.balance; $.nodeNotifyMsg.push(`💰 运行前余额：${d.result.balance} Coins`); } else $.nodeNotifyMsg.push(`⚠️ 查询：${d.retmsg}`);
         } catch (e) {
             $.nodeNotifyMsg.push('❌ 查询：解析失败');
         }
@@ -128,7 +129,7 @@ async function startTasks() {
     }).then(async res => {
         try {
             const d = JSON.parse(res.body);
-            if (d.retcode === 0) $.nodeNotifyMsg.unshift(`💰 最新余额：${d.result.balance} Coins`);
+            if (d.retcode === 0) { const _nb = d.result.balance; const _diff = balanceBefore !== null ? Number((_nb - balanceBefore).toFixed(3)) : null; const _line = `💰 最新余额：${_nb} Coins${_diff !== null ? ` 本次增加${_diff} Coins` : ''}`; $.balanceSummary = _line; $.nodeNotifyMsg.unshift(_line); }
         } catch (e) {
             console.log("查询最新余额失败！");
         }
