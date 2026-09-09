@@ -234,5 +234,10 @@ DOMAIN-SUFFIX,vfcdn.net
 DOMAIN-SUFFIX,vfimg.com
 
 # 视频资源站 IP（实测直连比代理快 3 倍，代理连接失败）
+# Cloudflare DoH（蛋蛋不语 DNS 解析，DanDan.list 有但被 IPCheck 模块抢走）
+DOMAIN-SUFFIX,one.one.one.one
+
 IP-CIDR,69.30.226.42/32
 IP-CIDR,192.187.115.106/32
+IP-CIDR,38.75.136.137/32
+IP-CIDR,63.141.250.98/32
