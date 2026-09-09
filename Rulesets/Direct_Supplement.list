@@ -202,3 +202,29 @@ DOMAIN-SUFFIX,did-cloud.com
 DOMAIN-SUFFIX,pinduoduo.com
 DOMAIN-SUFFIX,yangkeduo.com
 DOMAIN-SUFFIX,pddpic.com
+
+# 视频资源站通用 CDN（不在 ChinaMax 中，兜底走美国代理导致播放卡顿）
+# 七牛云 CDN
+DOMAIN-SUFFIX,qiniucdn.com
+DOMAIN-SUFFIX,qnssl.com
+DOMAIN-SUFFIX,qiniudns.com
+# 腾讯云 CDN / VOD
+DOMAIN-SUFFIX,qcloud.com
+DOMAIN-SUFFIX,myqcloud.com
+DOMAIN-SUFFIX,vodup.ai
+DOMAIN-SUFFIX,mycdn.me
+# 又拍云 CDN
+DOMAIN-SUFFIX,upaiyun.com
+DOMAIN-SUFFIX,upcdn.com
+DOMAIN-SUFFIX,upimg.com
+DOMAIN-SUFFIX,uservod.com
+# 速联科技 CDN
+DOMAIN-SUFFIX,kuaizhan.com
+# 百度云 CDN
+DOMAIN-SUFFIX,bdximg.com
+DOMAIN-SUFFIX,imgcdn.cn
+# 其他通用视频 CDN
+DOMAIN-SUFFIX,cdngslb.com
+DOMAIN-SUFFIX,myalicdn.com
+DOMAIN-SUFFIX,vfcdn.net
+DOMAIN-SUFFIX,vfimg.com
