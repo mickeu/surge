@@ -2,12 +2,18 @@
 # 补充被 FINAL 兜底误走代理的国内业务域名
 # 来源：Surge CLI rule explain 扫描发现 + 规则集交叉冲突修复
 # 维护者：mickeu
-# 更新时间：2026-09-06
+# 更新时间：2026-09-13
 
 # 腾讯业务域名（误走代理）
 # qq.com 顶级域：覆盖微信(short/szshort/szextshort/mp/support/minorshort.weixin.qq.com 长连接与 API)、
 # QQ、QQ邮箱(mail.qq.com)、网页微信(wx.qq.com)等全部子域，漏走代理会导致微信一直"收取中"
+# 元宝 AI(yuanbao/turing/tencent AI API)：国内腾讯服务，API 域名经常 DNS 空应答，若走代理会卡住，
+#   故在此显式直连(即使 DOMAIN-SUFFIX,qq.com 已覆盖，显式列出以防 rule-set 求值异常时能兜住)
 DOMAIN-SUFFIX,qq.com
+DOMAIN-SUFFIX,yuanbao.com // 腾讯元宝独立域(如有)
+DOMAIN-SUFFIX,turing.qq.com // 元宝 AI 分析后端
+DOMAIN-SUFFIX,yuanbao.qq.com // 元宝客户端 API
+DOMAIN-SUFFIX,api.yuanbao.qq.com // 元宝 API 子域
 DOMAIN-SUFFIX,tenpay.com // 微信支付/财付通
 DOMAIN-SUFFIX,weixinbridge.com // 微信网页桥接
 DOMAIN-SUFFIX,weixin.com // 微信扩展域（szilinkshort.weixin.com 等，非 qq.com 子域）
@@ -237,12 +243,13 @@ DOMAIN-SUFFIX,vfimg.com
 # Cloudflare DoH（蛋蛋不语 DNS 解析，DanDan.list 有但被 IPCheck 模块抢走）
 DOMAIN-SUFFIX,one.one.one.one
 
-IP-CIDR,69.30.226.42/32
-IP-CIDR,192.187.115.106/32
-IP-CIDR,38.75.136.137/32
-IP-CIDR,63.141.250.98/32
-IP-CIDR,69.197.146.178/32
-IP-CIDR,142.54.162.26/32
+# no-resolve：避免 rule set 求值时触发 DNS 查切(元宝/腾讯 API 域名 DNS 空应答会连带整个规则集失败→FINAL→代理)
+IP-CIDR,69.30.226.42/32,no-resolve
+IP-CIDR,192.187.115.106/32,no-resolve
+IP-CIDR,38.75.136.137/32,no-resolve
+IP-CIDR,63.141.250.98/32,no-resolve
+IP-CIDR,69.197.146.178/32,no-resolve
+IP-CIDR,142.54.162.26/32,no-resolve
 
 # 视频 CDN（联合数字/Longzu，DNS 解析到英国 IP）
 DOMAIN-SUFFIX,lzcdn31.com
