@@ -201,6 +201,19 @@ DOMAIN-SUFFIX,smartmidea.net
 DOMAIN-SUFFIX,midea-mcc.com
 DOMAIN-SUFFIX,did-cloud.com
 
+# 闲鱼/淘宝/阿里系（登录报 SSL 连接错误修复，2026-09-14）
+# goofish.com = 闲鱼主域（之前漏到 FINAL→美国节点，登录 TLS 握手地理校验失败报 SSL 错误）
+# taobao.com = 淘宝购物基础域（登录/购物车/接口）；alicdn.com = 阿里图片资源 CDN
+# alipay.com = 登录/支付授权（SSL 报错常出在这）；mmstat.com = 阿里统计/数据上报
+DOMAIN-SUFFIX,goofish.com
+DOMAIN-SUFFIX,taobao.com
+DOMAIN-SUFFIX,tmall.com
+DOMAIN-SUFFIX,alicdn.com
+DOMAIN-SUFFIX,alipay.com
+DOMAIN-SUFFIX,mmstat.com
+DOMAIN-SUFFIX,aliyuncs.com
+DOMAIN-SUFFIX,alibabauser.com
+
 # 拼多多 CDN/API 域名（多多买菜/拼多多 App 资源加载）
 # ta.pinduoduo.com / th.pinduoduo.com = 拼多多 CDN 静态资源域，被 blackmatrix7 Advertising_All 误判为广告 REJECT（历史误判），必须在此白名单前置直连绕过
 # th-a/th-b.pinduoduo.com、ta-a.pinduoduo.com、api.pinduoduo.com = CDN 备用域/接口域，漏到 FINAL→美国代理导致加载缓慢
