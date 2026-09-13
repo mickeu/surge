@@ -2,6 +2,18 @@
 # > 烧饼论坛 sb.sb 强制代理（防止被 Lan.list 的 198.18.0.0/15 fake-IP 规则误判直连而 403）
 DOMAIN-SUFFIX,sb.sb,PROXY
 
+# > 闲鱼/淘宝/阿里系强制直连（2026-09-14 登录 SSL 错误修复）
+# goofish.com 漏到 FINAL→美国节点，登录 TLS 握手地理校验失败报 SSL 连接错误
+# DOMAIN-SUFFIX 原生规则优先于此处的 RULE-SET，确保闲鱼登录/支付直连
+DOMAIN-SUFFIX,goofish.com,DIRECT
+DOMAIN-SUFFIX,taobao.com,DIRECT
+DOMAIN-SUFFIX,tmall.com,DIRECT
+DOMAIN-SUFFIX,alicdn.com,DIRECT
+DOMAIN-SUFFIX,alipay.com,DIRECT
+DOMAIN-SUFFIX,mmstat.com,DIRECT
+DOMAIN-SUFFIX,aliyuncs.com,DIRECT
+DOMAIN-SUFFIX,alibabauser.com,DIRECT
+
 # > 广告拦截（blackmatrix7 _All 全量版 + mickeu 补充）
 # 直连补充规则集（白名单）必须排在广告规则之前，防止白名单域名被误判广告拦截
 # > 规则集下载域名走兜底策略
