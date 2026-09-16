@@ -212,6 +212,14 @@ DOMAIN-SUFFIX,alicdn.com
 DOMAIN-SUFFIX,alipay.com
 DOMAIN-SUFFIX,mmstat.com
 DOMAIN-SUFFIX,aliyuncs.com
+
+# 唯品会（App 页面加载失败修复，2026-09-16）
+# 唯品会域名漏到 FINAL→美国节点，国内 App TLS/鉴权/CDN 全崩页面打不开
+# 对应 blackmatrix7 VipShop 规则集：vip.com(主域)/vipstatic.com(静态CDN)/appsimg.com(图片CDN)/appvipshop.com(商城)
+DOMAIN-SUFFIX,vip.com
+DOMAIN-SUFFIX,vipstatic.com
+DOMAIN-SUFFIX,appsimg.com
+DOMAIN-SUFFIX,appvipshop.com
 DOMAIN-SUFFIX,alibabauser.com
 
 # 拼多多 CDN/API 域名（多多买菜/拼多多 App 资源加载）
