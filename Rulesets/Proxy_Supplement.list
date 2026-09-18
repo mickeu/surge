@@ -1,0 +1,19 @@
+# NAME: Proxy_Supplement
+# AUTHOR: mickeu
+# REPO: https://github.com/mickeu/surge
+# UPDATED: 2026-09-19
+# DOMAIN: 0
+# DOMAIN-SUFFIX: 1
+# TOTAL: 1
+
+# Surge 补充代理规则集
+#
+# 用途：强制代理那些会被其他规则集误判直连的域名
+# 位置要求：必须在 Lan.list 之前——Lan.list 的 IP-CIDR 会匹配 Surge fake-IP 段，
+#   导致目标域名被误判为局域网流量直连。
+# 来源：原 Rule.dconf 原生规则迁入（2026-09-19），迁入后原生规则可删除
+#
+# --- 论坛（fake-IP 误判防护）---
+# sb.sb = 烧饼论坛。域名解析的 IP 可能落在 Surge fake-IP 段 198.18.0.0/15，
+#   被 Lan.list 的 IP-CIDR 规则误判为局域网直连 → 请求 403 失败。
+DOMAIN-SUFFIX,sb.sb

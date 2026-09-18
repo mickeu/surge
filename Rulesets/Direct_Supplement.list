@@ -61,6 +61,10 @@ DOMAIN-SUFFIX,didi.com
 DOMAIN-SUFFIX,unionpay.com
 DOMAIN-SUFFIX,gov.cn
 
+# --- 规则集/脚本下载源（2026-09-19，从 Rule.dconf 原生规则迁入）---
+# cdn.jsdelivr.net = jsdelivr CDN，规则集/脚本下载备用源，国内可达直连
+DOMAIN,cdn.jsdelivr.net
+
 # --- 规则集交叉冲突修复（2026-08-20）---
 # 背景：ChinaMax_Domain 想直连的域名被 Global_All 的 DOMAIN-SUFFIX 覆盖 →
 # Global_All 位置靠前导致实际走代理。本段在 Global_All 之前补充直连，
