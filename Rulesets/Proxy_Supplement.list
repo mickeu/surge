@@ -1,9 +1,20 @@
 # NAME: Proxy_Supplement
 # AUTHOR: mickeu
 # REPO: https://github.com/mickeu/surge
-# UPDATED: 2026-09-19
-# DOMAIN-SUFFIX: 1
-# TOTAL: 1
+# UPDATED: 2026-09-27
+# DOMAIN-SUFFIX: 9
+# TOTAL: 9
 
 # 强制代理：防止被 Lan.list 的 fake-IP IP-CIDR（198.18.0.0/15）误判直连
 DOMAIN-SUFFIX,sb.sb
+
+# 通用 Google 域名（从 Gemini.list 移出，走 PROXY 而非 AIGC）
+# Gemini 专属 API 域名仍在 Gemini.list 走 AIGC，这些通用服务不应占用 AI 节点
+DOMAIN-SUFFIX,www.google.com
+DOMAIN-SUFFIX,www.googleapis.com
+DOMAIN-SUFFIX,accounts.google.com
+DOMAIN-SUFFIX,auth.googleapis.com
+DOMAIN-SUFFIX,oauth2.googleapis.com
+DOMAIN-SUFFIX,ssl.gstatic.com
+DOMAIN-SUFFIX,lh3.googleusercontent.com
+DOMAIN-SUFFIX,firebaseio.com
