@@ -273,3 +273,6 @@ IP-CIDR,142.54.162.26/32,no-resolve
 DOMAIN-SUFFIX,lzcdn31.com
 DOMAIN-SUFFIX,lzcdn32.com
 DOMAIN-SUFFIX,lzcdn.com
+
+# 国内腾讯云音乐源 API（yinyue.），未被规则集收录，原走 FINAL->代理被站点 403 拒绝
+DOMAIN-SUFFIX,haitangw.net,DIRECT
