@@ -276,3 +276,8 @@ DOMAIN-SUFFIX,lzcdn.com
 
 # 国内腾讯云音乐源 API（yinyue.），未被规则集收录，原走 FINAL->代理被站点 403 拒绝
 DOMAIN-SUFFIX,haitangw.net,DIRECT
+# 国内音源 API 直连（pdone/lx-music-source 批量排查，未被规则集收录，原走 FINAL->代理被站点拒绝）
+DOMAIN-SUFFIX,kstore.vip,DIRECT
+DOMAIN-SUFFIX,haitangw.cc,DIRECT
+DOMAIN-SUFFIX,nxinxz.com,DIRECT
+DOMAIN-SUFFIX,oiapi.net,DIRECT
