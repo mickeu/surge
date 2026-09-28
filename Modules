@@ -1,0 +1,22 @@
+#!name=Spotify Proxy for LX-Y Music
+#!desc=将 Spotify API 重定向到洛雪本地代理服务器(127.0.0.1:36123)，让灵动歌词识别洛雪正在播放的歌曲
+#!author=mickeu
+#!category=mickeu
+
+# 原理：
+# 1. 灵动歌词调 api.spotify.com 获取 Spotify 播放状态
+# 2. Surge MITM 拦截 HTTPS，URL Rewrite 重定向到 127.0.0.1:36123
+# 3. 洛雪内置 HTTP 服务器返回当前播放信息（歌名/歌手/进度/时长）
+# 4. 灵动歌词以为用户在用 Spotify，搜索 lrclib.net 歌词并显示在灵动岛
+#
+# 前提：
+# - 洛雪播放器运行中（前台或后台播放）
+# - 灵动歌词已授权 Spotify（用真实 Spotify 账号登录一次即可）
+# - Surge MITM CA 证书已安装并信任
+
+[MITM]
+hostname = api.spotify.com
+
+[URL Rewrite]
+# 把所有 api.spotify.com 请求重定向到洛雪本地代理
+^https://api\.spotify\.com/(.+) http://127.0.0.1:36123/$1 header
