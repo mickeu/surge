@@ -66,7 +66,52 @@ if (status === 200) {
       body: JSON.stringify(fakeResponse)
     });
   } else {
-    // 没有缓存数据，返回 204（无播放）
-    $done({ status: 204 });
+    // 没有缓存数据，返回静态假数据（让 App 显示"正在播放"）
+    const fakeResponse = {
+      "timestamp": Date.now(),
+      "device": {
+        "id": "proxy",
+        "is_active": true,
+        "is_private_session": false,
+        "is_restricted": false,
+        "name": "iPhone",
+        "type": "Smartphone",
+        "volume_percent": 100
+      },
+      "progress_ms": 0,
+      "is_playing": true,
+      "item": {
+        "album": {
+          "album_type": "album",
+          "artists": [{"id": "0", "name": "Spotify", "type": "artist", "uri": "spotify:artist:0"}],
+          "id": "0",
+          "images": [],
+          "name": "Spotify",
+          "type": "album",
+          "uri": "spotify:album:0"
+        },
+        "artists": [{"id": "0", "name": "Spotify", "type": "artist", "uri": "spotify:artist:0"}],
+        "duration_ms": 180000,
+        "explicit": false,
+        "id": "0",
+        "is_local": false,
+        "name": "Now Playing",
+        "popularity": 0,
+        "track_number": 1,
+        "type": "track",
+        "uri": "spotify:track:0"
+      },
+      "currently_playing_type": "track",
+      "actions": {"disallows": {}}
+    };
+    
+    $done({
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*"
+      },
+      body: JSON.stringify(fakeResponse)
+    });
   }
 }
