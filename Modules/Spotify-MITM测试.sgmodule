@@ -1,0 +1,10 @@
+#!name=Spotify MITM测试
+#!desc=测试MITM是否工作
+#!author=mickeu
+
+[MITM]
+hostname = %APPEND% accounts.spotify.com
+
+[Header Rewrite]
+# 修改响应头，添加自定义头
+https://accounts.spotify.com/* headers={"X-Test": "MITM_OK"}
