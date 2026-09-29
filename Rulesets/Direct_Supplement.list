@@ -26,7 +26,7 @@ DOMAIN-SUFFIX,huaweicloud.com // 华为云登录/控制台（auth/developer/code
 # 百度业务域名（ChinaMax 未收录 CDN 子域，全漏到 FINAL→美国代理；百度对境外 IP 直接 reset，in=0 零响应）
 # bdstatic.com = 贴吧/百科静态资源 CDN（头像/图片/表情）；bdimg.com = 百度图片 CDN
 # 例外：ss0./gss0.bdstatic.com 是 Cloudflare 境外节点（104.193.90.88/89），在 Rule.dconf 精确 PROXY 排除
-DOMAIN-SUFFIX,bdstatic.com
+
 DOMAIN-SUFFIX,bdimg.com
 
 # 字节系/抖音域名（ChinaMax 未收录，全漏到 FINAL→代理，导致抖音加载缓慢/评论区卡）
