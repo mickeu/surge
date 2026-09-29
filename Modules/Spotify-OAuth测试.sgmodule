@@ -1,0 +1,10 @@
+#!name=Spotify OAuth测试
+#!desc=测试MITM是否工作
+#!author=mickeu
+
+[MITM]
+hostname = %APPEND% accounts.spotify.com
+
+[Script]
+# 测试脚本 - 内联，$ 转义为 \$
+SpotifyTest = type=http-request, pattern=^https://accounts\.spotify\.com, script-path=script:var l=request.url;\$notice({title:"OAuth拦截",subtitle:l,body:"MITM成功"});if(l.includes("/authorize")){var m=l.match(/redirect_uri=([^&]+)/);var r=m?decodeURIComponent(m[1]):"spotify-lyrics://spotify-login-callback";\$done({status:302,headers:{"Location":r+"?code=fake"},body:""});}else{\$done({status:200,headers:{"Content-Type":"application/json"},body:JSON.stringify({access_token:"fake",token_type:"Bearer",expires_in:3600})});}
