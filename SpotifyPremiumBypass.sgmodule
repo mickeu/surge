@@ -1,11 +1,17 @@
 #!name=Spotify Premium Bypass
-#!desc=用 iOS NowPlaying 数据伪装 Spotify API，绕过 Premium 限制
+#!desc=拦截 Spotify App 流量提取曲目数据，伪装 Web API 响应绕过 Premium 限制
 #!author=mickeu
 #!category=mickeu
 
 [MITM]
-hostname = %APPEND% api.spotify.com, *.spclient.spotify.com, *.spotifycdn.com
+hostname = %APPEND% api.spotify.com, *.spclient.spotify.com
 
-[URL Rewrite]
-^https://api\.spotify\.com/(.+) http://127.0.0.1:19821/$1 header
-^https://[a-z0-9-]*spclient\.spotify\.com/(.+) http://127.0.0.1:19821/$1 header
+[Script]
+# 1. 从 Spotify App 自己的 Connect API 响应中提取曲目信息
+type=http-response,pattern=^https://[a-z0-9-]*spclient\.spotify\.com/.*/player,script-path=spotify-extract.js,requires-body=true
+
+# 2. 拦截灵动歌词的 Web API 请求，403 时返回缓存的曲目数据
+type=http-response,pattern=^https://api\.spotify\.com/v1/me/player,script-path=spotify-fake.js,requires-body=true
+
+# 3. /v1/me 返回 premium 状态
+type=http-response,pattern=^https://api\.spotify\.com/v1/me$,script-path=spotify-me.js,requires-body=true
