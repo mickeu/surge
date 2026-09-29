@@ -17,8 +17,8 @@ https://pendragon.163.com/pendragon/1108/config/0x18745e9f896d9fda/3.1.2.908/con
 ^https://pendragon\.163\.com/pendragon/1108/config/0x18745e9f896d9fda/3\.1\.2\.908/config status-code=200 header=Access-Control-Allow-Origin:* data-type=text data="{}"
 
 [Script]
-# OAuth 伪造（内联脚本）
-SpotifyOAuth = type=http-request, pattern=^https://accounts\.spotify\.com/(authorize|api/token), script-path=script:var r='spotify-lyrics://spotify-login-callback';if(request.url.includes('/authorize')){var m=request.url.match(/redirect_uri=([^&]+)/);if(m)r=decodeURIComponent(m[1]);$done({status:302,headers:{'Location':r+'?code=fake_'+Date.now()},body:''});}else if(request.url.includes('/token')){$done({status:200,headers:{'Content-Type':'application/json'},body:JSON.stringify({access_token:'fake_'+Date.now(),refresh_token:'fake_'+Date.now(),token_type:'Bearer',expires_in:3600})});}else{$done({status:200,body:'{"status":"ok"}'});}
+# OAuth 伪造（内联脚本，$ 转义为 \$）
+SpotifyOAuth = type=http-request, pattern=^https://accounts\.spotify\.com/(authorize|api/token), script-path=script:var r='spotify-lyrics://spotify-login-callback';if(request.url.includes('/authorize')){var m=request.url.match(/redirect_uri=([^&]+)/);if(m){r=decodeURIComponent(m[1]);}var loc=r+'?code=fake_'+Date.now();var h={'Location':loc};var b='';\$done({status:302,headers:h,body:b});}else{var h={'Content-Type':'application/json'};var b=JSON.stringify({access_token:'fake_'+Date.now(),token_type:'Bearer',expires_in:3600});\$done({status:200,headers:h,body:b});}
 
 # 去广告
 Protobuf处理 = type=http-response, pattern=^https://(?:\w+-spclient|spclient\.wg)\.spotify\.com(?::443)?/(?:bootstrap|user-customization-service), script-path=https://kelee.one/Resource/JavaScript/Spotify/Spotify_remove_ads.js, requires-body=true, binary-body-mode=true, timeout=5, argument="[{{{tab}}},{{{useractivity}}}]"
