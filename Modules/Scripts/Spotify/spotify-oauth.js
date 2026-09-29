@@ -1,6 +1,6 @@
-// Spotify OAuth 伪造脚本 - 最简版
+// Spotify OAuth 伪造脚本 - HTML响应
 $done({
     status: 200,
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({access_token: 'fake_' + Date.now(), token_type: 'Bearer', expires_in: 3600})
+    headers: {'Content-Type': 'text/html'},
+    body: '<html><head><meta http-equiv="refresh" content="0;url=spotify-lyrics://spotify-login-callback?code=fake_'+Date.now()+'"></head><body><h1>MITM 成功!</h1></body></html>'
 });
