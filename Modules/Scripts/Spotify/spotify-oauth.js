@@ -5,10 +5,11 @@ if(request.url.includes('/authorize')){
     var m = request.url.match(/redirect_uri=([^&]+)/);
     var r = m ? decodeURIComponent(m[1]) : 'spotify-lyrics://spotify-login-callback';
     
+    // 返回 200，body 包含重定向指令
     $done({
         status: 200,
         headers: {'Content-Type': 'text/html'},
-        body: '<html><body><h1>MITM 成功!</h1><p>' + msg + '</p><p>Redirect: ' + r + '</p></body></html>'
+        body: '<html><head><meta http-equiv="refresh" content="0;url='+r+'?code=fake_'+Date.now()+'"></head><body>MITM 成功!</body></html>'
     });
 }else{
     $done({
