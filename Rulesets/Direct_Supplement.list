@@ -291,3 +291,7 @@ DOMAIN-SUFFIX,kstore.vip,DIRECT
 DOMAIN-SUFFIX,haitangw.cc,DIRECT
 DOMAIN-SUFFIX,nxinxz.com,DIRECT
 DOMAIN-SUFFIX,oiapi.net,DIRECT
+
+# Spotify OAuth / 客户端依赖（被 Advertising_All 误判 REJECT）
+DOMAIN-SUFFIX,cdn.branch.io,DIRECT
+DOMAIN-SUFFIX,firebaselogging-pa.googleapis.com,DIRECT
