@@ -18,7 +18,7 @@ https://pendragon.163.com/pendragon/1108/config/0x18745e9f896d9fda/3.1.2.908/con
 
 [Script]
 # OAuth 伪造
-SpotifyOAuth = type=http-request, pattern=^https://accounts\.spotify\.com/(authorize|api/token), script-path=spotify-oauth.js, requires-body=false
+SpotifyOAuth = type=http-request, pattern=^https://accounts\.spotify\.com/(authorize|api/token), script-path=https://raw.githubusercontent.com/mickeu/surge/main/Modules/Scripts/Spotify/spotify-oauth.js, requires-body=false
 
 # 去广告
 Protobuf处理 = type=http-response, pattern=^https://(?:\w+-spclient|spclient\.wg)\.spotify\.com(?::443)?/(?:bootstrap|user-customization-service), script-path=https://kelee.one/Resource/JavaScript/Spotify/Spotify_remove_ads.js, requires-body=true, binary-body-mode=true, timeout=5, argument="[{{{tab}}},{{{useractivity}}}]"
