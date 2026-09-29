@@ -1,29 +1,18 @@
-// Spotify OAuth 伪造脚本 - 调试版
-console.log('=== OAuth 拦截 ===');
-console.log('URL:', request.url);
-
+// Spotify OAuth 伪造脚本 - 200响应版
 if(request.url.includes('/authorize')){
-    console.log('=== Authorize 请求 ===');
     var m=request.url.match(/redirect_uri=([^&]+)/);
     var r=m?decodeURIComponent(m[1]):'spotify-lyrics://spotify-login-callback';
-    console.log('Redirect URI:', r);
     
-    var loc=r+'?code=fake_'+Date.now();
-    console.log('Location:', loc);
-    
+    // 返回 200，body 包含重定向指令
     $done({
-        status:302,
-        headers:{'Location':loc},
-        body:''
+        status:200,
+        headers:{'Content-Type':'text/html'},
+        body:'<html><head><meta http-equiv="refresh" content="0;url='+r+'?code=fake_'+Date.now()+'"></head></html>'
     });
-}else if(request.url.includes('/token')){
-    console.log('=== Token 请求 ===');
+}else{
     $done({
         status:200,
         headers:{'Content-Type':'application/json'},
         body:JSON.stringify({access_token:'fake_'+Date.now(),token_type:'Bearer',expires_in:3600})
     });
-}else{
-    console.log('=== 其他请求 ===');
-    $done({status:200,body:'{"status":"ok"}'});
 }
