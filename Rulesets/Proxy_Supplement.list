@@ -18,3 +18,10 @@ DOMAIN-SUFFIX,oauth2.googleapis.com
 DOMAIN-SUFFIX,ssl.gstatic.com
 DOMAIN-SUFFIX,lh3.googleusercontent.com
 DOMAIN-SUFFIX,firebaseio.com
+
+# 百度 CDN Cloudflare 子域走代理（直连不可达，须排在 ChinaMax 之前）
+DOMAIN,ss0.bdstatic.com
+DOMAIN,gss0.bdstatic.com
+
+# Azure blob 走代理（不在 Microsoft 规则集，国内直连极慢）
+DOMAIN-SUFFIX,blob.core.windows.net
