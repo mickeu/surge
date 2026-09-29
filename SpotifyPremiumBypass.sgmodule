@@ -1,0 +1,36 @@
+#!name=Spotify Premium Bypass
+#!desc=用 iOS NowPlaying 数据伪装 Spotify Web API，绕过 Premium 限制，让灵动歌词等歌词类 App 正常工作
+#!author=mickeu
+#!category=mickeu
+
+# 原理：
+# 1. 灵动歌词等 App 调用 api.spotify.com/v1/me/player 获取当前播放状态
+# 2. 无 Premium 时 Spotify 返回 403，App 显示"非 Premium"提示并阻止实时活动
+# 3. Surge MITM 拦截 HTTPS，URL Rewrite 重定向到本地 Python 服务器(127.0.0.1:19821)
+# 4. Python 服务器用 apple-media now-playing 获取 iOS 系统播放信息，构造 Spotify API 格式响应
+# 5. App 收到 200 响应，以为用户有 Premium，正常显示歌词和实时活动
+#
+# 依赖：
+# - Python 服务器必须在运行: python3 /var/minis/workspace/spotify-proxy/spotify_proxy.py
+# - Surge MITM CA 证书必须已安装并信任
+# - "Spotify综合模块" 必须禁用（其无效配置会干扰 MITM）
+#
+# 支持的端点：
+# - GET /v1/me/player → 当前播放状态（歌名/歌手/进度/时长）
+# - GET /v1/me/player/currently-playing → 精简版播放状态
+# - GET /v1/me → 用户资料（product: premium 伪装）
+# - POST /v1/me/player/pause → 204 成功
+# - POST /v1/me/player/previous → 204 成功
+# - PUT /v1/me/player/seek → 204 成功
+# - GET /v1/me/library/contains → 收藏检查
+# - GET /v1/me/library/playlists → 空列表
+# - GET /v1/me/favorites → 空列表
+# - GET /v1/me/recommendations → 空列表
+# - GET /v1/me/player/recently-played → 空列表
+
+[MITM]
+hostname = api.spotify.com
+
+[URL Rewrite]
+# 把所有 api.spotify.com 请求重定向到本地 Python 服务器
+^https://api\.spotify\.com/(.+) http://127.0.0.1:19821/$1 header
