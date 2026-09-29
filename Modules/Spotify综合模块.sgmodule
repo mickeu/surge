@@ -1,0 +1,40 @@
+#!name=Spotify综合模块
+#!desc=去广告 + 歌词增强 + 歌词翻译 + OAuth伪造
+#!author=mickeu
+#!category=mickeu
+#!homepage=
+
+[MITM]
+hostname = %APPEND% accounts.spotify.com, api.spotify.com, spclient.wg.spotify.com, *-spclient.spotify.com
+
+[URL Rewrite]
+^https://accounts\.spotify\.com/(.*) http://127.0.0.1:36123/$1 header
+^https://api\.spotify\.com/(.*) http://127.0.0.1:36123/$1 header
+^https://(?:\w+-spclient|spclient\.wg)\.spotify\.com(?::443)?/artistview/v1/artist/(.*)&platform=iphone https://spclient.wg.spotify.com/artistview/v1/artist/$1&platform=ipad header
+
+[Map Local]
+https://pendragon.163.com/pendragon/1108/config/0x18745e9f896d9fda/3.1.2.908/config https://kelee.one/Resource/Data/Spotify/config.json header=Access-Control-Allow-Origin:*
+^https://pendragon\.163\.com/pendragon/1108/config/0x18745e9f896d9fda/3\.1\.2\.908/config status-code=200 header=Access-Control-Allow-Origin:* data-type=text data="{}"
+
+[Script]
+# OAuth 伪造
+SpotifyOAuth = type=http-request, pattern=^https://accounts\.spotify\.com/(authorize|api/token), script-path=spotify-oauth.js, requires-body=false
+
+# 去广告
+Protobuf处理 = type=http-response, pattern=^https://(?:\w+-spclient|spclient\.wg)\.spotify\.com(?::443)?/(?:bootstrap|user-customization-service), script-path=https://kelee.one/Resource/JavaScript/Spotify/Spotify_remove_ads.js, requires-body=true, binary-body-mode=true, timeout=5, argument="[{{{tab}}},{{{useractivity}}}]"
+
+# 歌词增强
+跟踪响应·JSON = type=http-response, pattern=^https?:\/\/api\.spotify\.com\/v1\/tracks\?, script-path=https://kelee.one/Resource/JavaScript/Spotify/Spotify_response.js, requires-body=true
+歌词请求·JSON = type=http-request, pattern=^https?:\/\/spclient\.wg\.spotify\.com\/color-lyrics\/v2\/track\/(.+)\?(.*)format=json, script-path=https://kelee.one/Resource/JavaScript/Spotify/Spotify_request.js, requires-body=true
+歌词请求·Proto = type=http-request, pattern=^https?:\/\/spclient\.wg\.spotify\.com\/color-lyrics\/v2\/track\/\w+\?(.*), script-path=https://kelee.one/Resource/JavaScript/Spotify/Spotify_request.js, requires-body=true, binary-body-mode=true
+
+# 歌词翻译
+翻译歌词响应·JSON = type=http-response, pattern=^https?:\/\/spclient\.wg\.spotify\.com\/color-lyrics\/v2\/track\/(.+)\?(.*)format=json(.*)subtype=Translate, script-path=https://kelee.one/Resource/JavaScript/Spotify/Translate_response.js, requires-body=true
+翻译歌词响应·Proto = type=http-response, pattern=^https?:\/\/spclient\.wg\.spotify\.com\/color-lyrics\/v2\/track\/\w+\?(.*)subtype=Translate, script-path=https://kelee.one/Resource/JavaScript/Spotify/Translate_response.js, requires-body=true, binary-body-mode=true
+外部歌词响应·JSON = type=http-response, pattern=^https?:\/\/spclient\.wg\.spotify\.com\/color-lyrics\/v2\/track\/(.+)\?(.*)format=json(.*)subtype=External, script-path=https://kelee.one/Resource/JavaScript/Spotify/External_Lyrics_response.js, requires-body=true
+外部歌词响应·Proto = type=http-response, pattern=^https?:\/\/spclient\.wg\.spotify\.com\/color-lyrics\/v2\/track\/\w+\?(.*)subtype=External, script-path=https://kelee.one/Resource/JavaScript/Spotify/External_Lyrics_response.js, requires-body=true, binary-body-mode=true
+
+[Header Rewrite]
+https://spclient.wg.spotify.com/color-lyrics/v2/track/ headers={"X-Lyrics-Subtype": "Translate"}
+https://spclient.wg.spotify.com/color-lyrics/v2/track/ headers={"X-Lyrics-Subtype": "External"}
+
