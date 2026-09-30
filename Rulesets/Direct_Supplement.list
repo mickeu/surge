@@ -236,3 +236,5 @@ DOMAIN-SUFFIX,cdn.branch.io
 DOMAIN-SUFFIX,api3.branch.io
 DOMAIN-SUFFIX,firebaselogging-pa.googleapis.com
 DOMAIN-SUFFIX,firebase-settings.crashlytics.com
+# 临时验证规则（验证后删除）
+DOMAIN,verify-cache-test-mickeu.example
