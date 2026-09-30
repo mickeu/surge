@@ -5,6 +5,6 @@
 
 [Rule]
 # > 广告拦截补充（微信/百度/广告联盟，未被 blackmatrix7 覆盖）
-RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Advertising_Supplement.list,REJECT
+RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Advertising_Supplement.list,REJECT
 # > 补充直连（误走代理的国内业务域名）
-RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Direct_Supplement.list,DIRECT
+RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Direct_Supplement.list,DIRECT

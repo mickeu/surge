@@ -1,26 +1,19 @@
 [Rule]
-# > 烧饼论坛 sb.sb 强制代理（防止被 Lan.list 的 198.18.0.0/15 fake-IP 规则误判直连而 403）
-DOMAIN-SUFFIX,sb.sb,PROXY
-
-# > 闲鱼/淘宝/阿里系强制直连（2026-09-14 登录 SSL 错误修复）
-# goofish.com 漏到 FINAL→美国节点，登录 TLS 握手地理校验失败报 SSL 连接错误
-# DOMAIN-SUFFIX 原生规则优先于此处的 RULE-SET，确保闲鱼登录/支付直连
-DOMAIN-SUFFIX,goofish.com,DIRECT
-DOMAIN-SUFFIX,taobao.com,DIRECT
-DOMAIN-SUFFIX,tmall.com,DIRECT
-DOMAIN-SUFFIX,alicdn.com,DIRECT
-DOMAIN-SUFFIX,alipay.com,DIRECT
-DOMAIN-SUFFIX,mmstat.com,DIRECT
-DOMAIN-SUFFIX,aliyuncs.com,DIRECT
-DOMAIN-SUFFIX,alibabauser.com,DIRECT
+# > Spotify OAuth / 客户端依赖（被 Advertising_All 误判 REJECT，直连补充规则集未生效先本地兜底）
+DOMAIN-SUFFIX,cdn.branch.io,DIRECT
+DOMAIN-SUFFIX,api3.branch.io,DIRECT
+DOMAIN-SUFFIX,firebaselogging-pa.googleapis.com,DIRECT
+DOMAIN-SUFFIX,firebase-settings.crashlytics.com,DIRECT
 
 # > 广告拦截（blackmatrix7 _All 全量版 + mickeu 补充）
 # 直连补充规则集（白名单）必须排在广告规则之前，防止白名单域名被误判广告拦截
 # > 规则集下载域名走兜底策略
-DOMAIN,cdn.jsdelivr.net,DIRECT // jsdelivr CDN 规则集下载直连
 RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Direct_Supplement.list,DIRECT // 直连白名单（必须在广告/Global 之前，防误杀）
 RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Advertising/Advertising_All.list,REJECT,no-resolve // 广告全量拦截（blackmatrix7）
 RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Advertising_Supplement.list,REJECT // 广告拦截补充（blackmatrix7 漏覆盖）
+
+# > 强制代理补充（必须在 Lan 之前，防 fake-IP 段 IP-CIDR 误判直连）
+RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Proxy_Supplement.list,PROXY // 强制代理补充（通用 Google 域名从 Gemini 移入）
 
 # > LAN 安全
 RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Lan/Lan.list,DIRECT,no-resolve // 局域网直连（NAS/打印机/本地服务，no-resolve 防 DNS 泄露）
@@ -28,12 +21,12 @@ RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/r
 # > AI 服务（OpenAI / Claude / Gemini）
 RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/OpenAI/OpenAI.list,AIGC,no-resolve // OpenAI/ChatGPT 走 AI 策略组
 RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Claude/Claude.list,AIGC // Claude 走 AI 策略组
-RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Gemini.list,AIGC // Gemini 走 AI 策略组（自维护，含 blackmatrix7 原版 + 补充遗漏域名）
+RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Gemini.list,AIGC // Gemini 走 AI 策略组（自维护，通用 Google 域名已移至 Proxy_Supplement）
 
 # > 苹果服务
 # Apple AI 必须走代理，须先于 Apple_All，否则被 Apple_All 拉直连
 RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/AppleIntelligence.list,AIGC,no-resolve // Apple AI + APNs + IP 段走代理（no-resolve 防止代理域名本地DNS解析泄露）
-RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Apple_Services.list,AIGC,no-resolve // Apple 海外系统服务（GSP/GDMF/iTunes沙盒）蜂窝+WiFi 直连被 QoS 阻断，走代理
+RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Apple_Services.list,AIGC,no-resolve // Apple 海外系统服务走代理
 RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Apple_All.list,Apple,no-resolve // 苹果服务走 Apple 策略组（自维护，补充 Apple Music 流媒体域名，no-resolve 防 DNS 泄露）
 
 # > 微软服务

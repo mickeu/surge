@@ -285,13 +285,13 @@ DOMAIN-SUFFIX,lzcdn32.com
 DOMAIN-SUFFIX,lzcdn.com
 
 # 国内腾讯云音乐源 API（yinyue.），未被规则集收录，原走 FINAL->代理被站点 403 拒绝
-DOMAIN-SUFFIX,haitangw.net,DIRECT
+DOMAIN-SUFFIX,haitangw.net
 # 国内音源 API 直连（pdone/lx-music-source 批量排查，未被规则集收录，原走 FINAL->代理被站点拒绝）
-DOMAIN-SUFFIX,kstore.vip,DIRECT
-DOMAIN-SUFFIX,haitangw.cc,DIRECT
-DOMAIN-SUFFIX,nxinxz.com,DIRECT
-DOMAIN-SUFFIX,oiapi.net,DIRECT
+DOMAIN-SUFFIX,kstore.vip
+DOMAIN-SUFFIX,haitangw.cc
+DOMAIN-SUFFIX,nxinxz.com
+DOMAIN-SUFFIX,oiapi.net
 
 # Spotify OAuth / 客户端依赖（被 Advertising_All 误判 REJECT）
-DOMAIN-SUFFIX,cdn.branch.io,DIRECT
-DOMAIN-SUFFIX,firebaselogging-pa.googleapis.com,DIRECT
+DOMAIN-SUFFIX,cdn.branch.io
+DOMAIN-SUFFIX,firebaselogging-pa.googleapis.com
