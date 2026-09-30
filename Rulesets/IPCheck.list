@@ -1,7 +1,4 @@
-# IP 检测/纯净度检测域名集
-# 来源：MiCat-S/Rule，托管自维护
-# 用途：IP-Quality 面板模块 RULE-SET 引用，让所有检测域名走 {{{GROUP}}} 指定策略组
-# 维护者：mickeu
+# IP 检测/纯净度检测域名集（IP-Quality 面板模块 RULE-SET 引用）
 
 # IP 查询站
 DOMAIN-SUFFIX,ip.sb
@@ -37,13 +34,7 @@ DOMAIN-SUFFIX,ipcheck.ing
 DOMAIN,myip.ipip.net
 DOMAIN,ip.skk.moe
 
-# 注：不收录 browserleaks.com / ipleak.net / dnsleaktest.com / test-ipv6.com / whoer.net /
-# browserscan.net / pixelscan.net / iphey.com 等"用户日常泄露测试站"。
-# 原因：这类站若被 RULE-SET 强制走 {{{GROUP}}}，会污染用户测泄露时的出口 IP 结果
-# （例：GROUP 填 AIGC 时 browserleaks 走日本节点，IP 与 PROXY 组实际出口不一致，2026-08-31 实测）。
-# 让这类站走默认规则（FINAL→PROXY），IP 才反映真实代理出口。
-# IP-Quality 面板只用 ip.sb / ip-api.com / ipinfo.io / ipwho.is 检测，不依赖以上域名。
-
+# 不收录泄露测试站（browserleaks/ipleak/dnsleaktest 等），避免污染测泄露时的出口 IP
 # IP 风险评分
 DOMAIN-SUFFIX,scamalytics.com
 DOMAIN-SUFFIX,ipqualityscore.com

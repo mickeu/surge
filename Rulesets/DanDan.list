@@ -1,4 +1,4 @@
-# 蛋蛋不语
+# 蛋蛋不语规则集
 # 原有域名
 DOMAIN-SUFFIX,one.one.one.one
 DOMAIN-SUFFIX,api.wwzy.tv
@@ -13,8 +13,7 @@ DOMAIN-SUFFIX,develop202.github.io
 DOMAIN-SUFFIX,s2.bfllvip.com
 IP-CIDR,38.76.202.248/32
 
-# 补充：视频资源站域名（no-resolve 后 IP-CIDR 不再触发 DNS 解析，
-# 这些域名原本靠 ChinaMax IP-CIDR 匹配走 DIRECT，现在用域名规则直连）
+# 补充视频资源站域名（用域名规则直连，避免 IP-CIDR 依赖 DNS）
 # 飞飞资源 ffzy
 DOMAIN-SUFFIX,ffzy5.tv
 DOMAIN-SUFFIX,ffzy-online.com

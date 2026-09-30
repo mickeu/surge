@@ -1,23 +1,10 @@
-# Apple Intelligence 规则集（推理服务端 + API/CDN）
-#
-# 说明：Apple Intelligence（Siri 智能 / 写作工具 / 照片清理等）在大陆不可用，
-# 这些域名必须走代理。引用时策略组建议用 AIGC 或 PROXY。
-# 引用示例：
-#   RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/AppleIntelligence.list,AIGC
-#
-# 域名来源：blackmatrix7 QuantumultX/Apple.list 收录的 Apple Intelligence 域名族
-#   - guzzoni.apple.com        推理服务端
-#   - *.smoot.apple.com        API / CDN（含按区域分布的 api-p-ap-{c,d,e} / api-glb-sea 等端点）
-#   - guzzoni-apple-com.v.aaplimg.com  CDN 内容缓存
-#
-# 维护者：mickeu
-# 更新时间：2026-08-22
+# Apple Intelligence 规则集（推理服务端 + API/CDN，大陆不可用需走代理）
 
 DOMAIN-SUFFIX,guzzoni.apple.com
 DOMAIN-SUFFIX,smoot.apple.com
 DOMAIN-SUFFIX,guzzoni-apple-com.v.aaplimg.com
-# Apple 推送服务（APNs）走代理——蜂窝下直连 Apple 推送服务器失败，需走代理
-# 实测：xp.apple.com + push.apple.com 走代理后，蜂窝下官方 Telegram/X 推送正常
+
+# Apple 推送服务（APNs）走代理（蜂窝下直连推送失败）
 DOMAIN-SUFFIX,xp.apple.com
 DOMAIN-SUFFIX,push.apple.com
 # APNs 服务器 IP 段（走 IP 时也走代理）

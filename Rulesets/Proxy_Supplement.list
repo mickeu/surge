@@ -5,11 +5,10 @@
 # DOMAIN-SUFFIX: 9
 # TOTAL: 9
 
-# 强制代理：防止被 Lan.list 的 fake-IP IP-CIDR（198.18.0.0/15）误判直连
+# 强制代理：防止被 Lan.list 的 fake-IP（198.18.0.0/15）误判直连
 DOMAIN-SUFFIX,sb.sb
 
-# 通用 Google 域名（从 Gemini.list 移出，走 PROXY 而非 AIGC）
-# Gemini 专属 API 域名仍在 Gemini.list 走 AIGC，这些通用服务不应占用 AI 节点
+# 通用 Google 域名（走 PROXY 而非 AIGC，不占用 AI 节点）
 DOMAIN-SUFFIX,www.google.com
 DOMAIN-SUFFIX,www.googleapis.com
 DOMAIN-SUFFIX,accounts.google.com
@@ -19,7 +18,7 @@ DOMAIN-SUFFIX,ssl.gstatic.com
 DOMAIN-SUFFIX,lh3.googleusercontent.com
 DOMAIN-SUFFIX,firebaseio.com
 
-# 百度 CDN Cloudflare 子域走代理（直连不可达，须排在 ChinaMax 之前）
+# 百度 CDN Cloudflare 子域走代理（直连不可达）
 DOMAIN,ss0.bdstatic.com
 DOMAIN,gss0.bdstatic.com
 

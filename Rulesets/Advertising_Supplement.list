@@ -1,8 +1,4 @@
-# Surge 广告拦截补充规则集
-# 补充 blackmatrix7 Advertising_All.list 未覆盖的广告域名
-# 来源：Surge CLI rule explain 扫描发现
-# 维护者：mickeu
-# 更新时间：2026-09-01（已删除2条被blackmatrix7覆盖的规则+补入Hijacking未覆盖的5条，14→17条）
+# 广告拦截补充规则集（补充 Advertising_All 未覆盖的广告域名）
 
 # 微信广告域名
 DOMAIN-SUFFIX,adservice.weixin.qq.com
@@ -21,14 +17,14 @@ DOMAIN-SUFFIX,adsame.cn
 DOMAIN-SUFFIX,adsame1.cn
 DOMAIN-SUFFIX,mads.weather.com.cn
 
-# Hijacking.list 未覆盖项（原 blackmatrix7 规则，Advertising_All 漏掉的恶意域名/IP）
+# 恶意广告域名/IP（Advertising_All 漏掉）
 DOMAIN-SUFFIX,adsame.com
 IP-CIDR,111.175.220.163/32,no-resolve
 IP-CIDR,111.175.220.164/32,no-resolve
 IP-CIDR,175.6.223.15/32,no-resolve
 IP-CIDR,221.179.140.145/32,no-resolve
 
-# 京东广告域名（blackmatrix7 Advertising_All 仅收录 x.jd.com，以下子域走 jd.com 直连漏网）
+# 京东广告域名（Advertising_All 仅收录 x.jd.com）
 DOMAIN-SUFFIX,ads1.jd.com
 DOMAIN-SUFFIX,ads.jd.com
 DOMAIN-SUFFIX,dsp.jd.com

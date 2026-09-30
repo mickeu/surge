@@ -1,23 +1,17 @@
 # NAME: Apple_Services
 # AUTHOR: mickeu
-# DESC: Apple 海外系统服务域名（GSP检查/GDMF设备管理/iTunes沙盒），蜂窝+WiFi 直连被运营商 QoS 阻断（Connection refused / DNS timeout），需走代理
-# 引用时策略组用 AIGC（跟 AppleIntelligence.list 一致，节点日本/新加坡可选）
-# 引用示例：
-#   RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Apple_Services.list,AIGC,no-resolve
-# 必须放在 Apple_All.list 之前，否则被 Apple_All 拉直连（参照 AppleIntelligence.list 先例）
-# 只覆盖这几个海外系统服务域名，不影响国内 iCloud/App Store 直连
+# DESC: Apple 海外系统服务域名（GSP/GDMF/iTunes 沙盒），直连被运营商阻断需走代理
 # UPDATED: 2026-09-25
 
-# GSP 连通性检查（gspe1-ssl.ls.apple.com / gspe*.ls.apple.com / configuration-carry.ls.apple.com 等）
+# GSP 连通性检查
 DOMAIN-SUFFIX,ls.apple.com
 
-# iTunes 沙盒 bag 配置（仅这两个被运营商 QoS 阻断）
-# 不可用 DOMAIN-SUFFIX：会误伤 App Store/TestFlight 下载通道（itunes.apple.com / amp-api / tf）
+# iTunes 沙盒 bag 配置（仅这两个被阻断；不能用 SUFFIX 会误伤 App Store/TestFlight）
 DOMAIN,bag.itunes.apple.com
 DOMAIN,sandbox.itunes.apple.com
 
-# 设备管理（gdmf.apple.com / gdmf-ados.apple.com / gdmf-ndc.apple.com 等）
+# 设备管理（GDMF）
 DOMAIN-KEYWORD,gdmf
 
-# Microsoft 系统服务（m.hotmail.com 蜂窝/WiFi 直连均被 RST）
+# Microsoft 系统服务（m.hotmail.com 直连被 RST）
 DOMAIN,m.hotmail.com

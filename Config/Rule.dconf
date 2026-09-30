@@ -1,68 +1,55 @@
 [Rule]
-# > Spotify OAuth / 客户端依赖（被 Advertising_All 误判 REJECT，直连补充规则集未生效先本地兜底）
-DOMAIN-SUFFIX,cdn.branch.io,DIRECT
-DOMAIN-SUFFIX,api3.branch.io,DIRECT
-DOMAIN-SUFFIX,firebaselogging-pa.googleapis.com,DIRECT
-DOMAIN-SUFFIX,firebase-settings.crashlytics.com,DIRECT
+# 广告拦截（白名单必须先于广告，防误杀）
+RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Direct_Supplement.list,DIRECT
+RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Advertising/Advertising_All.list,REJECT,no-resolve
+RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Advertising_Supplement.list,REJECT
 
-# > 广告拦截（blackmatrix7 _All 全量版 + mickeu 补充）
-# 直连补充规则集（白名单）必须排在广告规则之前，防止白名单域名被误判广告拦截
-# > 规则集下载域名走兜底策略
-RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Direct_Supplement.list,DIRECT // 直连白名单（必须在广告/Global 之前，防误杀）
-RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Advertising/Advertising_All.list,REJECT,no-resolve // 广告全量拦截（blackmatrix7）
-RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Advertising_Supplement.list,REJECT // 广告拦截补充（blackmatrix7 漏覆盖）
+# 强制代理补充（先于 Lan，防 fake-IP 段被误判直连）
+RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Proxy_Supplement.list,PROXY
 
-# > 强制代理补充（必须在 Lan 之前，防 fake-IP 段 IP-CIDR 误判直连）
-RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Proxy_Supplement.list,PROXY // 强制代理补充（通用 Google 域名从 Gemini 移入）
+# 局域网直连
+RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Lan/Lan.list,DIRECT,no-resolve
 
-# > LAN 安全
-RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Lan/Lan.list,DIRECT,no-resolve // 局域网直连（NAS/打印机/本地服务，no-resolve 防 DNS 泄露）
+# AI 服务
+RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/OpenAI/OpenAI.list,AIGC,no-resolve
+RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Claude/Claude.list,AIGC
+RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Gemini.list,AIGC
 
-# > AI 服务（OpenAI / Claude / Gemini）
-RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/OpenAI/OpenAI.list,AIGC,no-resolve // OpenAI/ChatGPT 走 AI 策略组
-RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Claude/Claude.list,AIGC // Claude 走 AI 策略组
-RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Gemini.list,AIGC // Gemini 走 AI 策略组（自维护，通用 Google 域名已移至 Proxy_Supplement）
+# 苹果服务（AI/海外服务先于 Apple_All，否则被拉直连）
+RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/AppleIntelligence.list,AIGC,no-resolve
+RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Apple_Services.list,AIGC,no-resolve
+RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Apple_All.list,Apple,no-resolve
 
-# > 苹果服务
-# Apple AI 必须走代理，须先于 Apple_All，否则被 Apple_All 拉直连
-RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/AppleIntelligence.list,AIGC,no-resolve // Apple AI + APNs + IP 段走代理（no-resolve 防止代理域名本地DNS解析泄露）
-RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Apple_Services.list,AIGC,no-resolve // Apple 海外系统服务走代理
-RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Apple_All.list,Apple,no-resolve // 苹果服务走 Apple 策略组（自维护，补充 Apple Music 流媒体域名，no-resolve 防 DNS 泄露）
+# 微软服务
+RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Microsoft/Microsoft.list,Microsoft
 
-# > 微软服务
-RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Microsoft/Microsoft.list,Microsoft // 微软服务走 Microsoft 策略组
+# Telegram（MTProto 协议直送 + 域名规则）
+PROTOCOL,MTProto,Telegram
+RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Telegram_All.list,Telegram,no-resolve
 
-# > 社交平台（Telegram 流量全部走 Telegram 策略组）
-PROTOCOL,MTProto,Telegram // MTProto 协议直送 Telegram 组
-RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Telegram_All.list,Telegram,no-resolve // Telegram 完整规则集（合并 blackmatrix7 + 补充 CDN 域名，no-resolve 防 DNS 泄露）
+# 游戏平台
+RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Game/Game.list,Game,no-resolve
 
-# > 游戏平台
-RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Game/Game.list,Game,no-resolve // 游戏平台走 Game 组（含暴雪战网）
+# 流媒体
+RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/YouTube/YouTube.list,YouTube,no-resolve
+RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Netflix/Netflix.list,Netflix,no-resolve
+RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Disney/Disney.list,Disney+
+RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Spotify/Spotify.list,Spotify,no-resolve
+RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/TikTok/TikTok.list,TikTok
+RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/BiliBili/BiliBili.list,BiliBili,no-resolve
+RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/ChinaMedia/ChinaMedia.list,DIRECT,no-resolve
+RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/GlobalMedia/GlobalMedia.list,GlobalMedia,no-resolve
 
-# > 流媒体
-RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/YouTube/YouTube.list,YouTube,no-resolve // YouTube 走 YouTube 组
-RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Netflix/Netflix.list,Netflix,no-resolve // Netflix 走 Netflix 组
-RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Disney/Disney.list,Disney+ // Disney+ 走 Disney+ 组
-RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Spotify/Spotify.list,Spotify,no-resolve // Spotify 走 Spotify 组
-RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/TikTok/TikTok.list,TikTok // TikTok 走 TikTok 组
-RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/BiliBili/BiliBili.list,BiliBili,no-resolve // B站走 BiliBili 组
-RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/ChinaMedia/ChinaMedia.list,DIRECT,no-resolve // 国内流媒体直连（腾讯/爱奇艺/优酷等）
-RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/GlobalMedia/GlobalMedia.list,GlobalMedia,no-resolve // 境外流媒体兜底走 GlobalMedia 组
+# 视频资源站直连
+RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Video_RESOURCE.list,DIRECT
 
-# > 视频采集站/资源站域名直连（no-resolve 后不再靠 IP-CIDR 匹配，统一收进 Video_RESOURCE.list 维护）
-RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Video_RESOURCE.list,DIRECT // 视频采集站/资源站直连（mickeu 自维护）
+# 境外网站代理兜底
+RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Global/Global_All.list,PROXY,no-resolve
 
-# > 境外常规网站代理（Global_All 综合大表，覆盖所有未被以上规则匹配的境外域名/IP）
-RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Global/Global_All.list,PROXY,no-resolve // 境外网站代理兜底（综合大表，no-resolve 防 DNS 泄露）
+# 中国大陆直连（域名、ASN、IP 三层兜底）
+RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/ChinaMax/ChinaMax_Domain.list,DIRECT,no-resolve
+RULE-SET,https://raw.githubusercontent.com/VirgilClyne/GetSomeFries/main/ruleset/ASN.China.list,DIRECT,no-resolve
+GEOIP,CN,DIRECT,no-resolve
 
-# > 🇨🇳 中国大陆直连（三层防线，逐层收紧，确保无泄漏）
-# 第一层：ChinaMax_Domain 域名白名单（精准匹配国内域名，优先于 IP 规则；ChinaMax 综合大表的 IP 段在 fake-ip 模式下几乎不命中，已移除冗余引用）
-RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/ChinaMax/ChinaMax_Domain.list,DIRECT,no-resolve // 国内域名白名单（精准匹配，先于 IP 规则）
-# 第二层：GetSomeFries ASN China（按自治域匹配，补全 ChinaMax 仅 1 条 ASN 的缺口，覆盖电信/联通/移动骨干网全量）
-RULE-SET,https://raw.githubusercontent.com/VirgilClyne/GetSomeFries/main/ruleset/ASN.China.list,DIRECT,no-resolve // 中国 ASN 直连（5076 条自治域，骨干网全覆盖，no-resolve 防 DNS 泄露）
-
-# > GeoIP 中国大陆 IP 兜底（no-resolve 跳过已匹配流量的 DNS 解析，减少延迟）
-GEOIP,CN,DIRECT,no-resolve // 中国大陆 IP 兜底直连
-
-# > Final 规则（DNS 查询失败时也走 Final）
-FINAL,PROXY,dns-failed // 未匹配流量走代理兜底
+# 兜底代理（DNS 查询失败也走）
+FINAL,PROXY,dns-failed

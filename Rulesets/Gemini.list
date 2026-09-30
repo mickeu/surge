@@ -1,12 +1,13 @@
 # NAME: Gemini
-# AUTHOR: blackmatrix7 + mickeu (supplement)
+# AUTHOR: blackmatrix7 + mickeu
 # REPO: https://github.com/blackmatrix7/ios_rule_script
 # UPDATED: 2026-09-27
 # DOMAIN: 10
 # DOMAIN-KEYWORD: 3
 # DOMAIN-SUFFIX: 14
 # TOTAL: 27
-# > 以下为 blackmatrix7 原版规则
+
+# blackmatrix7 原版规则
 DOMAIN,ai.google.dev
 DOMAIN,alkalimakersuite-pa.clients6.google.com
 DOMAIN,makersuite.google.com
@@ -20,18 +21,19 @@ DOMAIN-SUFFIX,apis.google.com
 DOMAIN-KEYWORD,colab
 DOMAIN-KEYWORD,developerprofiles
 DOMAIN-KEYWORD,generativelanguage
-# > 以下为 mickeu 补充（blackmatrix7 遗漏的关键域名）
+
+# mickeu 补充（blackmatrix7 遗漏的关键域名）
 DOMAIN-SUFFIX,aistudio.google.com
 DOMAIN-SUFFIX,aiplatform.googleapis.com
 DOMAIN-SUFFIX,generativelanguage.googleapis.com
 DOMAIN-SUFFIX,content-googleapis.googleapis.com
 DOMAIN-SUFFIX,clients6.google.com
-# > 以下为 mickeu 补充 v2（Gemini app 专属 API 域名）
-# 通用 Google 域名（accounts/auth/oauth2/www.googleapis/ssl.gstatic/lh3/firebaseio）
-# 已移至 Proxy_Supplement 走 PROXY，不再占用 AIGC 节点
+
+# Gemini App 专属 API 域名（通用 Google 域名已移至 Proxy_Supplement）
 DOMAIN-SUFFIX,us-central1-aiplatform.googleapis.com
 DOMAIN-SUFFIX,cloudclientservices.googleapis.com
-# > 以下为 mickeu 补充 v3（2026-08-24 抓 dump recent 实际走 PROXY 的域名）
+
+# 实测走 PROXY 的 Gemini 附加域名
 DOMAIN,signaler-pa.googleapis.com
 DOMAIN,robinfrontend-pa.googleapis.com
 DOMAIN,accountcapabilities-pa.googleapis.com
