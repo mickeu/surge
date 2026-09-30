@@ -55,19 +55,14 @@ RULE-SET,https://raw.githubusercontent.com/mickeu/surge/main/Rulesets/Video_RESO
 # > 境外常规网站代理（Global_All 综合大表，覆盖所有未被以上规则匹配的境外域名/IP）
 RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Global/Global_All.list,PROXY,no-resolve // 境外网站代理兜底（综合大表，no-resolve 防 DNS 泄露）
 
-# > 🇨🇳 中国大陆直连（四层防线，逐层收紧，确保无泄漏）
-# 第一层：ChinaMax_Domain 域名白名单（精准匹配国内域名，优先于 IP 规则）
+# > 🇨🇳 中国大陆直连（三层防线，逐层收紧，确保无泄漏）
+# 第一层：ChinaMax_Domain 域名白名单（精准匹配国内域名，优先于 IP 规则；ChinaMax 综合大表的 IP 段在 fake-ip 模式下几乎不命中，已移除冗余引用）
 RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/ChinaMax/ChinaMax_Domain.list,DIRECT,no-resolve // 国内域名白名单（精准匹配，先于 IP 规则）
-# 第二层：ChinaMax 综合大表（域名 + IP-CIDR 全覆盖，捕获国内 IP 段流量）
-RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/ChinaMax/ChinaMax.list,DIRECT,no-resolve // 国内 IP 段全覆盖（含域名 11万+ IP 8千+，no-resolve 防 DNS 泄露）
-# 第三层：GetSomeFries ASN China（按自治域匹配，补全 ChinaMax 仅 1 条 ASN 的缺口，覆盖电信/联通/移动骨干网全量）
+# 第二层：GetSomeFries ASN China（按自治域匹配，补全 ChinaMax 仅 1 条 ASN 的缺口，覆盖电信/联通/移动骨干网全量）
 RULE-SET,https://raw.githubusercontent.com/VirgilClyne/GetSomeFries/main/ruleset/ASN.China.list,DIRECT,no-resolve // 中国 ASN 直连（5076 条自治域，骨干网全覆盖，no-resolve 防 DNS 泄露）
 
 # > GeoIP 中国大陆 IP 兜底（no-resolve 跳过已匹配流量的 DNS 解析，减少延迟）
 GEOIP,CN,DIRECT,no-resolve // 中国大陆 IP 兜底直连
-
-# > HTTP 流量兜底直连（视频采集站几乎全是 HTTP，HTTPS 已被前面规则匹配走代理）
-URL-REGEX,^http://,DIRECT // 未被以上规则匹配的 HTTP 流量走直连（视频采集站兜底）
 
 # > Final 规则（DNS 查询失败时也走 Final）
 FINAL,PROXY,dns-failed // 未匹配流量走代理兜底

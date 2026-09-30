@@ -107,9 +107,6 @@ DOMAIN-SUFFIX,widevine.com
 DOMAIN-SUFFIX,xn--ngstr-lra8j.com
 DOMAIN-SUFFIX,xtracloud.net
 DOMAIN-SUFFIX,xuite.net
-DOMAIN-SUFFIX,co.kr
-DOMAIN-SUFFIX,com.tw
-DOMAIN-SUFFIX,gov.tw
 
 # 精确域名（厂商主域可能需要代理，只直连国内节点/更新站）
 DOMAIN,ccmdls.adobe.com
@@ -292,6 +289,8 @@ DOMAIN-SUFFIX,haitangw.cc
 DOMAIN-SUFFIX,nxinxz.com
 DOMAIN-SUFFIX,oiapi.net
 
-# Spotify OAuth / 客户端依赖（被 Advertising_All 误判 REJECT）
+# Spotify OAuth / 客户端依赖（被 Advertising_All 误判 REJECT，需在广告拦截前放行）
 DOMAIN-SUFFIX,cdn.branch.io
+DOMAIN-SUFFIX,api3.branch.io
 DOMAIN-SUFFIX,firebaselogging-pa.googleapis.com
+DOMAIN-SUFFIX,firebase-settings.crashlytics.com
