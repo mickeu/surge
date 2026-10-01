@@ -3,7 +3,9 @@
 百度贴吧签到脚本 - Surge 专用版
 原作者: @sazs34
 修改: mickeu (适配 Surge API)
-更新日期: 2026/07/30
+版本: v2 (2026/10/01)
+- 清理重复 $done / 移除多余通知参数
+- 签到失败时检测登录失效并提示重新抓 Cookie
 
 获取Cookie说明：
 打开百度贴吧App后，点击"我的"，即可自动获取Cookie，抓取成功会弹通知。
@@ -50,7 +52,7 @@ function mainCookie() {
   if (headerCookie && headerCookie.includes('BDUSS=')) {
     $persistentStore.write(headerCookie, ckKey);
     console.log('✅ 百度贴吧Cookie保存成功');
-    $notification.post('✅ 百度贴吧', '', 'Cookie获取成功', { url: undefined });
+    $notification.post('✅ 百度贴吧', '', 'Cookie获取成功');
   } else {
     console.log('❌ 写入Cookie失败, BDUSS值缺失.');
   }
@@ -93,25 +95,26 @@ async function mainSign() {
     var isSuccess = signResp && signResp.no === 0 && signResp.error === 'success' && signResp.data && signResp.data.tbs;
 
     if (!isSuccess) {
-      console.log('❌ 签到失败: ' + ((signResp && signResp.error) ? signResp.error : '接口数据获取失败'));
-      $notification.post('贴吧签到', '', '签到失败：' + ((signResp && signResp.error) ? signResp.error : '接口数据获取失败'));
-      $done();
+      var failReason = (signResp && signResp.error) ? signResp.error : '接口数据获取失败';
+      var cookieHint = /login|登录|未登录/i.test(failReason) ? '（Cookie可能已失效，请重新抓取）' : '';
+      console.log('❌ 签到失败: ' + failReason);
+      $notification.post('贴吧签到', '', '签到失败：' + failReason + cookieHint);
       return;
     }
 
     var forums = signResp.data.like_forum;
     var tbs = signResp.data.tbs;
-    var total = forums.length;
-    var results = [];
-
-    console.log('📋 共 ' + total + ' 个贴吧');
 
     if (!forums || forums.length === 0) {
       console.log('❌ 没有关注的贴吧');
       $notification.post('贴吧签到', '', '签到失败：请确认您有关注的贴吧');
-      $done();
       return;
     }
+
+    var total = forums.length;
+    var results = [];
+
+    console.log('📋 共 ' + total + ' 个贴吧');
 
     // 决定并行还是串行
     var isParallel = useParallel === 2 || (useParallel === 0 && forums.length < 30);
@@ -138,6 +141,7 @@ async function mainSign() {
     for (var i = 0; i < Math.ceil(total / singleNotifyCount); i++) {
       var batch = results.splice(0, singleNotifyCount);
       var successCount = 0;
+      var loginFailed = false;
       var notifyText = '';
 
       for (var j = 0; j < batch.length; j++) {
@@ -150,7 +154,14 @@ async function mainSign() {
         } else {
           notifyText += '【' + res.bar + '】' + (res.errorCode === 0 ? '签到成功' : '签到失败') + '，' +
             (res.errorCode === 0 ? res.errorMsg : '原因：' + res.errorMsg) + '\n';
+          if (res.errorCode !== 0 && /login|登录|未登录/i.test(res.errorMsg || '')) {
+            loginFailed = true;
+          }
         }
+      }
+
+      if (loginFailed) {
+        notifyText += '⚠️ Cookie可能已失效，请重新抓取\n';
       }
 
       var title = '贴吧签到';
@@ -163,8 +174,6 @@ async function mainSign() {
     console.log('❌ 网络请求异常: ' + e);
     $notification.post('贴吧签到', '', '签到失败：网络请求异常');
   }
-
-  $done();
 }
 
 function signBar(bar, tbs, cookieVal) {
