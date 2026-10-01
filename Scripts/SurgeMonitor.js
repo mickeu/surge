@@ -10,6 +10,7 @@
  *
  * API: GET /v1/metrics
  *
+ * v9: 紧凑对齐——值列统一第10位，最大3空格；"请求中"标签替代"请求...进行中"
  * v8: 顶部三行数值列严格对齐；"流量统计"保持4字标题，纯文字无图标
  * v7: "WiFi流量"标签去空格，与其余流量标签宽度对齐
  * v6: "流量统计"作为流量区标题移到前面(去括号)；全部流量行标签对齐
@@ -342,13 +343,13 @@ $httpClient.get(
         );
 
         const content = [
-            "内存占用：  " + formatBytes(memory ? memory.value : NaN),
+            "内存占用： " + formatBytes(memory ? memory.value : NaN),
             "",
-            "运行时间：  " + formatUptime(uptime ? uptime.value : NaN),
+            "运行时间： " + formatUptime(uptime ? uptime.value : NaN),
             "",
-            "请求：      " +
+            "请求中：   " +
                 formatNumber(activeRequests ? activeRequests.value : NaN) +
-                " 进行中 · DNS " +
+                " · DNS " +
                 formatNumber(dnsCache ? dnsCache.value : NaN) +
                 " · 封禁 " +
                 formatNumber(activeBans ? activeBans.value : NaN),
