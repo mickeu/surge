@@ -10,6 +10,8 @@
  *
  * API: GET /v1/metrics
  *
+ * v7: "WiFi流量"标签去空格，与其余流量标签宽度对齐
+ * v6: "流量统计"作为流量区标题移到前面(去括号)；全部流量行标签对齐
  * v5: 新增 WiFi/蜂窝流量拆分；底部加（流量统计）；"请求"标签恢复并压缩空格
  * v4: 面板标签改为等宽对齐，去掉"请求"后的长空格
  * v3: 新增进行中请求/DNS缓存/活跃封禁/直连-代理流量详情
@@ -349,6 +351,8 @@ $httpClient.get(
                 formatNumber(dnsCache ? dnsCache.value : NaN) +
                 " · 封禁 " +
                 formatNumber(activeBans ? activeBans.value : NaN),
+            "",
+            "流量统计",
             "直连流量： ↓ " +
                 formatBytes(directIn) +
                 " ↑ " +
@@ -357,7 +361,7 @@ $httpClient.get(
                 formatBytes(proxyIn) +
                 " ↑ " +
                 formatBytes(proxyOut),
-            "WiFi 流量： ↓ " +
+            "WiFi流量： ↓ " +
                 formatBytes(wifiIn) +
                 " ↑ " +
                 formatBytes(wifiOut),
@@ -365,9 +369,10 @@ $httpClient.get(
                 formatBytes(cellularIn) +
                 " ↑ " +
                 formatBytes(cellularOut),
-            "",
-            "↓ " + formatBytes(download) + "     ↑ " + formatBytes(upload),
-            "（流量统计）",
+            "总流量：   ↓ " +
+                formatBytes(download) +
+                " ↑ " +
+                formatBytes(upload),
             "",
             "Surge " + version + " · Build " + build + " · " + system
         ].join("\n");
