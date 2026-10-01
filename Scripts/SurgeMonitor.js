@@ -10,6 +10,7 @@
  *
  * API: GET /v1/metrics
  *
+ * v17: 汇总行标签由"总流量"改为"流量统计"
  * v16: 流量区标题改为"流量明细"，避免与"总流量"行混淆
  * v15: DNS请求改回DNS缓存；请求行冒号后去空格，紧凑排布
  * v14: 恢复 HTTP请求/DNS请求/封禁 三指标布局（用户确认）
@@ -378,7 +379,7 @@ $httpClient.get(
                 formatBytes(cellularIn) +
                 " ↑ " +
                 formatBytes(cellularOut),
-            "总流量：   ↓ " +
+            "流量统计： ↓ " +
                 formatBytes(download) +
                 " ↑ " +
                 formatBytes(upload),
