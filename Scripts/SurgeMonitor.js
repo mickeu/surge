@@ -10,6 +10,7 @@
  *
  * API: GET /v1/metrics
  *
+ * v16: 流量区标题改为"流量明细"，避免与"总流量"行混淆
  * v15: DNS请求改回DNS缓存；请求行冒号后去空格，紧凑排布
  * v14: 恢复 HTTP请求/DNS请求/封禁 三指标布局（用户确认）
  * v13: 请求行只显示进行中请求与封禁，隐藏 DNS 缓存；两标签等宽值列对齐
@@ -360,7 +361,7 @@ $httpClient.get(
                 " · 封禁：" +
                 formatNumber(activeBans ? activeBans.value : NaN),
             "",
-            "流量统计",
+            "流量明细",
             "直连流量： ↓ " +
                 formatBytes(directIn) +
                 " ↑ " +
