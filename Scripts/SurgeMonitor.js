@@ -9,13 +9,24 @@
  *   surge_interface_out_bytes_total{interface}
  *
  * API: GET /v1/metrics
+ *
+ * v3: 新增进行中请求/DNS缓存/活跃封禁/直连-代理流量详情
+ * v2: 流量统计排除 lo0 回环接口；请求加显式 timeout(8s)
  */
 
 const API_KEY = "surgetest";
 const METRICS_URL = "http://127.0.0.1:6171/v1/metrics";
+const REQUEST_TIMEOUT = 8000;
 
 function isFiniteNumber(value) {
     return isFinite(Number(value));
+}
+
+function formatNumber(value) {
+    if (!isFiniteNumber(value)) {
+        return "—";
+    }
+    return String(Math.round(Number(value)));
 }
 
 function formatBytes(value) {
@@ -125,6 +136,30 @@ function sumMetrics(metrics, metricName) {
             metrics[i].name === metricName &&
             isFiniteNumber(metrics[i].value)
         ) {
+            // 排除本机回环(lo0)接口，避免统计到 Surge 自身流量
+            if (metrics[i].labels && metrics[i].labels.interface === "lo0") {
+                continue;
+            }
+            total += Number(metrics[i].value);
+            found = true;
+        }
+    }
+
+    return found ? total : NaN;
+}
+
+function sumMetricsByLabel(metrics, metricName, labelName, labelValue) {
+    let total = 0;
+    let found = false;
+
+    for (let i = 0; i < metrics.length; i++) {
+        if (
+            metrics[i].name === metricName &&
+            isFiniteNumber(metrics[i].value)
+        ) {
+            if (metrics[i].labels[labelName] !== labelValue) {
+                continue;
+            }
             total += Number(metrics[i].value);
             found = true;
         }
@@ -172,6 +207,7 @@ setTimeout(function () {
 $httpClient.get(
     {
         url: METRICS_URL,
+        timeout: REQUEST_TIMEOUT,
         headers: {
             Accept: "text/plain",
             "X-Key": API_KEY
@@ -239,10 +275,44 @@ $httpClient.get(
             "surge_interface_out_bytes_total"
         );
 
+        const activeRequests = getMetric(metrics, "surge_active_requests");
+        const dnsCache = getMetric(metrics, "surge_dns_cache_entries");
+        const activeBans = getMetric(metrics, "surge_active_bans");
+
+        const directIn = sumMetricsByLabel(
+            metrics,
+            "surge_policy_in_bytes_total",
+            "policy",
+            "DIRECT"
+        );
+        const directOut = sumMetricsByLabel(
+            metrics,
+            "surge_policy_out_bytes_total",
+            "policy",
+            "DIRECT"
+        );
+        const proxyIn = download - directIn;
+        const proxyOut = upload - directOut;
+
         const content = [
             "内存占用：  " + formatBytes(memory ? memory.value : NaN),
             "",
             "运行时间：  " + formatUptime(uptime ? uptime.value : NaN),
+            "",
+            "请求：     " +
+                formatNumber(activeRequests ? activeRequests.value : NaN) +
+                " 进行中 · DNS " +
+                formatNumber(dnsCache ? dnsCache.value : NaN) +
+                " · 封禁 " +
+                formatNumber(activeBans ? activeBans.value : NaN),
+            "直连流量： ↓ " +
+                formatBytes(directIn) +
+                " ↑ " +
+                formatBytes(directOut),
+            "代理流量： ↓ " +
+                formatBytes(proxyIn) +
+                " ↑ " +
+                formatBytes(proxyOut),
             "",
             "↓ " + formatBytes(download) + "     ↑ " + formatBytes(upload),
             "",
