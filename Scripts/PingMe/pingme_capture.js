@@ -59,13 +59,17 @@ if (url.includes('/app/queryBalanceAndBonus')) {
 
 $done();
 
+function safeDecode(s) {
+    try { return decodeURIComponent(s || ''); } catch (e) { return s || ''; }
+}
+
 function parseRawQuery(url) {
     const idx = url.indexOf('?');
     if (idx === -1) return {};
     const qs = url.substring(idx + 1);
     const params = {};
     qs.split('&').forEach(pair => {
-        const [k, v] = pair.split('=').map(s => decodeURIComponent(s || ''));
+        const [k, v] = pair.split('=').map(safeDecode);
         if (k) params[k] = v;
     });
     return params;

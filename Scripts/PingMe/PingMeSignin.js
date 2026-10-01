@@ -41,6 +41,9 @@ const fakeDeviceId = genFakeDeviceId();
 startTasks().then(r => {
     try { $surge?.logbook(`PingMe签到 ${$.balanceSummary || '完成'}`); } catch(e){}
     $.done()
+}).catch(err => {
+    console.log('PingMe 签到异常结束', err && err.error || err);
+    $.done();
 });
 
 async function startTasks() {
@@ -71,17 +74,24 @@ async function startTasks() {
     const headers = buildHeaders(capture, ua);
 
     function fetchApi(path, overrideDeviceId) {
-        // return $task.fetch({ url: buildUrl(path, capture, overrideDeviceId), method: 'GET', headers });
-        return $.http.get({url: buildUrl(path, capture, overrideDeviceId), headers: headers});
+        // 10s 超时，防止 API 挂起拖垮整个脚本（最坏视频循环 5×(1.5+8+10)s，仍在预算内）
+        return $.http.get({url: buildUrl(path, capture, overrideDeviceId), headers: headers, timeout: 10000});
     }
 
+    // 视频奖励总时长预算：达到上限提前结束，避免卡满面板/cron timeout
+    const VIDEO_BUDGET_MS = 60000;
     function doVideoLoop(count) {
         let i = 0;
+        const t0 = Date.now();
 
         function next() {
             if (i >= count) return Promise.resolve();
             return new Promise(resolve => {
                 setTimeout(() => {
+                    if (Date.now() - t0 > VIDEO_BUDGET_MS) {
+                        $.nodeNotifyMsg.push('⏹ 视频奖励已达总时长上限，提前结束');
+                        return resolve();
+                    }
                     i++;
                     fetchApi('videoBonus', fakeDeviceId).then(res => {
                         try {
