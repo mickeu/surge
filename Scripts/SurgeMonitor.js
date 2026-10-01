@@ -10,6 +10,7 @@
  *
  * API: GET /v1/metrics
  *
+ * v15: DNS请求改回DNS缓存；请求行冒号后去空格，紧凑排布
  * v14: 恢复 HTTP请求/DNS请求/封禁 三指标布局（用户确认）
  * v13: 请求行只显示进行中请求与封禁，隐藏 DNS 缓存；两标签等宽值列对齐
  * v12: 请求行改为 HTTP请求/DNS请求/封禁 顺序，紧凑排布、流量区保持对齐
@@ -352,11 +353,11 @@ $httpClient.get(
             "",
             "运行时间： " + formatUptime(uptime ? uptime.value : NaN),
             "",
-            "HTTP请求： " +
+            "HTTP请求：" +
                 formatNumber(activeRequests ? activeRequests.value : NaN) +
-                " · DNS请求： " +
+                " · DNS缓存：" +
                 formatNumber(dnsCache ? dnsCache.value : NaN) +
-                " · 封禁： " +
+                " · 封禁：" +
                 formatNumber(activeBans ? activeBans.value : NaN),
             "",
             "流量统计",
