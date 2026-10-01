@@ -10,6 +10,7 @@
  *
  * API: GET /v1/metrics
  *
+ * v11: 请求行三标签等宽（DNS缓存/请求中/封禁数），值列第8位对齐、无大段空格
  * v10: 请求行改为 DNS缓存/请求中/封禁 顺序，内部值列对齐
  * v9: 紧凑对齐——值列统一第10位，最大3空格；"请求中"标签替代"请求...进行中"
  * v8: 顶部三行数值列严格对齐；"流量统计"保持4字标题，纯文字无图标
@@ -352,7 +353,7 @@ $httpClient.get(
                 formatNumber(dnsCache ? dnsCache.value : NaN) +
                 " · 请求中： " +
                 formatNumber(activeRequests ? activeRequests.value : NaN) +
-                " · 封禁   " +
+                " · 封禁数： " +
                 formatNumber(activeBans ? activeBans.value : NaN),
             "",
             "流量统计",
