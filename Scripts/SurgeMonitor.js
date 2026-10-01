@@ -10,6 +10,7 @@
  *
  * API: GET /v1/metrics
  *
+ * v8: 顶部三行数值列严格对齐；"流量统计"保持4字标题，纯文字无图标
  * v7: "WiFi流量"标签去空格，与其余流量标签宽度对齐
  * v6: "流量统计"作为流量区标题移到前面(去括号)；全部流量行标签对齐
  * v5: 新增 WiFi/蜂窝流量拆分；底部加（流量统计）；"请求"标签恢复并压缩空格
@@ -345,7 +346,7 @@ $httpClient.get(
             "",
             "运行时间：  " + formatUptime(uptime ? uptime.value : NaN),
             "",
-            "请求： " +
+            "请求：      " +
                 formatNumber(activeRequests ? activeRequests.value : NaN) +
                 " 进行中 · DNS " +
                 formatNumber(dnsCache ? dnsCache.value : NaN) +
