@@ -10,6 +10,8 @@
  *
  * API: GET /v1/metrics
  *
+ * v5: 新增 WiFi/蜂窝流量拆分；底部加（流量统计）；"请求"标签恢复并压缩空格
+ * v4: 面板标签改为等宽对齐，去掉"请求"后的长空格
  * v3: 新增进行中请求/DNS缓存/活跃封禁/直连-代理流量详情
  * v2: 流量统计排除 lo0 回环接口；请求加显式 timeout(8s)
  */
@@ -168,6 +170,27 @@ function sumMetricsByLabel(metrics, metricName, labelName, labelValue) {
     return found ? total : NaN;
 }
 
+function sumMetricsByInterfacePrefix(metrics, metricName, prefix) {
+    let total = 0;
+    let found = false;
+
+    for (let i = 0; i < metrics.length; i++) {
+        if (
+            metrics[i].name === metricName &&
+            isFiniteNumber(metrics[i].value)
+        ) {
+            const iface = metrics[i].labels.interface || "";
+            if (!iface.startsWith(prefix)) {
+                continue;
+            }
+            total += Number(metrics[i].value);
+            found = true;
+        }
+    }
+
+    return found ? total : NaN;
+}
+
 var finished = false;
 
 function finishPanel(title, content, style, icon, iconColor) {
@@ -294,12 +317,33 @@ $httpClient.get(
         const proxyIn = download - directIn;
         const proxyOut = upload - directOut;
 
+        const wifiIn = sumMetricsByInterfacePrefix(
+            metrics,
+            "surge_interface_in_bytes_total",
+            "en"
+        );
+        const wifiOut = sumMetricsByInterfacePrefix(
+            metrics,
+            "surge_interface_out_bytes_total",
+            "en"
+        );
+        const cellularIn = sumMetricsByInterfacePrefix(
+            metrics,
+            "surge_interface_in_bytes_total",
+            "pdp_ip"
+        );
+        const cellularOut = sumMetricsByInterfacePrefix(
+            metrics,
+            "surge_interface_out_bytes_total",
+            "pdp_ip"
+        );
+
         const content = [
             "内存占用：  " + formatBytes(memory ? memory.value : NaN),
             "",
             "运行时间：  " + formatUptime(uptime ? uptime.value : NaN),
             "",
-            "请求：     " +
+            "请求： " +
                 formatNumber(activeRequests ? activeRequests.value : NaN) +
                 " 进行中 · DNS " +
                 formatNumber(dnsCache ? dnsCache.value : NaN) +
@@ -313,8 +357,17 @@ $httpClient.get(
                 formatBytes(proxyIn) +
                 " ↑ " +
                 formatBytes(proxyOut),
+            "WiFi 流量： ↓ " +
+                formatBytes(wifiIn) +
+                " ↑ " +
+                formatBytes(wifiOut),
+            "蜂窝流量： ↓ " +
+                formatBytes(cellularIn) +
+                " ↑ " +
+                formatBytes(cellularOut),
             "",
             "↓ " + formatBytes(download) + "     ↑ " + formatBytes(upload),
+            "（流量统计）",
             "",
             "Surge " + version + " · Build " + build + " · " + system
         ].join("\n");
