@@ -1,8 +1,13 @@
-// auto-reconnect.js v8
+// auto-reconnect.js v9
 // 断线自动重连 + 定时巡检（同一份脚本，双挂载点，完全自适应任意策略组配置）
 //   断线重连 = type=event,event-name=network-changed,script-path=...
-//   定时巡检 = type=cron,cronexp="0 */30 * * *",script-path=...
+//   定时巡检 = type=cron,cronexp="0 */30 * * *",script-path=...,wake-system=true
 // 触发源区分：$event 必须先 typeof 防护再引用（cron 环境未声明会 ReferenceError 静默崩溃）
+//
+// v9 变更（2026-10-01 审查优化）：
+//   - $notification.post 的 auto-dismiss 改用 Boolean true（官方文档定义为 Boolean，非秒数）
+//   - clearTimeout 加 typeof 防护（engine=jsc 时不可用；auto=WebView 正常）
+//   - 串行测速加总预算 MAX_TOTAL_MS，组多时提前退出，避免整个脚本被 timeout 强杀
 //
 // 通用性设计（不写死任何组名/数量）：
 //   1. 动态找出所有 select 组（GET /v1/policies/detail 判断类型），只看"叶子"组：
@@ -23,8 +28,9 @@
 
 // ===== 可配置（$argument 可覆盖） =====
 var SETTLE_MS = 3000;        // 断线模式：网络稳定等待（巡检模式自动置 0）
-var DISMISS = 5;             // 通知自动消除秒数
+var DISMISS = true;         // 通知自动消除（Boolean，官方文档定义；argument=DISMISS=0/false 可关闭）
 var TEST_TIMEOUT = 20000;    // 单组测速超时 ms
+var MAX_TOTAL_MS = 90000;    // 串行测速总预算 ms（timeout=120 时留收尾余量，组多防超时被强杀）
 // v6 约束（默认不限制任何组/节点；有需求的用户通过 $argument 传入）
 var V6_NODES = [];           // 支持 IPv6 的节点名列表，如: ['🇯🇵日本','🇸🇬新加坡']
 var V6_ONLY_GROUPS = [];     // 必须使用 v6 节点的组名列表，如: ['Telegram']
@@ -44,21 +50,26 @@ if (MODE === 'patrol') SETTLE_MS = 0; // 巡检时网络早已稳定，无需等
     try { ARG = Object.fromEntries($argument.split('&').map(function(i) { var p = i.split('='); return [p[0], p[1]]; })); } catch (e) {}
   }
   if (ARG.SETTLE_MS && /^\d+$/.test(ARG.SETTLE_MS)) SETTLE_MS = parseInt(ARG.SETTLE_MS, 10);
-  if (ARG.DISMISS && /^\d+$/.test(ARG.DISMISS)) DISMISS = parseInt(ARG.DISMISS, 10);
+  if (ARG.DISMISS) DISMISS = !/^(0|false|no)$/i.test(ARG.DISMISS);
   if (ARG.TEST_TIMEOUT && /^\d+$/.test(ARG.TEST_TIMEOUT)) TEST_TIMEOUT = parseInt(ARG.TEST_TIMEOUT, 10);
+  if (ARG.MAX_TOTAL_MS && /^\d+$/.test(ARG.MAX_TOTAL_MS)) MAX_TOTAL_MS = parseInt(ARG.MAX_TOTAL_MS, 10);
   if (ARG.V6_NODES) V6_NODES = ARG.V6_NODES.split(',').map(function(s){ return s.trim(); }).filter(Boolean);
   if (ARG.V6_ONLY_GROUPS) V6_ONLY_GROUPS = ARG.V6_ONLY_GROUPS.split(',').map(function(s){ return s.trim(); }).filter(Boolean);
 
   var log = function(m) { console.log('[auto-reconnect/' + MODE + '] ' + m); };
   var delay = function(ms) { return new Promise(function(r) { setTimeout(r, ms); }); };
   var enc = encodeURIComponent;
+  // clearTimeout 只在 WebView 引擎存在（engine=jsc 时 typeof=undefined，回调里直接调用会抛异常）
+  function safeClearTimeout(t) {
+    try { if (typeof clearTimeout === 'function') clearTimeout(t); } catch (e) {}
+  }
 
   function httpAPI(path, method, body, timeoutMs) {
     return new Promise(function(resolve) {
       var done = false;
       var timer = setTimeout(function() { if (!done) { done = true; resolve({}); } }, timeoutMs || 8000);
       $httpAPI(method || 'POST', path, body || null, function(r) {
-        if (!done) { done = true; clearTimeout(timer); resolve(r || {}); }
+        if (!done) { done = true; safeClearTimeout(timer); resolve(r || {}); }
       });
     });
   }
@@ -85,7 +96,7 @@ if (MODE === 'patrol') SETTLE_MS = 0; // 巡检时网络早已稳定，无需等
     return (r && Array.isArray(r.available)) ? r.available : null;
   }
 
-  // v8: MTProto IPv6 自动判定 —— 没有 MTProto 模块或未开 ipv6，则不需要 v6 节点
+  // MTProto IPv6 自动判定 —— 没有 MTProto 模块或未开 ipv6，则不需要 v6 节点
   async function mtprotoIPv6Enabled() {
     var r = await httpAPI('/v1/profiles/current?sensitive=0', 'GET');
     var txt = r.profile || '';
@@ -94,7 +105,7 @@ if (MODE === 'patrol') SETTLE_MS = 0; // 巡检时网络早已稳定，无需等
     return /^ipv6\s*=\s*true/m.test(m[1]);        // 开了 ipv6 才需要 v6 节点
   }
 
-  // v8: 节点 v6 能力自动检测 —— 让节点直连 IPv6 地址(Cloudflare Anycast 443)，
+  // 节点 v6 能力自动检测 —— 让节点直连 IPv6 地址(Cloudflare Anycast 443)，
   // 能握手=支持 v6 出口；失败/超时=不支持
   // 注意 $httpClient 签名: get(options对象含url/policy/timeout, callback)；timeout 单位秒
   function probeV6(name) {
@@ -104,11 +115,11 @@ if (MODE === 'patrol') SETTLE_MS = 0; // 巡检时网络早已稳定，无需等
       try {
         $httpClient.get({ url: 'https://[2606:4700:4700::1111]/', policy: name, timeout: 5 }, function(err, resp) {
           if (done) return;
-          done = true; clearTimeout(timer);
+          done = true; safeClearTimeout(timer);
           resolve(!err && resp && resp.status && resp.status >= 200 && resp.status < 500);
         });
       } catch (e) {
-        if (!done) { done = true; clearTimeout(timer); resolve(false); }
+        if (!done) { done = true; safeClearTimeout(timer); resolve(false); }
       }
     });
   }
@@ -121,7 +132,7 @@ if (MODE === 'patrol') SETTLE_MS = 0; // 巡检时网络早已稳定，无需等
     return results.filter(function(x) { return x.ok; }).map(function(x) { return x.name; });
   }
 
-  var v6Active = false; // v8: 运行时由 MTProto 判定赋值（pickCandidate 同步引用）
+  var v6Active = false; // 运行时由 MTProto 判定赋值（pickCandidate 同步引用）
 
   function pickCandidate(options, available, t) {
     // 返回切换候选节点名；无候选返回 null
@@ -129,7 +140,7 @@ if (MODE === 'patrol') SETTLE_MS = 0; // 巡检时网络早已稳定，无需等
     function ok(o) {
       if (!o.enabled || o.isGroup || o.name === t.selected) return false;
       if (o.name === 'DIRECT' || o.name === 'REJECT') return false;
-      // v6 锁定仅在"MTProto ipv6 生效"时启用（v8 动态判定）
+      // v6 锁定仅在"MTProto ipv6 生效"时启用（动态判定）
       if (v6Active && V6_ONLY_GROUPS.indexOf(t.name) >= 0 && V6_NODES.indexOf(o.name) < 0) return false;
       return true;
     }
@@ -173,7 +184,7 @@ if (MODE === 'patrol') SETTLE_MS = 0; // 巡检时网络早已稳定，无需等
     targets.forEach(function(t) { log('  - ' + t.name + ' 选中: ' + t.selected); });
     if (!targets.length) { log('无需要处理的组'); $done(); return; }
 
-    // v8: v6 约束自动判定
+    // v6 约束自动判定
     //   1. 未配置 V6_ONLY_GROUPS 或 MTProto 未启用/未开 ipv6 → 不锁 v6（候选不过滤）
     //   2. 需要锁 v6 且未显式指定 V6_NODES → 自动实测各候选节点的 v6 能力
     v6Active = V6_ONLY_GROUPS.length > 0 && await mtprotoIPv6Enabled();
@@ -189,9 +200,14 @@ if (MODE === 'patrol') SETTLE_MS = 0; // 巡检时网络早已稳定，无需等
       log('v6 节点自动检测: ' + (V6_NODES.length ? V6_NODES.join(', ') : '(候选均不支持 v6)'));
     }
 
-    // 串行组测速 + 判断 + 切换
+    // 串行组测速 + 判断 + 切换（预算内串行；组多超预算时提前退出，避免被 timeout 强杀）
     var switched = [];
+    var speedStart = Date.now();
     for (var j = 0; j < targets.length; j++) {
+      if (Date.now() - speedStart > MAX_TOTAL_MS) {
+        log('⚠️ 测速总耗时超过预算(' + (MAX_TOTAL_MS / 1000) + 's)，跳过剩余 ' + (targets.length - j) + ' 个组');
+        break;
+      }
       var t = targets[j];
       var available = await getAvailable(t.name);
       if (available === null) { log('  ' + t.name + ' ⚠️ 测速无结果(超时/冲突), 跳过不动'); continue; }
@@ -209,6 +225,9 @@ if (MODE === 'patrol') SETTLE_MS = 0; // 巡检时网络早已稳定，无需等
         switched.push(t.name + ': 无可用候选');
       }
     }
+
+    var speedElapsed = (Date.now() - speedStart) / 1000;
+    log('串行测速总耗时: ' + speedElapsed.toFixed(1) + 's');
 
     if (switched.length) {
       var title = (MODE === 'patrol') ? '节点定时巡检' : '断线自动重连';
