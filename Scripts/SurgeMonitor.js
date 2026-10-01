@@ -10,6 +10,7 @@
  *
  * API: GET /v1/metrics
  *
+ * v18: 流量区标题改为"本次启动流量明细"（流量自启动累计）
  * v17: 汇总行标签由"总流量"改为"流量统计"
  * v16: 流量区标题改为"流量明细"，避免与"总流量"行混淆
  * v15: DNS请求改回DNS缓存；请求行冒号后去空格，紧凑排布
@@ -362,7 +363,7 @@ $httpClient.get(
                 " · 封禁：" +
                 formatNumber(activeBans ? activeBans.value : NaN),
             "",
-            "流量明细",
+            "本次启动流量明细",
             "直连流量： ↓ " +
                 formatBytes(directIn) +
                 " ↑ " +
