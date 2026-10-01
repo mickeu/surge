@@ -1,5 +1,5 @@
 /**
- * IP 纯净度检测 — Scamalytics 真实评分 + 多源兜底
+ * IP 纯净度检测 — Scamalytics 真实评分 + 多源兜底（v7）
  *
  * 架构：
  *  Phase 1: 多源并发获取出口 IP（ip-api/ipinfo/ipwho/ip.sb/ifconfig）
@@ -7,6 +7,13 @@
  *  Phase 3: 无 key 时降级到 ip-api 布尔信号估算（旧逻辑）
  *
  * 规则法：不指定 policy，靠模块 [Rule] 段 RULE-SET 让检测域名走 {{{GROUP}}}
+ *
+ * v7（2026-10-01 审查修复）：
+ *  - 超时兜底 19s 对齐模块 timeout=20（原 16s 晚于 timeout=15，极端情况兜底来不及触发）
+ *  - x4b 交叉验证结果并入 proxyStatus 显示（原在 proxyStatus 计算后才 push，不生效）
+ *  - clearTimeout 加 typeof 防护（engine=jsc 时不可用）
+ *  - 清理未生效的黑名单死代码；Scamalytics user 为空时直接跳过
+ *  - 估算分数标注"纯净度"（Scamalytics 分数高=危险，估算分数高=安全，语义区分）
  */
 
 const META = "IP 纯净度检测";
@@ -35,12 +42,15 @@ function done(obj) {
   try { $done(obj); } catch (e) {}
 }
 
-// ---------- 超时兜底 ----------
+// ---------- 超时兜底（19s，配合模块 timeout=20，留 1s 给 $done 收尾） ----------
 setTimeout(() => done({
   title: META + " · 超时",
   content: "策略组: " + groupName + "\n所有源均超时，检查节点或规则集是否生效",
   icon: "exclamationmark.triangle", "icon-color": "#FF9500"
-}), 16000);
+}), 19000);
+
+// ---------- 工具函数 ----------
+function safeClearTimeout(t) { if (typeof clearTimeout === "function") clearTimeout(t); }
 
 // ---------- 国旗 ----------
 const FLAG = { CN:"🇨🇳",HK:"🇭🇰",TW:"🇹🇼",JP:"🇯🇵",SG:"🇸🇬",US:"🇺🇸",KR:"🇰🇷",GB:"🇬🇧",DE:"🇩🇪",FR:"🇫🇷",CA:"🇨🇦",AU:"🇦🇺",IN:"🇮🇳",RU:"🇷🇺",BR:"🇧🇷",NL:"🇳🇱",TR:"🇹🇷",TH:"🇹🇭",VN:"🇻🇳",PH:"🇵🇭",MY:"🇲🇾",ID:"🇮🇩",AE:"🇦🇪",AR:"🇦🇷",ES:"🇪🇸",IT:"🇮🇹",SE:"🇸🇪",CH:"🇨🇭",UA:"🇺🇦",PL:"🇵🇱",MX:"🇲🇽",CL:"🇨🇱" };
@@ -51,7 +61,7 @@ function fetchJson(url) {
   return new Promise(resolve => {
     const t = setTimeout(() => resolve(null), 9000);
     $httpClient.get(url, (err, resp, data) => {
-      clearTimeout(t);
+      safeClearTimeout(t);
       if (err || !data) return resolve(null);
       try { resolve(JSON.parse(data)); } catch (e) { resolve(null); }
     });
@@ -61,7 +71,7 @@ function fetchText(url) {
   return new Promise(resolve => {
     const t = setTimeout(() => resolve(null), 7000);
     $httpClient.get(url, (err, resp, data) => {
-      clearTimeout(t);
+      safeClearTimeout(t);
       resolve(err || !data ? null : String(data).trim());
     });
   });
@@ -69,7 +79,7 @@ function fetchText(url) {
 
 // ---------- Scamalytics API ----------
 function fetchScamalytics(ip) {
-  if (!SCAM_KEY || !ip) return Promise.resolve(null);
+  if (!SCAM_KEY || !SCAM_USER || !ip) return Promise.resolve(null);
   const url = "https://api11.scamalytics.com/v3/" + SCAM_USER + "/?key=" + SCAM_KEY + "&ip=" + encodeURIComponent(ip);
   return fetchJson(url).then(d => {
     if (!d || !d.scamalytics || d.scamalytics.status !== "ok") return null;
@@ -96,20 +106,16 @@ function parseScamalytics(s) {
   if (p.is_apple_icloud_private_relay) proxyFlags.push("iCloud中继");
   if (p.is_amazon_aws) proxyFlags.push("AWS");
   if (p.is_google) proxyFlags.push("Google");
-  const proxyStatus = proxyFlags.length > 0 ? "⚠️ " + proxyFlags.join("/") : "✅ 无";
 
-  // 外部数据源交叉验证
+  // 外部数据源交叉验证（先合并再计算状态，x4b 结果要能显示在面板上）
   const ext = s.external_datasources || {};
   const x4b = ext.x4bnet || {};
   if (x4b.is_datacenter && !p.is_datacenter) proxyFlags.push("机房(x4b)");
   if (x4b.is_vpn && !p.is_vpn) proxyFlags.push("VPN(x4b)");
+  const proxyStatus = proxyFlags.length > 0 ? "⚠️ " + proxyFlags.join("/") : "✅ 无";
 
-  // 黑名单
+  // 黑名单（外部黑名单仅作记录，不参与分数计算）
   const blacklisted = !!s.is_blacklisted_external;
-  const blExt = ext.firehol || {}, blIp = ext.ipsum || {}, blSpam = ext.spamhaus_drop || {};
-  if (blIp.ip_blacklisted || (blExt.ip_blacklisted_1day) || (blExt.ip_blacklisted_30)) {
-    // 补充外部黑名单检测
-  }
 
   // 类型判定
   let type;
@@ -219,10 +225,10 @@ function normIpwho(d) {
     };
   } else if (SCAM_KEY) {
     r = riskLevelLegacy(ipapi || {});
-    scamDisplay = { proxyStatus: "API失败", blacklisted: false, scoreLabel: r.score + "/100(估算)", riskLabel: "" };
+    scamDisplay = { proxyStatus: "API失败", blacklisted: false, scoreLabel: "纯净度 " + r.score + "/100(估算)", riskLabel: "" };
   } else {
     r = ipapi ? riskLevelLegacy(ipapi) : { type: "无信号", risk: "未知", score: 0 };
-    scamDisplay = { proxyStatus: "", blacklisted: false, scoreLabel: (r.score > 0 ? r.score + "/100" : "无数据"), riskLabel: "" };
+    scamDisplay = { proxyStatus: "", blacklisted: false, scoreLabel: (r.score > 0 ? "纯净度 " + r.score + "/100" : "无数据"), riskLabel: "" };
   }
 
   // 面板详细版
