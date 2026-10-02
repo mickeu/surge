@@ -49,6 +49,8 @@ DOMAIN,cdn.jsdelivr.net
 # 宽域（整个厂商国内直连合理）
 DOMAIN-SUFFIX,acer.com
 DOMAIN-SUFFIX,sensenova.cn // 商汤日日新 API
+# 商汤 SenseCore IAM/控制台（国内服务，走代理被掐断 TLS）
+DOMAIN-SUFFIX,sensecoreapi.cn
 DOMAIN-SUFFIX,admob-cn.com
 DOMAIN-SUFFIX,amplifi.com
 DOMAIN-SUFFIX,angruo.com
