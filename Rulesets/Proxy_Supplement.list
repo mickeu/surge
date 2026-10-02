@@ -1,9 +1,10 @@
 # NAME: Proxy_Supplement
 # AUTHOR: mickeu
 # REPO: https://github.com/mickeu/surge
-# UPDATED: 2026-09-27
-# DOMAIN-SUFFIX: 9
-# TOTAL: 9
+# UPDATED: 2026-10-02
+# DOMAIN-SUFFIX: 10
+# DOMAIN: 5
+# TOTAL: 15
 
 # 强制代理：防止被 Lan.list 的 fake-IP（198.18.0.0/15）误判直连
 DOMAIN-SUFFIX,sb.sb
@@ -24,3 +25,8 @@ DOMAIN,gss0.bdstatic.com
 
 # Azure blob 走代理（不在 Microsoft 规则集，国内直连极慢）
 DOMAIN-SUFFIX,blob.core.windows.net
+
+# WebRTC STUN 走代理，避免 UDP 直连泄露真实 IP
+DOMAIN,stun.chat.bilibili.com
+DOMAIN,stun.hitv.com
+DOMAIN,stun.miwifi.com
