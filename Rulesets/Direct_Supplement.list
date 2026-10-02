@@ -209,6 +209,8 @@ DOMAIN-SUFFIX,haitangw.cc
 DOMAIN-SUFFIX,nxinxz.com
 DOMAIN-SUFFIX,oiapi.net
 # Spotify OAuth 依赖（被广告规则误判 REJECT，需在广告拦截前放行）
+# 上游 Advertising_All 含 DOMAIN-SUFFIX,branch.io 整域拦截（10-01 新增），放行整域
+DOMAIN-SUFFIX,branch.io
 DOMAIN-SUFFIX,cdn.branch.io
 DOMAIN-SUFFIX,api3.branch.io
 DOMAIN-SUFFIX,firebaselogging-pa.googleapis.com
