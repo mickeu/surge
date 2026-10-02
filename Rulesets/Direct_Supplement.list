@@ -51,6 +51,8 @@ DOMAIN-SUFFIX,acer.com
 DOMAIN-SUFFIX,sensenova.cn // 商汤日日新 API
 # 商汤 SenseCore IAM/控制台（国内服务，走代理被掐断 TLS）
 DOMAIN-SUFFIX,sensecoreapi.cn
+# 微信支付账单/收银台（tenpay.wechatpay.cn 等，走代理被掐断，账单页打不开）
+DOMAIN-SUFFIX,wechatpay.cn
 DOMAIN-SUFFIX,admob-cn.com
 DOMAIN-SUFFIX,amplifi.com
 DOMAIN-SUFFIX,angruo.com
