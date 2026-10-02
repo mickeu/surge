@@ -213,3 +213,6 @@ DOMAIN-SUFFIX,cdn.branch.io
 DOMAIN-SUFFIX,api3.branch.io
 DOMAIN-SUFFIX,firebaselogging-pa.googleapis.com
 DOMAIN-SUFFIX,firebase-settings.crashlytics.com
+# DNSPod HTTPDNS 直连（QQ/微信依赖，走代理导致解析失败、日签卡等功能进不去）
+IP-CIDR,1.101.198.0/24,no-resolve
+IP-CIDR,1.101.199.0/24,no-resolve
