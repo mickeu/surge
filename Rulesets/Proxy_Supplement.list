@@ -1,10 +1,11 @@
 # NAME: Proxy_Supplement
 # AUTHOR: mickeu
 # REPO: https://github.com/mickeu/surge
-# UPDATED: 2026-10-02
+# UPDATED: 2026-10-04
 # DOMAIN-SUFFIX: 10
 # DOMAIN: 5
-# TOTAL: 15
+# IP-CIDR: 2
+# TOTAL: 17
 
 # 强制代理：防止被 Lan.list 的 fake-IP（198.18.0.0/15）误判直连
 DOMAIN-SUFFIX,sb.sb
@@ -36,3 +37,8 @@ DOMAIN-SUFFIX,browserleaks.com
 # steam.com/akamai.com 被 ChinaMax_All 误判为国内域名（全球服务，走直连打不开或慢）
 DOMAIN-SUFFIX,steam.com
 DOMAIN-SUFFIX,akamai.com
+
+# Google 被墙段误入 ChinaMax_All 直连（74.125.16.64/26 实测超时不可达，2026-10-04）
+IP-CIDR,74.125.16.64/26
+# Cloudflare 被墙段误入 ChinaMax_All 直连（104.27.168.0/24 实测超时不可达，2026-10-04）
+IP-CIDR,104.27.168.0/24
