@@ -129,3 +129,12 @@ DOMAIN-SUFFIX,16510010.com
 DOMAIN-SUFFIX,wostore.cn
 DOMAIN-SUFFIX,wo.cn
 DOMAIN-SUFFIX,wo.com.cn
+# 广告规则集误判拦截的正常服务（前置直连放行）
+DOMAIN-SUFFIX,juejin.cn // 稀土掘金（开发者社区）
+DOMAIN-SUFFIX,kingsoft.com // 金山软件官网
+DOMAIN-SUFFIX,ijinshan.com // 金山网络/猎豹移动
+DOMAIN-SUFFIX,ucweb.com // UC 优视
+DOMAIN-SUFFIX,baixing.com // 百姓网
+DOMAIN-SUFFIX,maka.im // 凡科
+DOMAIN-SUFFIX,youzu.com // 游族网络
+DOMAIN-SUFFIX,live800.com // 在线客服系统

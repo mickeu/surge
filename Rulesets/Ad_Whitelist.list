@@ -1,0 +1,17 @@
+# 广告规则集误判的境外正常服务（必须走代理，在广告拦截前放行，否则 REJECT 后无法访问）
+# 上游 Advertising_All 整域/KEYWORD 误杀，这些域名均非广告
+DOMAIN-SUFFIX,sc-static.net // Snapchat CDN
+DOMAIN-SUFFIX,snap.com // Snap 主域
+DOMAIN-SUFFIX,jwpcdn.com // JW Player 视频 CDN
+DOMAIN-SUFFIX,cloudflareinsights.com // Cloudflare Web Analytics
+DOMAIN-SUFFIX,squareup.com // Square 支付
+DOMAIN-SUFFIX,sentry.io // Sentry 错误监控
+DOMAIN-SUFFIX,newrelic.com // New Relic 监控
+DOMAIN-SUFFIX,slackb.com // Slack 静态资源
+DOMAIN-SUFFIX,vkcdnservice.com // VK CDN
+DOMAIN-SUFFIX,pixiv.org // pixiv 公司域
+DOMAIN-SUFFIX,bn5x.net // Disney+ CDN
+DOMAIN-SUFFIX,pancakeswap.finance // PancakeSwap DeFi（被 DOMAIN-KEYWORD,pancakeswap 误伤）
+DOMAIN-SUFFIX,plausible.io // Plausible 隐私统计（被 DOMAIN-KEYWORD,plausible. 误伤）
+DOMAIN-SUFFIX,nimiq.com // Nimiq 加密货币（被 DOMAIN-KEYWORD,nimiq 误伤）
+DOMAIN-SUFFIX,wixsite.com // Wix 免费建站平台（被 DOMAIN-KEYWORD,wixsite.com 误伤）
