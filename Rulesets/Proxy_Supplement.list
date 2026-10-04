@@ -33,3 +33,6 @@ DOMAIN,stun.miwifi.com
 
 # browserleaks.com 被 ChinaMax_All 误判为国内域名（blackmatrix7 数据错误），前置走代理避免泄露真实 IP
 DOMAIN-SUFFIX,browserleaks.com
+# steam.com/akamai.com 被 ChinaMax_All 误判为国内域名（全球服务，走直连打不开或慢）
+DOMAIN-SUFFIX,steam.com
+DOMAIN-SUFFIX,akamai.com
