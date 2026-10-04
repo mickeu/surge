@@ -226,3 +226,10 @@ IP-CIDR,1.101.199.0/24,no-resolve
 DOMAIN-SUFFIX,unisound.com
 # Cloudflare 中国版（腾讯云托管，走境外代理被服务端掐断 TLS，官网打不开）
 DOMAIN-SUFFIX,cloudflare-cn.com
+# 中国联通 App 全系域名（国内服务，走境外代理被掐断 TLS，报"网络不给力"）
+DOMAIN-SUFFIX,10010.com
+DOMAIN-SUFFIX,10010hyn.com
+DOMAIN-SUFFIX,16510010.com
+DOMAIN-SUFFIX,wostore.cn
+DOMAIN-SUFFIX,wo.cn
+DOMAIN-SUFFIX,wo.com.cn
