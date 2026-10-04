@@ -1,68 +1,24 @@
-# 补充直连规则集（被 FINAL 误走代理的国内业务域名）
-# 腾讯系（微信/QQ/邮箱/财付通等；漏走代理微信会一直"收取中"）
-DOMAIN-SUFFIX,qq.com
-DOMAIN-SUFFIX,yuanbao.com // 腾讯元宝独立域
-DOMAIN-SUFFIX,tenpay.com // 微信支付/财付通
-DOMAIN-SUFFIX,weixinbridge.com // 微信网页桥接
-DOMAIN-SUFFIX,weixin.com // 微信扩展域
-DOMAIN-SUFFIX,tencent-cloud.net // 腾讯云统计/PCDN
-DOMAIN-SUFFIX,jd.com // 京东
-DOMAIN-SUFFIX,360buyimg.com // 京东图片 CDN
-DOMAIN-SUFFIX,manmanbuy.com // 京东比价组件
-DOMAIN-SUFFIX,300hu.com // 京东商品视频 CDN
-DOMAIN-SUFFIX,qqmail.com
-DOMAIN-SUFFIX,wxgateway.com // 微信数据上报
-DOMAIN-SUFFIX,servicewechat.com // 微信小程序服务
-DOMAIN-SUFFIX,huaweicloud.com // 华为云登录/控制台
-# 百度 CDN（对境外 IP reset，必须直连；ss0./gss0. 走代理在 Rule.dconf 处理）
-DOMAIN-SUFFIX,bdimg.com
-# 字节系（抖音主站/API/CDN/对象存储，漏走代理会卡）
-DOMAIN-SUFFIX,amemv.com
-DOMAIN-SUFFIX,douyin.com
-DOMAIN-SUFFIX,snssdk.com
-DOMAIN-SUFFIX,bytedance.com
-DOMAIN-SUFFIX,pstatp.com
-DOMAIN-SUFFIX,ibytedapm.com
-DOMAIN-SUFFIX,byteimg.com
-DOMAIN-SUFFIX,iesdouyin.com
-DOMAIN-SUFFIX,douyinpic.com
-DOMAIN-SUFFIX,douyinvod.com
-DOMAIN-SUFFIX,douyinstatic.com
-DOMAIN-SUFFIX,ixigua.com
-DOMAIN-SUFFIX,bytegecko.com // 字节 CDN
-DOMAIN-SUFFIX,zijieapi.com // 字节 API
-DOMAIN-SUFFIX,bytetos.com // 字节对象存储
-# 天气数据源（彩云/和风，误走代理会超时）
-DOMAIN-SUFFIX,caiyunapp.com
-DOMAIN-SUFFIX,caiyun.com
-DOMAIN-SUFFIX,qweather.com
-# 其他国内业务（扫描发现走兜底）
+# 补充直连规则集（ChinaMax_All 未覆盖、或需在广告拦截/Global_All 前置直连的域名）
+# 腾讯/字节（ChinaMax 未收录的独立域）
+DOMAIN-SUFFIX,yuanbao.com // 腾讯元宝
+DOMAIN-SUFFIX,snssdk.com // 字节系 API
+# 其他国内业务
 DOMAIN-SUFFIX,didi.com
-DOMAIN-SUFFIX,unionpay.com
 DOMAIN-SUFFIX,gov.cn
-# DoH 服务器直连（否则走代理导致公众号图片极慢）
-DOMAIN-SUFFIX,doh.pub
-DOMAIN-SUFFIX,alidns.com
 # 规则集/脚本下载源
 DOMAIN,cdn.jsdelivr.net
-# 厂商更新站/CDN 直连（被 Global_All 覆盖走代理，前置直连）
-# 宽域（整个厂商国内直连合理）
+# 厂商国内直连（Global_All 误判走代理，前置直连）
 DOMAIN-SUFFIX,acer.com
 DOMAIN-SUFFIX,sensenova.cn // 商汤日日新 API
-# 商汤 SenseCore IAM/控制台（国内服务，走代理被掐断 TLS）
-DOMAIN-SUFFIX,sensecoreapi.cn
-# 微信支付账单/收银台（tenpay.wechatpay.cn 等，走代理被掐断，账单页打不开）
-DOMAIN-SUFFIX,wechatpay.cn
-DOMAIN-SUFFIX,admob-cn.com
+DOMAIN-SUFFIX,sensecoreapi.cn // 商汤 SenseCore（走代理被掐断 TLS）
+DOMAIN-SUFFIX,wechatpay.cn // 微信支付账单/收银台
 DOMAIN-SUFFIX,amplifi.com
 DOMAIN-SUFFIX,angruo.com
-DOMAIN-SUFFIX,app-analytics-services.com
 DOMAIN-SUFFIX,bdn.dev
 DOMAIN-SUFFIX,crisp.chat
 DOMAIN-SUFFIX,eprintsw.com
 DOMAIN-SUFFIX,eset.com
 DOMAIN-SUFFIX,fantv.hk
-DOMAIN-SUFFIX,gonglchuangl.net
 DOMAIN-SUFFIX,kaspersky.com
 DOMAIN-SUFFIX,msi.com
 DOMAIN-SUFFIX,ntdimg.com
@@ -81,14 +37,7 @@ DOMAIN-SUFFIX,widevine.com
 DOMAIN-SUFFIX,xn--ngstr-lra8j.com
 DOMAIN-SUFFIX,xtracloud.net
 DOMAIN-SUFFIX,xuite.net
-# 精确域名（厂商主域可能需要代理，只直连国内节点/更新站）
-DOMAIN,ccmdls.adobe.com
-DOMAIN,cdn.globalsigncdn.com.cdn.cloudflare.net
-DOMAIN,lenovo.com.cdn.cloudflare.net
-DOMAIN,oemssl.cn.cdn.cloudflare.net
-DOMAIN,qualcomm.cn.cdn.cloudflare.net
-DOMAIN,sectigochina.com.cdn.cloudflare.net
-DOMAIN,d4z1onkegyrs5.cloudfront.net
+# Dell 精确域名（厂商主域走代理，只直连国内节点/更新站）
 DOMAIN,afcs.dell.com
 DOMAIN,clientperipherals.dell.com
 DOMAIN,customization-cdn.dell.com
@@ -107,16 +56,7 @@ DOMAIN,supportal.dell.com
 DOMAIN,tsmapi.dell.com
 DOMAIN,utility.dell.com
 DOMAIN,www.dell.com
-DOMAIN,cn.download.nvidia.com
-DOMAIN,cdn.samsung.com
 DOMAIN,images.samsung.com
-DOMAIN,support-cn.samsung.com
-DOMAIN,cdn.jetbrains.com
-DOMAIN,download.jetbrains.com
-DOMAIN,createpoint.qti.qualcomm.com
-DOMAIN,qcc.qualcomm.com
-DOMAIN,my.st.com
-DOMAIN,www.st.com
 # 测速站点直连（避免走代理测不出真实网速）
 DOMAIN-SUFFIX,speedtest.net
 DOMAIN-SUFFIX,ookla.com
@@ -128,15 +68,9 @@ DOMAIN-SUFFIX,ooklaserver.net // Speedtest 测速服务器宿主域
 DOMAIN-KEYWORD,speedtest // 测速服务器关键字直连
 DOMAIN-KEYWORD,ookla
 DOMAIN,hk.mymonitor.space
-DOMAIN-SUFFIX,xfinfr.com // 国内 App 后端（阿里云北京）
 DOMAIN-SUFFIX,speedtest.cn // 国内测速站
 # 国内运营商官方测速节点（防被 FINAL 兜底误走代理）
-DOMAIN,cesu-hz.zjtelecom.com.cn
-DOMAIN,cesu-nb.zjtelecom.com.cn
-DOMAIN,speedtest1.online.sh.cn
-DOMAIN,speedtest.jsqiuying.com
 DOMAIN,mobile.shunicomtest.com
-DOMAIN,beijing.unicomtest.com
 DOMAIN,4gsuzhou1.speedtest.jsinfo.net
 DOMAIN,5gzhenjiang.speedtest.jsinfo.net
 DOMAIN,mobile.shunicomtest.com.prod.hosts.ooklaserver.net
@@ -144,57 +78,28 @@ DOMAIN,4gsuzhou1.speedtest.jsinfo.net.prod.hosts.ooklaserver.net
 DOMAIN,5gzhenjiang.speedtest.jsinfo.net.prod.hosts.ooklaserver.net
 # 极点云 PolarNode（VPS 预约站，走代理 500）
 DOMAIN-SUFFIX,polarnode.vip
-# 上海 AI Lab（OpenXLab / InternLM，被 Advertising_All 误判广告拦截）
+# 上海 AI Lab（OpenXLab/InternLM，被 Advertising_All 误判广告拦截）
 DOMAIN-SUFFIX,openxlab.org.cn
 DOMAIN-SUFFIX,intern-ai.org.cn
 # 美的智能家居（漏走代理会导致登录/验证码失败）
-DOMAIN-SUFFIX,midea.com
 DOMAIN-SUFFIX,smartmidea.com
-DOMAIN-SUFFIX,smartmidea.net
 DOMAIN-SUFFIX,midea-mcc.com
 DOMAIN-SUFFIX,did-cloud.com
-# 闲鱼/淘宝/阿里系（登录报 SSL 错误，需直连）
-DOMAIN-SUFFIX,goofish.com
-DOMAIN-SUFFIX,taobao.com
-DOMAIN-SUFFIX,tmall.com
-DOMAIN-SUFFIX,alicdn.com
-DOMAIN-SUFFIX,alipay.com
-DOMAIN-SUFFIX,mmstat.com // 阿里统计（也在广告规则集，防误杀）
-DOMAIN-SUFFIX,aliyuncs.com
-# 唯品会（漏走代理会导致页面打不开）
-DOMAIN-SUFFIX,vip.com
-DOMAIN-SUFFIX,vipstatic.com
-DOMAIN-SUFFIX,appsimg.com
-DOMAIN-SUFFIX,appvipshop.com
+# 阿里统计（也在广告规则集，防误杀需前置直连）
+DOMAIN-SUFFIX,mmstat.com
+# 阿里用户域（ChinaMax 未收录）
 DOMAIN-SUFFIX,alibabauser.com
-# 拼多多 CDN/API（ta./th. 被广告规则误判 REJECT，必须前置直连）
-DOMAIN-SUFFIX,pinduoduo.com
-DOMAIN-SUFFIX,yangkeduo.com
-DOMAIN-SUFFIX,pddpic.com
-# 豆瓣（影视海报/评分/图片 CDN）
-DOMAIN-SUFFIX,douban.com
-DOMAIN-SUFFIX,doubanio.com
-# 视频资源站通用 CDN（七牛/腾讯云/又拍云等，漏走代理会卡）
-DOMAIN-SUFFIX,qiniucdn.com
-DOMAIN-SUFFIX,qnssl.com
-DOMAIN-SUFFIX,qiniudns.com
-DOMAIN-SUFFIX,qcloud.com
-DOMAIN-SUFFIX,myqcloud.com
+# 视频资源站通用 CDN（ChinaMax 未收录的，漏走代理会卡）
 DOMAIN-SUFFIX,vodup.ai
 DOMAIN-SUFFIX,mycdn.me
-DOMAIN-SUFFIX,upaiyun.com
 DOMAIN-SUFFIX,upcdn.com
 DOMAIN-SUFFIX,upimg.com
 DOMAIN-SUFFIX,uservod.com
-DOMAIN-SUFFIX,kuaizhan.com
 DOMAIN-SUFFIX,bdximg.com
 DOMAIN-SUFFIX,imgcdn.cn
-DOMAIN-SUFFIX,cdngslb.com
-DOMAIN-SUFFIX,myalicdn.com
 DOMAIN-SUFFIX,vfcdn.net
 DOMAIN-SUFFIX,vfimg.com
-# 视频资源站 IP（直连比代理快 3 倍）
-# 元宝/腾讯 API 域名 DNS 空应答会导致规则集求值失败，IP 规则必须 no-resolve
+# 视频资源站 IP（直连比代理快 3 倍；元宝/腾讯 API DNS 空应答会致规则集求值失败，必须 no-resolve）
 DOMAIN-SUFFIX,one.one.one.one
 IP-CIDR,69.30.226.42/32,no-resolve
 IP-CIDR,192.187.115.106/32,no-resolve
@@ -207,27 +112,18 @@ DOMAIN-SUFFIX,lzcdn31.com
 DOMAIN-SUFFIX,lzcdn32.com
 DOMAIN-SUFFIX,lzcdn.com
 # 国内音源 API 直连（lx-music 源，原走代理被站点 403 拒绝）
-DOMAIN-SUFFIX,haitangw.net
-DOMAIN-SUFFIX,kstore.vip
-DOMAIN-SUFFIX,haitangw.cc
 DOMAIN-SUFFIX,nxinxz.com
 DOMAIN-SUFFIX,oiapi.net
 # Spotify OAuth 依赖（被广告规则误判 REJECT，需在广告拦截前放行）
-# 上游 Advertising_All 含 DOMAIN-SUFFIX,branch.io 整域拦截（10-01 新增），放行整域
+# 上游 Advertising_All 含 DOMAIN-SUFFIX,branch.io 整域拦截，放行整域
 DOMAIN-SUFFIX,branch.io
 DOMAIN-SUFFIX,cdn.branch.io
 DOMAIN-SUFFIX,api3.branch.io
 DOMAIN-SUFFIX,firebaselogging-pa.googleapis.com
-DOMAIN-SUFFIX,firebase-settings.crashlytics.com
 # DNSPod HTTPDNS 直连（QQ/微信依赖，走代理导致解析失败、日签卡等功能进不去）
 IP-CIDR,1.101.198.0/24,no-resolve
 IP-CIDR,1.101.199.0/24,no-resolve
-# 云知声 MaaS API（国内服务，走境外代理被服务端掐断 TLS，u2-flash 调不通）
-DOMAIN-SUFFIX,unisound.com
-# Cloudflare 中国版（腾讯云托管，走境外代理被服务端掐断 TLS，官网打不开）
-DOMAIN-SUFFIX,cloudflare-cn.com
-# 中国联通 App 全系域名（国内服务，走境外代理被掐断 TLS，报"网络不给力"）
-DOMAIN-SUFFIX,10010.com
+# 中国联通补充域名（ChinaMax_All 已有 10010.com，此处补充未收录的子域）
 DOMAIN-SUFFIX,10010hyn.com
 DOMAIN-SUFFIX,16510010.com
 DOMAIN-SUFFIX,wostore.cn
