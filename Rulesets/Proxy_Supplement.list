@@ -30,3 +30,6 @@ DOMAIN-SUFFIX,blob.core.windows.net
 DOMAIN,stun.chat.bilibili.com
 DOMAIN,stun.hitv.com
 DOMAIN,stun.miwifi.com
+
+# browserleaks.com 被 ChinaMax_All 误判为国内域名（blackmatrix7 数据错误），前置走代理避免泄露真实 IP
+DOMAIN-SUFFIX,browserleaks.com
