@@ -1,10 +1,12 @@
 #!name=Local Device Loopback
-#!desc=Reflect 10.7.0.1 back to this device for on-device developer tools. Surge 5.102.0+ [IP Rewrite] 官方示例：让 Surge 充当 LocalDevVPN
+#!desc=Reflect 10.7.0.1 back to this device for on-device developer tools. Surge 5.102.0+ [IP Rewrite] 官方示例：让 Surge 充当 LocalDevVPN。参数可控制 IPv6 VIF
 #!author=mickeu
 #!category=mickeu
+#!arguments=IPV6_VIF:disabled
+#!arguments-desc=IPv6 VIF 开关（默认 disabled）：disabled=禁用 IPv6 VIF（官方 LocalDevVPN 推荐）｜auto=本地网络有 IPv6 时自动启用｜always=始终启用 IPv6 VIF。修改参数后请在 Surge 中重新加载配置生效。
 
 [General]
-ipv6-vif = disabled // Some tools only recognize utun interfaces without an IPv6 address.
+ipv6-vif = {{{IPV6_VIF}}} // Some tools only recognize utun interfaces without an IPv6 address. Set to auto/always to re-enable IPv6 on VIF
 tun-included-routes = %INSERT% 10.7.0.1/32
 
 [IP Rewrite]
