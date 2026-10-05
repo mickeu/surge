@@ -24,7 +24,7 @@ DOMAIN-SUFFIX,msi.com
 DOMAIN-SUFFIX,ntdimg.com
 DOMAIN-SUFFIX,ntp.org
 DOMAIN-SUFFIX,oasisfeng.com
-DOMAIN-SUFFIX,pki.goog
+
 DOMAIN-SUFFIX,pxcc.com
 DOMAIN-SUFFIX,qcomgeo2.com
 DOMAIN-SUFFIX,redhat.com
@@ -34,7 +34,7 @@ DOMAIN-SUFFIX,skymansion.net
 DOMAIN-SUFFIX,ssl-images-amazon.com
 DOMAIN-SUFFIX,tvb.com
 DOMAIN-SUFFIX,widevine.com
-DOMAIN-SUFFIX,xn--ngstr-lra8j.com
+
 DOMAIN-SUFFIX,xtracloud.net
 DOMAIN-SUFFIX,xuite.net
 # Dell 精确域名（厂商主域走代理，只直连国内节点/更新站）
@@ -114,12 +114,7 @@ DOMAIN-SUFFIX,lzcdn.com
 # 国内音源 API 直连（lx-music 源，原走代理被站点 403 拒绝）
 DOMAIN-SUFFIX,nxinxz.com
 DOMAIN-SUFFIX,oiapi.net
-# Spotify OAuth 依赖（被广告规则误判 REJECT，需在广告拦截前放行）
-# 上游 Advertising_All 含 DOMAIN-SUFFIX,branch.io 整域拦截，放行整域
-DOMAIN-SUFFIX,branch.io
-DOMAIN-SUFFIX,cdn.branch.io
-DOMAIN-SUFFIX,api3.branch.io
-DOMAIN-SUFFIX,firebaselogging-pa.googleapis.com
+
 # DNSPod HTTPDNS 直连（QQ/微信依赖，走代理导致解析失败、日签卡等功能进不去）
 IP-CIDR,1.101.198.0/24,no-resolve
 IP-CIDR,1.101.199.0/24,no-resolve

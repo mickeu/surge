@@ -16,3 +16,10 @@ DOMAIN-SUFFIX,plausible.io // Plausible 隐私统计（被 DOMAIN-KEYWORD,plausi
 DOMAIN-SUFFIX,nimiq.com // Nimiq 加密货币（被 DOMAIN-KEYWORD,nimiq 误伤）
 DOMAIN-SUFFIX,wixsite.com // Wix 免费建站平台（被 DOMAIN-KEYWORD,wixsite.com 误伤）
 DOMAIN-SUFFIX,onelink.me // Discord AppsFlyer 追踪域（被 Advertising_All 误判 REJECT，需走代理才能打开邀请深链）
+
+# Spotify OAuth 深链依赖（Advertising_All 整域拦截；原误放 Direct_Supplement 直连不通，改走代理）
+DOMAIN-SUFFIX,branch.io
+DOMAIN-SUFFIX,cdn.branch.io
+DOMAIN-SUFFIX,api3.branch.io
+# Firebase 日志上报（Gemini App 依赖，被 Advertising_All 误杀；googleapis 需走代理）
+DOMAIN-SUFFIX,firebaselogging-pa.googleapis.com
