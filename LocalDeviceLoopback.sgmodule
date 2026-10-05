@@ -1,0 +1,12 @@
+#!name=Local Device Loopback
+#!desc=Reflect 10.7.0.1 back to this device for on-device developer tools. Surge 5.102.0+ [IP Rewrite] 官方示例：让 Surge 充当 LocalDevVPN
+#!author=mickeu
+#!category=mickeu
+
+# 部分工具只识别无 IPv6 地址的 utun 接口；如无需兼容可删掉 ipv6-vif 行
+[General]
+ipv6-vif = disabled
+tun-included-routes = %INSERT% 10.7.0.1/32
+
+[IP Rewrite]
+10.7.0.1 = reflect
