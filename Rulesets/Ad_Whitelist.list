@@ -15,3 +15,4 @@ DOMAIN-SUFFIX,pancakeswap.finance // PancakeSwap DeFi（被 DOMAIN-KEYWORD,panca
 DOMAIN-SUFFIX,plausible.io // Plausible 隐私统计（被 DOMAIN-KEYWORD,plausible. 误伤）
 DOMAIN-SUFFIX,nimiq.com // Nimiq 加密货币（被 DOMAIN-KEYWORD,nimiq 误伤）
 DOMAIN-SUFFIX,wixsite.com // Wix 免费建站平台（被 DOMAIN-KEYWORD,wixsite.com 误伤）
+DOMAIN-SUFFIX,onelink.me // Discord AppsFlyer 追踪域（被 Advertising_All 误判 REJECT，需走代理才能打开邀请深链）
