@@ -3,34 +3,9 @@
 #!author=mickeu
 #!category=mickeu
 
-# 默认不关闭 IPv6 VIF（保持主配置 ipv6-vif=auto，IPv6 继续走 Surge）
-# 若工具无法识别带 IPv6 的 utun 接口，取消下面一行注释再启用
 [General]
-# ipv6-vif = disabled
+ipv6-vif = disabled // Some tools only recognize utun interfaces without an IPv6 address.
 tun-included-routes = %INSERT% 10.7.0.1/32
 
 [IP Rewrite]
 10.7.0.1 = reflect
-
-# HTTPDNS 拦截（精简自可莉 HTTPDNS拦截器，确保 DNS 走系统通道被 Surge 接管）
-[Rule]
-DOMAIN-KEYWORD,httpdns,REJECT,extended-matching,pre-matching
-DOMAIN-KEYWORD,httpsdns,REJECT,extended-matching,pre-matching
-USER-AGENT,"httpdns*",REJECT
-USER-AGENT,"httpsdns*",REJECT
-DOMAIN,httpdns.kg.qq.com,REJECT,extended-matching,pre-matching
-DOMAIN,dns.weixin.qq.com,REJECT,extended-matching,pre-matching
-DOMAIN,httpdns.alicdn.com,REJECT,extended-matching,pre-matching
-DOMAIN,httpdns-api.aliyuncs.com,REJECT,extended-matching,pre-matching
-DOMAIN,httpdns-sc.aliyuncs.com,REJECT,extended-matching,pre-matching
-DOMAIN,httpdns.baidu.com,REJECT,extended-matching,pre-matching
-DOMAIN,httpsdns.baidu.com,REJECT,extended-matching,pre-matching
-DOMAIN,httpdns.browser.miui.com,REJECT,extended-matching,pre-matching
-DOMAIN,resolver.msg.xiaomi.net,REJECT,extended-matching,pre-matching
-DOMAIN,httpdns.platform.dbankcloud.com,REJECT,extended-matching,pre-matching
-DOMAIN,httpdns.platform.dbankcloud.cn,REJECT,extended-matching,pre-matching
-DOMAIN,httpdns.bilivideo.com,REJECT,extended-matching,pre-matching
-DOMAIN,httpdns.music.163.com,REJECT,extended-matching,pre-matching
-DOMAIN,httpdns.n.netease.com,REJECT,extended-matching,pre-matching
-DOMAIN,dns.jd.com,REJECT,extended-matching,pre-matching
-DOMAIN,dns.weibo.cn,REJECT,extended-matching,pre-matching
