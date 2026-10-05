@@ -23,3 +23,6 @@ DOMAIN-SUFFIX,cdn.branch.io
 DOMAIN-SUFFIX,api3.branch.io
 # Firebase 日志上报（Gemini App 依赖，被 Advertising_All 误杀；googleapis 需走代理）
 DOMAIN-SUFFIX,firebaselogging-pa.googleapis.com
+
+# Google 库 CDN（DanDan 模块误放直连，改走代理）
+DOMAIN-SUFFIX,ajax.googleapis.com

@@ -13,29 +13,22 @@ DOMAIN-SUFFIX,sensenova.cn // 商汤日日新 API
 DOMAIN-SUFFIX,sensecoreapi.cn // 商汤 SenseCore（走代理被掐断 TLS）
 DOMAIN-SUFFIX,wechatpay.cn // 微信支付账单/收银台
 DOMAIN-SUFFIX,amplifi.com
-DOMAIN-SUFFIX,angruo.com
-DOMAIN-SUFFIX,bdn.dev
 DOMAIN-SUFFIX,crisp.chat
 DOMAIN-SUFFIX,eprintsw.com
 DOMAIN-SUFFIX,eset.com
 DOMAIN-SUFFIX,fantv.hk
 DOMAIN-SUFFIX,kaspersky.com
 DOMAIN-SUFFIX,msi.com
-DOMAIN-SUFFIX,ntdimg.com
 DOMAIN-SUFFIX,ntp.org
 DOMAIN-SUFFIX,oasisfeng.com
 
-DOMAIN-SUFFIX,pxcc.com
-DOMAIN-SUFFIX,qcomgeo2.com
 DOMAIN-SUFFIX,redhat.com
 DOMAIN-SUFFIX,samsungapps.com
 DOMAIN-SUFFIX,sc.com
-DOMAIN-SUFFIX,skymansion.net
 DOMAIN-SUFFIX,ssl-images-amazon.com
 DOMAIN-SUFFIX,tvb.com
 DOMAIN-SUFFIX,widevine.com
 
-DOMAIN-SUFFIX,xtracloud.net
 DOMAIN-SUFFIX,xuite.net
 # Dell 精确域名（厂商主域走代理，只直连国内节点/更新站）
 DOMAIN,afcs.dell.com
