@@ -3,7 +3,7 @@
 #!author=mickeu
 #!category=mickeu
 #!arguments=IPV6_VIF:disabled
-#!arguments-desc=IPv6 VIF 开关（默认 disabled）：disabled=禁用 IPv6 VIF（官方 LocalDevVPN 推荐）｜auto=本地网络有 IPv6 时自动启用｜always=始终启用 IPv6 VIF。修改参数后请在 Surge 中重新加载配置生效。
+#!arguments-desc=IPv6 VIF 开关：disabled = 关闭（VIF 无 IPv6 地址，官方 LocalDevVPN 推荐，默认）｜auto = 本地网络有 IPv6 时自动启用｜always = 始终启用 IPv6 VIF。示例：想保留 IPv6 通道填 auto，想强制启用填 always，恢复官方默认填 disabled。修改参数后请在 Surge 中重新加载配置生效。
 
 [General]
 ipv6-vif = {{{IPV6_VIF}}} // Some tools only recognize utun interfaces without an IPv6 address. Set to auto/always to re-enable IPv6 on VIF
