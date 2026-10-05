@@ -3,9 +3,10 @@
 #!author=mickeu
 #!category=mickeu
 
-# 部分工具只识别无 IPv6 地址的 utun 接口；如无需兼容可删掉 ipv6-vif 行
+# 默认不关闭 IPv6 VIF（保持主配置 ipv6-vif=auto，IPv6 继续走 Surge）
+# 若工具无法识别带 IPv6 的 utun 接口，取消下面一行注释再启用
 [General]
-ipv6-vif = disabled
+# ipv6-vif = disabled
 tun-included-routes = %INSERT% 10.7.0.1/32
 
 [IP Rewrite]
