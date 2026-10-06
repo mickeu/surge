@@ -330,7 +330,8 @@ function buildHeaders(capture, ua) {
     const headers = cloneHeaders(capture.headers || {});
     delete headers['Content-Length']; delete headers['content-length'];
     delete headers[':authority']; delete headers[':method']; delete headers[':path']; delete headers[':scheme'];
-    headers['Host'] = 'api.pingmeapp.net';
+    // Surge $httpClient 在 HTTP/2 下不允许 Host 字段（会告警），且会自动从 URL 生成 :authority，这里显式删除避免告警
+    delete headers['Host']; delete headers['host'];
     headers['Accept'] = headers['Accept'] || 'application/json';
     if (ua) {
         Object.keys(headers).forEach(k => {
