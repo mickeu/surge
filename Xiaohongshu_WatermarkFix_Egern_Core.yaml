@@ -1,0 +1,83 @@
+name: 小红书/RedNote 去水印核心(Egern版·水印拦截法)
+description: 由 Surge 模块 Xiaohongshu_WatermarkFix.sgmodule 转换的轻量版，只保留 Map Local 水印拦截核心，不依赖外部脚本。让红书客户端拿不到水印配置，从而所有图片(含评论区)无死角去水印。适配海外版 RedNote(rnote.com)。
+author: xchun5678 (Egern 转换版)
+homepage: https://github.com/xchun5678/surge
+
+rules:
+  # 屏蔽 QUIC，让红书走可 MITM 处理的 HTTP
+  - and:
+      match:
+        - protocol:
+            match: quic
+        - domain_suffix:
+            match: rnote.com
+    policy: REJECT
+  - and:
+      match:
+        - protocol:
+            match: quic
+        - domain_suffix:
+            match: xhscdn.com
+    policy: REJECT
+  - and:
+      match:
+        - protocol:
+            match: quic
+        - domain_suffix:
+            match: rednotecan.com
+    policy: REJECT
+  # 红书 CDN 直连
+  - domain_suffix:
+      match: rednotecan.com
+    policy: DIRECT
+  - domain_suffix:
+      match: xhscdn.com
+    policy: DIRECT
+  - domain_suffix:
+      match: rnote.com
+    policy: DIRECT
+
+map_locals:
+  # 拦截水印配置接口（QingRex 方法核心）→ 客户端拿不到水印，全图无死角去水印
+  # 原 Surge 用 data-type=tiny-gif，Egern 无此语法，这里返回 200 + 空 JSON 配置达到同样效果
+  - match: '^https://ci\.xiaohongshu\.com/system_config/watermark'
+    status_code: 200
+    headers:
+      Content-Type: application/json
+    body: '{}'
+  - match: '^https://ci\.rnote\.com/system_config/watermark'
+    status_code: 200
+    headers:
+      Content-Type: application/json
+    body: '{}'
+  - match: '^https://edith\.(?:xiaohongshu|rnote)\.com/api/sns/v1/system/config/watermark'
+    status_code: 200
+    headers:
+      Content-Type: application/json
+    body: '{}'
+  - match: '^https://www\.(?:xiaohongshu|rnote)\.com/api/sns/v1/system_config/watermark'
+    status_code: 200
+    headers:
+      Content-Type: application/json
+    body: '{}'
+  # 拦截广告配置接口
+  - match: '^https://ci\.(?:xiaohongshu|rnote)\.com/system_config/(?:advertise|splash)'
+    status_code: 200
+    headers:
+      Content-Type: application/json
+    body: '{}'
+
+mitm:
+  ca_p12: ""
+  ca_passphrase: ""
+  hostnames:
+    includes:
+      - ci.xiaohongshu.com
+      - ci.rnote.com
+      - edith.rnote.com
+      - rec.rnote.com
+      - so.rnote.com
+      - www.rnote.com
+      - music.rnote.com
+      - "*.xhscdn.com"
+      - "*.rednotecan.com"
