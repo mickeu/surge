@@ -73,62 +73,62 @@ scriptings:
   - http_response:
       name: 移除图片和实况照片水印
       match: '^https://edith\.rnote\.com/api/sns/v1/note/(?:imagefeed|live_photo/save)(\?|$)'
-      script_url: https://kelee.one/Resource/JavaScript/RedPaper/RedPaper_remove_ads.js
+      script_url: https://raw.githubusercontent.com/mickeu/surge/main/Scripts/RedPaper/RedPaper_remove_ads.js
       body_required: true
   - http_response:
       name: 移除界面配置
       match: '^https://edith\.rnote\.com/api/sns/v1/system/service/ui/config\?'
-      script_url: https://kelee.one/Resource/JavaScript/RedPaper/RedPaper_remove_ads.js
+      script_url: https://raw.githubusercontent.com/mickeu/surge/main/Scripts/RedPaper/RedPaper_remove_ads.js
       body_required: true
   - http_response:
       name: 移除开屏广告
       match: '^https://edith\.rnote\.com/api/sns/v1/system_service/config\?'
-      script_url: https://kelee.one/Resource/JavaScript/RedPaper/RedPaper_remove_ads.js
+      script_url: https://raw.githubusercontent.com/mickeu/surge/main/Scripts/RedPaper/RedPaper_remove_ads.js
       body_required: true
   - http_response:
       name: 移除开屏splash
       match: '^https://edith\.rnote\.com/api/sns/v2/system_service/splash_config'
-      script_url: https://kelee.one/Resource/JavaScript/RedPaper/RedPaper_remove_ads.js
+      script_url: https://raw.githubusercontent.com/mickeu/surge/main/Scripts/RedPaper/RedPaper_remove_ads.js
       body_required: true
   - http_response:
       name: 移除详情页小部件
       match: '^https://edith\.rnote\.com/api/sns/v2/(?:note/widgets|user/followings/followfeed)'
-      script_url: https://kelee.one/Resource/JavaScript/RedPaper/RedPaper_remove_ads.js
+      script_url: https://raw.githubusercontent.com/mickeu/surge/main/Scripts/RedPaper/RedPaper_remove_ads.js
       body_required: true
   - http_response:
       name: 移除信息流广告(v4)
       match: '^https://edith\.rnote\.com/api/sns/v4/followfeed\?'
-      script_url: https://kelee.one/Resource/JavaScript/RedPaper/RedPaper_remove_ads.js
+      script_url: https://raw.githubusercontent.com/mickeu/surge/main/Scripts/RedPaper/RedPaper_remove_ads.js
       body_required: true
   - http_response:
       name: 移除详情页感兴趣的人
       match: '^https://edith\.rnote\.com/api/sns/v5/recommend/user/follow_recommend\?'
-      script_url: https://kelee.one/Resource/JavaScript/RedPaper/RedPaper_remove_ads.js
+      script_url: https://raw.githubusercontent.com/mickeu/surge/main/Scripts/RedPaper/RedPaper_remove_ads.js
       body_required: true
   - http_response:
       name: 移除评论区实况照片水印
       match: '^https://edith\.rnote\.com/api/sns/(?:v1/interaction/comment/video/download|v5/note/comment/list)'
-      script_url: https://kelee.one/Resource/JavaScript/RedPaper/RedPaper_remove_ads.js
+      script_url: https://raw.githubusercontent.com/mickeu/surge/main/Scripts/RedPaper/RedPaper_remove_ads.js
       body_required: true
   - http_response:
       name: 移除图片视频水印
       match: '^https://edith\.rnote\.com/api/sns/(?:v2/note/feed|v3/note/videofeed)'
-      script_url: https://kelee.one/Resource/JavaScript/RedPaper/RedPaper_remove_ads.js
+      script_url: https://raw.githubusercontent.com/mickeu/surge/main/Scripts/RedPaper/RedPaper_remove_ads.js
       body_required: true
   - http_response:
       name: 移除信息流广告(v6)
       match: '^https://(?:edith|rec)\.rnote\.com/api/sns/v6/homefeed\?'
-      script_url: https://kelee.one/Resource/JavaScript/RedPaper/RedPaper_remove_ads.js
+      script_url: https://raw.githubusercontent.com/mickeu/surge/main/Scripts/RedPaper/RedPaper_remove_ads.js
       body_required: true
   - http_response:
       name: 移除搜索页广告
       match: '^https://(?:edith|so)\.rnote\.com/api/sns/v10/search/notes\?'
-      script_url: https://kelee.one/Resource/JavaScript/RedPaper/RedPaper_remove_ads.js
+      script_url: https://raw.githubusercontent.com/mickeu/surge/main/Scripts/RedPaper/RedPaper_remove_ads.js
       body_required: true
   - http_response:
       name: 移除视频水印
       match: '^https://(?:edith|rec|www)\.rnote\.com/api/sns/(?:v4/note/videofeed|v10/note/video/save)'
-      script_url: https://kelee.one/Resource/JavaScript/RedPaper/RedPaper_remove_ads.js
+      script_url: https://raw.githubusercontent.com/mickeu/surge/main/Scripts/RedPaper/RedPaper_remove_ads.js
       body_required: true
 
 mitm:
