@@ -3,7 +3,7 @@
 #!author=mickeu
 #!category=mickeu
 #!arguments=IPV6_VIF:disabled
-#!arguments-desc=IPv6 VIF 设置（修改后请在 Surge 中重新加载配置生效）：disabled = 关闭（默认，官方 LocalDevVPN 推荐）｜auto = 自动启用｜always = 总是启用
+#!arguments-desc=IPv6 VIF 设置（修改后请在 Surge 中重新加载配置生效）：disabled = 关闭（默认，官方 LocalDevVPN 推荐）｜auto = 自动启用｜always = 总是启用｜留空自动回退 disabled，不会报错
 
 [General]
 ipv6-vif = {{{IPV6_VIF}}}
