@@ -68,8 +68,7 @@ map_locals:
     body: '{}'
 
 scriptings:
-  # ===== 去广告/去水印（RedPaper 脚本，覆盖海外版 rnote 域名） =====
-  # 注意：脚本源 kelee.one 当前对代理出口返回 403，脚本可能加载失败，仅 Map Local 去水印不依赖脚本
+  # ===== 去广告/去水印（RedPaper 脚本镜像，已托管到 mickeu/surge，不依赖 kelee.one） =====
   - http_response:
       name: 移除图片和实况照片水印
       match: '^https://edith\.rnote\.com/api/sns/v1/note/(?:imagefeed|live_photo/save)(\?|$)'

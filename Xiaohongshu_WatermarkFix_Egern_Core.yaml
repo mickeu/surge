@@ -1,5 +1,5 @@
 name: 小红书/RedNote 去水印核心(Egern版·水印拦截法)
-description: 由 Surge 模块 Xiaohongshu_WatermarkFix.sgmodule 转换的轻量版，只保留 Map Local 水印拦截核心，不依赖外部脚本。让红书客户端拿不到水印配置，从而所有图片(含评论区)无死角去水印。适配海外版 RedNote(rnote.com)。
+description: 由 Surge 模块 Xiaohongshu_WatermarkFix.sgmodule 转换的轻量版，只保留 Map Local 水印拦截核心，不依赖外部脚本。让红书客户端拿不到水印配置，从而图片/视频无死角去水印。适配海外版 RedNote(rnote.com)。如需去广告与评论区水印，请使用完整版（含 RedPaper 脚本）。
 author: xchun5678 (Egern 转换版)
 homepage: https://github.com/xchun5678/surge
 
