@@ -5,6 +5,7 @@ DOMAIN-SUFFIX,snssdk.com // 字节系 API
 # 其他国内业务
 DOMAIN-SUFFIX,didi.com
 DOMAIN-SUFFIX,gov.cn
+DOMAIN-SUFFIX,lqnature.com // 生态营地小程序 API（国内服务器，走代理被掐断 TLS）
 # 规则集/脚本下载源
 DOMAIN,cdn.jsdelivr.net
 # 厂商国内直连（Global_All 误判走代理，前置直连）
