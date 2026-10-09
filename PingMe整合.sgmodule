@@ -1,5 +1,5 @@
 #!name=PingMe 签到整合版
-#!desc=🔄 整合 PingMe 抓Cookie + 签到 + 视频奖励，支持策略组参数，一个模块搞定
+#!desc=🔄 整合 PingMe 抓Cookie + 签到 + 视频奖励，支持策略组参数，一个模块搞定\n更新时间：2026.10.09 16:10｜超时重试版 v1
 #!icon=https://raw.githubusercontent.com/axhani/icon/refs/heads/main/pingme&wetalk.png
 #!system=ios
 #!author=mickeu
