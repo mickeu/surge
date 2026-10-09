@@ -1,11 +1,14 @@
 # NAME: Proxy_Supplement
 # AUTHOR: mickeu
 # REPO: https://github.com/mickeu/surge
-# UPDATED: 2026-10-06
-# DOMAIN-SUFFIX: 13
+# DOMAIN-SUFFIX: 15
 # DOMAIN: 5
 # IP-CIDR: 2
-# TOTAL: 20
+# TOTAL: 22
+
+# 社区与 AI 入口不能被 Game/Microsoft 的直连策略覆盖
+DOMAIN-SUFFIX,steamcommunity.com
+DOMAIN-SUFFIX,copilot.microsoft.com
 
 # 强制代理：防止被 Lan.list 的 fake-IP（198.18.0.0/15）误判直连
 DOMAIN-SUFFIX,sb.sb

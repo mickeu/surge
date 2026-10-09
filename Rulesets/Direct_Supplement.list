@@ -1,4 +1,6 @@
 # 补充直连规则集（ChinaMax_All 未覆盖、或需在广告拦截/Global_All 前置直连的域名）
+# 避免广告规则覆盖私网，保持局域网直连
+IP-CIDR,10.72.25.0/24,no-resolve
 # 腾讯/字节（ChinaMax 未收录的独立域）
 DOMAIN-SUFFIX,yuanbao.com // 腾讯元宝
 DOMAIN-SUFFIX,snssdk.com // 字节系 API

@@ -26,3 +26,6 @@ DOMAIN-SUFFIX,firebaselogging-pa.googleapis.com
 
 # Google 库 CDN（DanDan 模块误放直连，改走代理）
 DOMAIN-SUFFIX,ajax.googleapis.com
+
+# 恢复 Google 恶意网址检测，避免被广告规则整域拦截
+DOMAIN,safebrowsing.googleapis.com
