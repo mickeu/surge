@@ -14,9 +14,9 @@ DOMAIN-SUFFIX,api.pingmeapp.net,{{{PingMePolicy}}}
 # 抓 Cookie（http-request，拦截余额查询自动抓参，参数会明文写入 Surge 存储）
 PingMe获取签到参数 = type=http-request,pattern=^https:\/\/api\.pingmeapp\.net\/app\/queryBalanceAndBonus,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/PingMe/pingme_capture.js?v=20261002,argument="capture={{{capture}}}",timeout=60,script-update-interval=-1
 # 签到+视频奖励（cron 定时任务，默认每3小时）
-PingMe签到 = type=cron,cronexp="{{{cron}}}",script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/PingMe/PingMeSignin.js?v=20261002,timeout=300,wake-system=true,script-update-interval=-1
+PingMe签到 = type=cron,cronexp="{{{cron}}}",script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/PingMe/SigninRetry_v1.js,timeout=300,wake-system=true,script-update-interval=-1
 # 面板签到（点击面板执行完整签到，面板显示最新余额摘要）
-PingMe签到面板 = type=generic,timeout=180,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/PingMe/PingMePanelSignin.js?v=20261002,script-update-interval=-1
+PingMe签到面板 = type=generic,timeout=180,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/PingMe/PanelSigninRetry_v1.js,script-update-interval=-1
 
 [Panel]
 PingMe签到面板 = script-name=PingMe签到面板,title="🔄 PingMe 签到",content="运行签到",style=info,update-interval=0
