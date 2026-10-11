@@ -2,7 +2,7 @@
 @Name：PingMe 自动化签到+视频奖励
 @Author：怎么肥事 https://raw.githubusercontent.com/ZenmoFeiShi/Qx/refs/heads/main/PingMe.js
 @modify 奶思做了修改，理论支持 Qx,Loon,Surge,Egern,ShadowRocket,青龙
-@date 2026.10.09 16:06
+@date 2026.10.11 16:24
 
 ============QuanX============
 [rewrite_local]
@@ -213,7 +213,7 @@ async function startTasks() {
         if (isNode) {
             await sendMsg($.nodeNotifyMsg.join('\n'), "").then(r => console.log("通知发送完成"));
         } else {
-            $.msg($.name + ($.taskFailure ? '⚠️ 任务未全部完成' : '🎉 任务完成'), $.nodeNotifyMsg.join('\n'), '', {
+            $.msg($.name, $.nodeNotifyMsg.join('\n'), '', {
                 'open-url': '',
                 'media-url': 'https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/PingMe.png'
             });
