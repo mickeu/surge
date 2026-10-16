@@ -1,10 +1,10 @@
 # NAME: Proxy_Supplement
 # AUTHOR: mickeu
 # REPO: https://github.com/mickeu/surge
-# DOMAIN-SUFFIX: 15
+# DOMAIN-SUFFIX: 16
 # DOMAIN: 5
 # IP-CIDR: 2
-# TOTAL: 22
+# TOTAL: 23
 
 # 社区与 AI 入口不能被 Game/Microsoft 的直连策略覆盖
 DOMAIN-SUFFIX,steamcommunity.com
@@ -45,3 +45,6 @@ DOMAIN-SUFFIX,akamai.com
 IP-CIDR,74.125.16.64/26
 # Cloudflare 被墙段误入 ChinaMax_All 直连（104.27.168.0/24 实测超时不可达，2026-10-04）
 IP-CIDR,104.27.168.0/24
+
+# fanmingming.cn（IPTV 直播源）解析到境外 Cloudflare/CDN，被 ChinaMax 误判为国内域名直连导致 443 连不上
+DOMAIN-SUFFIX,fanmingming.cn
