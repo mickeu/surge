@@ -1,8 +1,13 @@
 /*
- * 内存流量（Memory Traffic）v1
+ * 内存流量（Memory Traffic）v4
  *
- * 本机流量 + Tailscale 入站设备流量监控面板
+ * 本机流量 + Tailscale 入站设备累计流量监控面板
  * 独立于原「内存」模块（SurgeMonitor），互不影响。
+ *
+ * 累计说明：入站设备流量为自模块启用以来的累计值（持久化保存），
+ * 每 10 秒轮询 /v1/requests/recent 并只累加新请求，避免重复统计。
+ * 本机流量 = Surge 接口总流量 - 所有入站设备累计流量；
+ * 总计流量 = 本机流量 + 所有入站设备流量 = Surge 接口总流量。
  *
  * 配置方式（Surge App → 模块 → 编辑本模块 → 脚本参数 argument 中修改）：
  *   每个设备对应一个参数口：dev1=设备名1,dev2=设备名2,...
@@ -220,6 +225,31 @@ function collectDevices(arg) {
     return devices;
 }
 
+const STATE_KEY = "MemoryTrafficAccum";
+
+function loadState() {
+    try {
+        const raw = $persistentStore.read(STATE_KEY);
+        if (raw) {
+            const parsed = JSON.parse(raw);
+            if (parsed && typeof parsed === "object") {
+                return parsed;
+            }
+        }
+    } catch (e) {
+        // 忽略损坏的状态
+    }
+    return { lastMaxId: 0, devices: {} };
+}
+
+function saveState(state) {
+    try {
+        $persistentStore.write(JSON.stringify(state), STATE_KEY);
+    } catch (e) {
+        // 忽略写入失败
+    }
+}
+
 var finished = false;
 
 function finishPanel(title, content, style, icon, iconColor) {
@@ -312,6 +342,72 @@ function maybeFinish() {
         "surge_interface_out_bytes_total"
     );
 
+    let requests = [];
+    if (!requestsFailed && requestsBody) {
+        try {
+            const parsed = JSON.parse(requestsBody);
+            requests = Array.isArray(parsed) ? parsed : (parsed.requests || []);
+        } catch (e) {
+            requests = [];
+        }
+    }
+
+    // 持久化累计各设备的入站流量（只累加新请求，避免重复）
+    const state = loadState();
+    const prevLastMaxId = Number(state.lastMaxId) || 0;
+    const devicesState = state.devices || {};
+    let maxId = prevLastMaxId;
+
+    for (let i = 0; i < requests.length; i++) {
+        const id = Number((requests[i] || {}).id) || 0;
+        if (id > maxId) {
+            maxId = id;
+        }
+    }
+
+    for (let i = 0; i < requests.length; i++) {
+        const r = requests[i] || {};
+        const id = Number(r.id) || 0;
+        const devName = String(r.deviceName || "");
+        if (id <= prevLastMaxId) {
+            continue;
+        }
+        if (devices.indexOf(devName) === -1) {
+            continue;
+        }
+        const entry = devicesState[devName] || { in: 0, out: 0, count: 0 };
+        entry.in += Number(r.inBytes) || 0;
+        entry.out += Number(r.outBytes) || 0;
+        entry.count += 1;
+        devicesState[devName] = entry;
+    }
+
+    state.lastMaxId = maxId;
+    state.devices = devicesState;
+    saveState(state);
+
+    // 各设备累计流量（面板直接显示累计数值，不写「累计/总计」标签）
+    let inboundTotalIn = 0;
+    let inboundTotalOut = 0;
+    const deviceLines = [];
+
+    for (let i = 0; i < devices.length; i++) {
+        const entry = devicesState[devices[i]] || { in: 0, out: 0, count: 0 };
+        inboundTotalIn += entry.in;
+        inboundTotalOut += entry.out;
+        deviceLines.push(
+            devices[i] +
+                "： ↓ " +
+                formatBytes(entry.in) +
+                " ↑ " +
+                formatBytes(entry.out)
+        );
+    }
+
+    // 本机流量 = 接口总流量 - 入站总流量（扣除所有入站设备）
+    const localIn = Math.max(0, download - inboundTotalIn);
+    const localOut = Math.max(0, upload - inboundTotalOut);
+
     const lines = [
         "内存占用： " + formatBytes(memory ? memory.value : NaN),
         "",
@@ -324,42 +420,22 @@ function maybeFinish() {
             " · 封禁：" +
             formatNumber(activeBans ? activeBans.value : NaN),
         "",
-        "本机流量： ↓ " +
-            formatBytes(download) +
-            " ↑ " +
-            formatBytes(upload)
+        "本机流量： ↓ " + formatBytes(localIn) + " ↑ " + formatBytes(localOut)
     ];
 
-    let requests = [];
-    if (!requestsFailed && requestsBody) {
-        try {
-            const parsed = JSON.parse(requestsBody);
-            requests = Array.isArray(parsed) ? parsed : (parsed.requests || []);
-        } catch (e) {
-            requests = [];
-        }
-    }
-
     lines.push("");
-    lines.push("Tailscale 入站");
+    lines.push("入站流量");
     if (devices.length === 0) {
         lines.push("（未配置设备）");
         lines.push("编辑脚本参数添加设备名");
     } else {
-        for (let i = 0; i < devices.length; i++) {
-            const agg = aggregateDeviceRequests(requests, devices[i]);
-            lines.push(
-                devices[i] +
-                    "： " +
-                    agg.count +
-                    "连 · ↓ " +
-                    formatBytes(agg.inBytes) +
-                    " ↑ " +
-                    formatBytes(agg.outBytes)
-            );
+        for (let i = 0; i < deviceLines.length; i++) {
+            lines.push(deviceLines[i]);
         }
     }
 
+    lines.push("");
+    lines.push("总计流量： ↓ " + formatBytes(download) + " ↑ " + formatBytes(upload));
     lines.push("");
     lines.push("Surge " + version + " · Build " + build);
 
