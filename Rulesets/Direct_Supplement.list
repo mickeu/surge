@@ -130,3 +130,5 @@ DOMAIN-SUFFIX,maka.im // 凡科
 DOMAIN-SUFFIX,youzu.com // 游族网络
 DOMAIN-SUFFIX,live800.com // 在线客服系统
 DOMAIN-SUFFIX,xiaobai51.top // 国内站点走代理连接超时
+# 医院官网（国内电信服务器，走境外代理被掐 TLS）
+DOMAIN-SUFFIX,lhxzyyy.com
