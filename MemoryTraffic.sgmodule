@@ -1,0 +1,10 @@
+#!name=内存流量
+#!desc=本机流量 + Tailscale 入站设备流量监控面板。每个设备一个参数口：编辑脚本参数 argument，按 dev1=设备名,dev2=设备名... 添加多台设备
+#!author=mickeu
+#!category=mickeu
+
+[Panel]
+MemoryTraffic = title="内存流量",content="正在获取数据...",style=info,script-name=memory-traffic,update-interval=10
+
+[Script]
+memory-traffic = type=generic,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/MemoryTraffic.js?v=1,argument=dev1=iphone-xr
