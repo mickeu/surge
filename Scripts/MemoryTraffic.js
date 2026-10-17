@@ -211,7 +211,8 @@ function collectDevices(arg) {
 
     for (let i = 0; i < keys.length; i++) {
         const value = String(arg[keys[i]] || "").trim();
-        if (value.length > 0) {
+        // 过滤空值和「选填」占位符（未填写的参数口不显示在面板）
+        if (value.length > 0 && value !== "选填") {
             devices.push(value);
         }
     }
