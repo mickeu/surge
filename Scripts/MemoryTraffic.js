@@ -10,14 +10,20 @@
  *   例如：argument=dev1=iphone-xr,dev2=iphone-15-pro
  *   以后新增设备只需在参数里追加 ,devN=新设备名。
  *
+ *   API 配置（可选，默认使用本机 HTTP API）：
+ *   api_host=HTTP API 地址（默认 127.0.0.1）
+ *   api_port=HTTP API 端口（默认 6171）
+ *   api_key=HTTP API 密码（默认 surgetest）
+ *   例如：argument=dev1=iphone-xr&api_host=127.0.0.1&api_port=6171&api_key=surgetest
+ *
  * 数据来源：
  *   GET /v1/metrics            —— 内存、运行时间、请求/DNS/封禁、本机总流量
  *   GET /v1/requests/recent     —— 按设备名统计 Tailscale 入站设备的连接数与流量
  */
 
-const API_KEY = "surgetest";
-const METRICS_URL = "http://127.0.0.1:6171/v1/metrics";
-const REQUESTS_URL = "http://127.0.0.1:6171/v1/requests/recent";
+const DEFAULT_API_HOST = "127.0.0.1";
+const DEFAULT_API_PORT = "6171";
+const DEFAULT_API_KEY = "surgetest";
 const REQUEST_TIMEOUT = 8000;
 
 function isFiniteNumber(value) {
@@ -153,7 +159,8 @@ function sumMetrics(metrics, metricName) {
 function parseArgument(arg) {
     const result = {};
     if (typeof arg === "string") {
-        arg.split(/[,;]/).forEach(function (part) {
+        // 支持 &（query-string 风格）和逗号/分号分隔的 key=value
+        arg.split(/[&,;]/).forEach(function (part) {
             const idx = part.indexOf("=");
             if (idx > 0) {
                 result[part.slice(0, idx).trim()] = part.slice(idx + 1).trim();
@@ -249,6 +256,12 @@ setTimeout(function () {
 }, 9000);
 
 const argument = parseArgument($argument);
+const apiHost = String(argument.api_host || DEFAULT_API_HOST).trim() || DEFAULT_API_HOST;
+const apiPort = String(argument.api_port || DEFAULT_API_PORT).trim() || DEFAULT_API_PORT;
+const apiKey = String(argument.api_key || DEFAULT_API_KEY).trim() || DEFAULT_API_KEY;
+const apiBase = "http://" + apiHost + ":" + apiPort;
+const METRICS_URL = apiBase + "/v1/metrics";
+const REQUESTS_URL = apiBase + "/v1/requests/recent";
 const devices = collectDevices(argument);
 
 let metricsBody = null;
@@ -364,7 +377,7 @@ $httpClient.get(
         timeout: REQUEST_TIMEOUT,
         headers: {
             Accept: "text/plain",
-            "X-Key": API_KEY
+            "X-Key": apiKey
         }
     },
     function (error, response, body) {
@@ -391,7 +404,7 @@ $httpClient.get(
         timeout: REQUEST_TIMEOUT,
         headers: {
             Accept: "application/json",
-            "X-Key": API_KEY
+            "X-Key": apiKey
         }
     },
     function (error, response, body) {
