@@ -19,18 +19,18 @@ const CAT_KEY = "raccoon_openai_catalog";
 const CAT_TTL = 10 * 60 * 1000;
 
 // 多账号解析：accounts = phone:pwd|phone:pwd|...
-// 分隔符容错：| , ; 任一种都可（防 Surge 参数展开对某字符做特殊处理）
+// 分隔符容错：半角/全角 | , ; 任一种都可；冒号半角/全角均可；自动去掉首尾空白（含全角空格）
 function parseAccounts() {
   const list = [];
   const s = (A.accounts || "").trim();
   if (s) {
-    s.split(/[|,;]/).forEach(function (seg) {
-      seg = seg.trim();
+    s.split(/[|,;｜，；]/).forEach(function (seg) {
+      seg = seg.replace(/^[\s\u3000]+|[\s\u3000]+$/g, "");
       if (!seg) return;
-      const i = seg.indexOf(":");
+      const i = seg.search(/[:：]/);
       if (i > 0) {
-        const phone = seg.slice(0, i).trim();
-        const pwd = seg.slice(i + 1).trim();
+        const phone = seg.slice(0, i).replace(/[\s\u3000]/g, "");
+        const pwd = seg.slice(i + 1).replace(/^[\s\u3000]+|[\s\u3000]+$/g, "");
         if (phone && pwd) list.push({ phone: phone, password: pwd });
       }
     });
