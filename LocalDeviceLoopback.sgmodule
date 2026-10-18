@@ -1,5 +1,5 @@
 #!name=Local Device Loopback
-#!desc=Reflect 10.7.0.1 back to this device for on-device developer tools. Surge 5.102.0+ [IP Rewrite] 官方示例：让 Surge 充当 LocalDevVPN
+#!desc=Reflect 10.7.0.1 back to this device for on-device developer tools. Surge 5.102.0+ [IP Rewrite] 官方示例：让 Surge 充当 LocalDevVPN。支持 coredevice-toolkit (cdtk) 免电脑 CoreDevice RSD 极客工具链
 #!author=mickeu
 #!category=mickeu
 #!arguments=IPV6_VIF:disabled
@@ -8,6 +8,8 @@
 [General]
 ipv6-vif = {{{IPV6_VIF}}}
 tun-included-routes = %INSERT% 10.7.0.1/32
+# 苹果配对协议原始透传，避免被 TLS 劫持破坏配对握手
+always-raw-tcp-keywords = %APPEND% "Content-Type: application/pairing+tlv8"
 
 [IP Rewrite]
 10.7.0.1 = reflect
