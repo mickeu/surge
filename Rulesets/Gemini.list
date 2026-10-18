@@ -113,5 +113,4 @@ DOMAIN-SUFFIX,manuscdn.com
 # Microsoft Copilot（纯 AI 端点，不走 Microsoft 组直连）
 DOMAIN,copilot.microsoft.com
 DOMAIN,sydney.bing.com
-DOMAIN,gateway.bingviz.microsoft.net
 DOMAIN,gateway.bingviz.microsoftapp.net
