@@ -512,6 +512,7 @@ if (typeof $request === "undefined" || !$request || !$request.url) {
         function (err, resp, data) {
           jsonResp(200, {
             http: resp ? resp.status : 0,
+            accounts: ACCOUNT_COUNT,
             token_head: token.slice(0, 12),
             body_head: String(data || err || "").slice(0, 3000),
           });
