@@ -367,6 +367,22 @@ function beijingToday() {
 function desktopHeaders() {
   return { "X-Client-Platform": "desktop-windows", "X-Client-Version": "v1.0.0", "X-Raccoon-Language": "zh" };
 }
+// 随机设备 ID（16字节hex）——小浣熊服务器不读设备ID字段，仅作为客户端身份的一部分
+function randomDeviceId() {
+  let s = "";
+  for (let i = 0; i < 16; i++) s += Math.floor(Math.random() * 256).toString(16).padStart(2, "0");
+  return s;
+}
+// 每次签到用独立随机客户端身份：平台固定桌面端（保证签到端点行为不变），版本/设备ID/UA 随机，防风控
+function randomCheckinHeaders() {
+  return {
+    "X-Client-Platform": "desktop-windows",
+    "X-Client-Version": "v1.0." + Math.floor(Math.random() * 50),
+    "X-Raccoon-Language": "zh",
+    "X-Client-Device-Id": randomDeviceId(),
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/1" + Math.floor(Math.random() * 90) + ".0 Safari/537.36"
+  };
+}
 function toastText(data) {
   if (!data) return "";
   const parts = [];
@@ -396,9 +412,11 @@ function requestJson(method, path2, token, headers, timeout, cb) {
 function checkinOne(i, cb) {
   ensureToken(i, function (e, token) {
     if (e) return cb({ ok: false, title: "小浣熊签到失败", subtitle: e.message, body: "", sum: 0, balance: null });
-    requestJson("GET", "/api/web/office/v3/setting_info", token, desktopHeaders(), 20, function (err1, info) {
+    // 每个账号签到用独立随机客户端身份（防风控）
+    const hdr = randomCheckinHeaders();
+    requestJson("GET", "/api/web/office/v3/setting_info", token, hdr, 20, function (err1, info) {
       const grantNote = err1 ? ("发放接口: " + err1.message) : toastText(info);
-      requestJson("GET", "/api/web/points/v1/bills?paging.limit=20&paging.offset=0", token, {}, 25, function (err2, bills) {
+      requestJson("GET", "/api/web/points/v1/bills?paging.limit=20&paging.offset=0", token, hdr, 25, function (err2, bills) {
         let sum = 0;
         const names = [];
         const today = beijingToday();
@@ -410,7 +428,7 @@ function checkinOne(i, cb) {
             names.push((it.event_name || "积分") + " +" + pts);
           }
         }
-        requestJson("GET", "/api/web/points/v1/balance", token, {}, 20, function (err3, bal) {
+        requestJson("GET", "/api/web/points/v1/balance", token, hdr, 20, function (err3, bal) {
           const wallets = [];
           if (bal && typeof bal === "object") {
             for (const pair of [["daily_points", "每日"], ["monthly_points", "会员"], ["reward_points", "奖励"], ["topup_points", "充值"]]) {
