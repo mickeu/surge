@@ -6,8 +6,10 @@
  * 参考 Agent2API（aimod-cc/Agent2API）racoon 适配器。
  * by LinkPass888
  *
- * $argument: nation=86&accounts=phone1:pwd1|phone2:pwd2|...&token=...
- * 多账号版：accounts 紧凑格式，脚本轮询负载均衡；每账号独立 token 缓存；批量串行签到。
+ * $argument: 支持两种多账号写法（任选其一）：
+ *   ① 每账号独立密码：nation=86&accounts=phone1:pwd1|phone2:pwd2|...
+ *   ② 所有账号同密码：nation=86&phones=手机1|手机2|...&password=统一密码
+ * 多账号版：脚本轮询负载均衡；每账号独立 token 缓存；批量串行签到。
  */
 const A = parseArg(typeof $argument === "string" ? $argument : "");
 const AUTH = "https://xiaohuanxiong.com/api/web/auth/v1";
@@ -18,8 +20,9 @@ const RR_KEY = "raccoon_openai_rr_index";
 const CAT_KEY = "raccoon_openai_catalog";
 const CAT_TTL = 10 * 60 * 1000;
 
-// 多账号解析：accounts = phone:pwd|phone:pwd|...
-// 分隔符容错：半角/全角 | , ; 任一种都可；冒号半角/全角均可；自动去掉首尾空白（含全角空格）
+// 多账号解析，支持两种参数格式（分隔符容错：半角/全角 | , ; 任一种；冒号半角/全角均可；自动去首尾空白含全角空格）：
+//   方式一（每账号独立密码）：accounts = 手机1:密码1|手机2:密码2|...
+//   方式二（所有账号同密码）：phones = 手机1|手机2|...&password = 统一密码
 function parseAccounts() {
   const list = [];
   const s = (A.accounts || "").trim();
@@ -34,6 +37,17 @@ function parseAccounts() {
         if (phone && pwd) list.push({ phone: phone, password: pwd });
       }
     });
+  }
+  // 方式二兜底：phones + password（统一密码）
+  if (list.length === 0) {
+    const ps = (A.phones || "").trim();
+    const pwd = (A.password || "").trim();
+    if (ps && pwd) {
+      ps.split(/[|,;｜，；]/).forEach(function (seg) {
+        seg = seg.replace(/^[\s\u3000]+|[\s\u3000]+$/g, "");
+        if (seg) list.push({ phone: seg.replace(/[\s\u3000]/g, ""), password: pwd });
+      });
+    }
   }
   return list;
 }
