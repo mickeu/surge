@@ -373,14 +373,17 @@ function randomDeviceId() {
   for (let i = 0; i < 16; i++) s += Math.floor(Math.random() * 256).toString(16).padStart(2, "0");
   return s;
 }
-// 每次签到用独立随机客户端身份：平台固定桌面端（保证签到端点行为不变），版本/设备ID/UA 随机，防风控
+// 每次签到用独立随机客户端身份：平台为手机 App（随机安卓/iOS，版本 v1.0.3 手机端真实值），设备ID/UA 随机，防风控
 function randomCheckinHeaders() {
+  const isIos = Math.random() < 0.5;
   return {
-    "X-Client-Platform": "desktop-windows",
-    "X-Client-Version": "v1.0." + Math.floor(Math.random() * 50),
+    "X-Client-Platform": isIos ? "app-ios" : "app-android",
+    "X-Client-Version": "v1.0.3",
     "X-Raccoon-Language": "zh",
     "X-Client-Device-Id": randomDeviceId(),
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/1" + Math.floor(Math.random() * 90) + ".0 Safari/537.36"
+    "User-Agent": isIos
+      ? "Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1"
+      : "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/1" + Math.floor(Math.random() * 90) + ".0 Mobile Safari/537.36"
   };
 }
 function toastText(data) {
