@@ -466,12 +466,25 @@ if (typeof $request === "undefined" || !$request || !$request.url) {
     $done({});
   });
 } else {
-  const path = $request.url.split("?")[0];
+  let path = $request.url.split("?")[0];
+  // 按账号路由：/v1/acc2/... 固定用第 2 个账号（不参与轮询）；无 accN 前缀时正常轮询
+  let forcedIdx = -1;
+  const accM = path.match(/\/acc(\d+)(?=\/|$)/);
+  if (accM) {
+    forcedIdx = Math.max(0, parseInt(accM[1], 10) - 1);
+    path = path.replace(/\/acc\d+(?=\/|$)/, "");
+  }
+  // 固定路由索引：无强制路由时取账号0（models/probe 用）
+  const fixedIdx = forcedIdx >= 0 ? (ACCOUNT_COUNT > 0 ? forcedIdx % ACCOUNT_COUNT : 0) : 0;
+  // 本次请求目标账号：固定路由用指定索引，否则轮询下一个
+  const pickAccount = function () {
+    return forcedIdx >= 0 ? (ACCOUNT_COUNT > 0 ? forcedIdx % ACCOUNT_COUNT : 0) : nextAccountIndex();
+  };
   if (/\/chat\/completions\/?$/.test(path)) {
     // ★ 真流式：只改写请求（URL → llm/v2 网关、Bearer token、模型名归一化），
     //   不返回 response —— 上游的标准 OpenAI SSE 流由 Surge 原生透传给客户端。
     //   多账号：轮询选下一个账号，token 过期在请求前预检。
-    const acctIdx = nextAccountIndex();
+    const acctIdx = pickAccount();
     ensureToken(acctIdx, function (e, token) {
       if (e) return errResp(401, "小浣熊代理(账号" + (acctIdx + 1) + "): " + e.message);
       let reqBody;
@@ -486,7 +499,7 @@ if (typeof $request === "undefined" || !$request || !$request.url) {
       });
     });
   } else if (/\/models\/?$/.test(path)) {
-    ensureToken(0, function (e, token) {
+    ensureToken(fixedIdx, function (e, token) {
       if (e) {
         return jsonResp(200, {
           object: "list",
@@ -505,7 +518,7 @@ if (typeof $request === "undefined" || !$request || !$request.url) {
   } else if (/\/checkin\/?$/.test(path)) {
     runCheckin(function (r) { jsonResp(200, r); });
   } else if (/\/probe\/?$/.test(path)) {
-    ensureToken(0, function (e, token) {
+    ensureToken(fixedIdx, function (e, token) {
       if (e) return errResp(401, "token: " + e.message);
       $httpClient.get(
         { url: LLM + "/model_catalog", headers: { Authorization: "Bearer " + token, Accept: "application/json" }, timeout: 15 },
@@ -513,6 +526,8 @@ if (typeof $request === "undefined" || !$request || !$request.url) {
           jsonResp(200, {
             http: resp ? resp.status : 0,
             accounts: ACCOUNT_COUNT,
+            account_index: fixedIdx,
+            routed: forcedIdx >= 0 ? ("acc" + (forcedIdx + 1)) : "round-robin",
             token_head: token.slice(0, 12),
             body_head: String(data || err || "").slice(0, 3000),
           });
