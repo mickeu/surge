@@ -444,6 +444,10 @@ function checkinOne(i, cb) {
             ? (err3 ? "余额查询失败: " + err3.message : "")
             : ("总余额 " + avail + "（" + wallets.join(" / ") + "）");
           const r = { ok: sum > 0, today: today, sum: sum, entries: names, balance: isNaN(avail) ? null : avail, wallets: wallets, grant_note: grantNote, err_grant: err1 && err1.message, err_bills: err2 && err2.message, err_balance: err3 && err3.message };
+          // 全量账单摘要（含扣费项），用于核对 token 计费
+          r.recent = ((bills && bills.items) || []).map(function (it) {
+            return String(it.created_at || "").slice(5, 19) + " | " + (it.event_name || "积分") + " " + (Number(it.points) > 0 ? "+" : "") + Number(it.points || 0);
+          });
           if (sum > 0) {
             r.title = "小浣熊签到成功"; r.subtitle = "今日 +" + sum + " · " + (isNaN(avail) ? "余额未知" : "余额 " + avail);
             r.body = (names.join("；") + (balanceLine ? "；" + balanceLine : "")) + (grantNote ? "（" + grantNote + "）" : "");
