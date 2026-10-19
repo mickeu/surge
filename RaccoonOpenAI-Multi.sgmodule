@@ -1,5 +1,5 @@
-#!name=小浣熊 OpenAI 反代（多账号轮询）
-#!desc=把商汤小浣熊包装成 OpenAI 兼容 API，支持多账号轮询负载均衡：accounts 填多个「手机号:密码」用竖线分隔，每账号独立 token 缓存与自动续期；附每日批量签到（串行防风控）。账号数不限。
+#!name=Xiaoxiong OpenAI 反代（多账号轮询）
+#!desc=把商汤 Xiaoxiong（小浣熊）包装成 OpenAI 兼容 API，支持多账号轮询负载均衡：accounts 填多个「手机号:密码」用竖线分隔，每账号独立 token 缓存与自动续期；附每日批量签到（串行防风控）+ 面板手动签到。账号数不限。
 #!author=mickeu
 #!category=mickeu
 #!arguments=nation:86,accounts:none,phones:none,password:none,cron:12 0 * * *
@@ -9,5 +9,9 @@
 hostname = %APPEND% xiaohuanxiong.com
 
 [Script]
-小浣熊多账号反代 = type=http-request,pattern=^https://xiaohuanxiong\.com/v1/(acc\d+/)?(chat/completions|models|checkin|probe),requires-body=true,max-size=10485760,engine=webview,timeout=600,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/raccoon-openai-multi.js,argument="nation={{{nation}}}&accounts={{{accounts}}}&phones={{{phones}}}&password={{{password}}}"
-小浣熊多账号签到 = type=cron,cronexp="{{{cron}}}",wake-system=1,engine=webview,timeout=600,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/raccoon-openai-multi.js,argument="nation={{{nation}}}&accounts={{{accounts}}}&phones={{{phones}}}&password={{{password}}}"
+Xiaoxiong 多账号反代 = type=http-request,pattern=^https://xiaohuanxiong\.com/v1/(acc\d+/)?(chat/completions|models|checkin|probe),requires-body=true,max-size=10485760,engine=webview,timeout=600,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/raccoon-openai-multi.js?v=2,argument="nation={{{nation}}}&accounts={{{accounts}}}&phones={{{phones}}}&password={{{password}}}"
+Xiaoxiong 多账号签到 = type=cron,cronexp="{{{cron}}}",wake-system=1,engine=webview,timeout=600,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/raccoon-openai-multi.js?v=2,argument="nation={{{nation}}}&accounts={{{accounts}}}&phones={{{phones}}}&password={{{password}}}"
+Xiaoxiong 签到面板 = type=generic,timeout=120,engine=webview,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/raccoon-openai-multi.js?v=2,argument="nation={{{nation}}}&accounts={{{accounts}}}&phones={{{phones}}}&password={{{password}}}"
+
+[Panel]
+Xiaoxiong 签到面板 = script-name=Xiaoxiong 签到面板,title="🦝 Xiaoxiong 签到",content="点此手动签到",style=info,update-interval=0
