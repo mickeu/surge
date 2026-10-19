@@ -448,7 +448,6 @@ function checkinOne(i, cb) {
           r.recent = ((bills && bills.items) || []).map(function (it) {
             return String(it.created_at || "").slice(5, 19) + " | " + (it.event_name || "积分") + " " + (Number(it.points) > 0 ? "+" : "") + Number(it.points || 0);
           });
-          r.raw = ((bills && bills.items) || []).slice(0, 3);
           if (sum > 0) {
             r.title = "小浣熊签到成功"; r.subtitle = "今日 +" + sum + " · " + (isNaN(avail) ? "余额未知" : "余额 " + avail);
             r.body = (names.join("；") + (balanceLine ? "；" + balanceLine : "")) + (grantNote ? "（" + grantNote + "）" : "");
