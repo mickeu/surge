@@ -4,8 +4,8 @@
 # UPDATED: 2026-10-19
 # DOMAIN: 18
 # DOMAIN-KEYWORD: 3
-# DOMAIN-SUFFIX: 50
-# TOTAL: 71
+# DOMAIN-SUFFIX: 59
+# TOTAL: 80
 
 # blackmatrix7 原版规则
 DOMAIN,ai.google.dev
@@ -123,3 +123,24 @@ DOMAIN-SUFFIX,xkiro.com
 
 # OpenRouter（AI 模型聚合）
 DOMAIN-SUFFIX,openrouter.ai
+
+# OpenAI Sora（视频生成）
+DOMAIN-SUFFIX,sora.com
+
+# Suno（AI 音乐生成）
+DOMAIN-SUFFIX,suno.com
+
+# ElevenLabs（AI 语音合成/克隆）
+DOMAIN-SUFFIX,elevenlabs.io
+
+# Ideogram（AI 生图）
+DOMAIN-SUFFIX,ideogram.ai
+
+# Runway（AI 视频生成）
+DOMAIN-SUFFIX,runwayml.com
+
+# 推理平台：Together / Fireworks / DeepInfra / Replicate
+DOMAIN-SUFFIX,together.ai
+DOMAIN-SUFFIX,fireworks.ai
+DOMAIN-SUFFIX,deepinfra.com
+DOMAIN-SUFFIX,replicate.com
