@@ -6,8 +6,10 @@
  * 参考 Agent2API（aimod-cc/Agent2API）racoon 适配器。
  * by LinkPass888
  *
- * $argument: nation=86&accounts=phone1:pwd1|phone2:pwd2|...&token=...
- * 多账号版：accounts 紧凑格式，脚本轮询负载均衡；每账号独立 token 缓存；批量串行签到。
+ * $argument: 支持两种多账号写法（任选其一）：
+ *   ① 每账号独立密码：nation=86&accounts=phone1:pwd1|phone2:pwd2|...
+ *   ② 所有账号同密码：nation=86&phones=手机1|手机2|...&password=统一密码
+ * 多账号版：脚本轮询负载均衡；每账号独立 token 缓存；批量串行签到。
  */
 const A = parseArg(typeof $argument === "string" ? $argument : "");
 const AUTH = "https://xiaohuanxiong.com/api/web/auth/v1";
@@ -18,8 +20,9 @@ const RR_KEY = "raccoon_openai_rr_index";
 const CAT_KEY = "raccoon_openai_catalog";
 const CAT_TTL = 10 * 60 * 1000;
 
-// 多账号解析：accounts = phone:pwd|phone:pwd|...
-// 分隔符容错：半角/全角 | , ; 任一种都可；冒号半角/全角均可；自动去掉首尾空白（含全角空格）
+// 多账号解析，支持两种参数格式（分隔符容错：半角/全角 | , ; 任一种；冒号半角/全角均可；自动去首尾空白含全角空格）：
+//   方式一（每账号独立密码）：accounts = 手机1:密码1|手机2:密码2|...
+//   方式二（所有账号同密码）：phones = 手机1|手机2|...&password = 统一密码
 function parseAccounts() {
   const list = [];
   const s = (A.accounts || "").trim();
@@ -34,6 +37,17 @@ function parseAccounts() {
         if (phone && pwd) list.push({ phone: phone, password: pwd });
       }
     });
+  }
+  // 方式二兜底：phones + password（统一密码）
+  if (list.length === 0) {
+    const ps = (A.phones || "").trim();
+    const pwd = (A.password || "").trim();
+    if (ps && pwd) {
+      ps.split(/[|,;｜，；]/).forEach(function (seg) {
+        seg = seg.replace(/^[\s\u3000]+|[\s\u3000]+$/g, "");
+        if (seg) list.push({ phone: seg.replace(/[\s\u3000]/g, ""), password: pwd });
+      });
+    }
   }
   return list;
 }
@@ -353,6 +367,25 @@ function beijingToday() {
 function desktopHeaders() {
   return { "X-Client-Platform": "desktop-windows", "X-Client-Version": "v1.0.0", "X-Raccoon-Language": "zh" };
 }
+// 随机设备 ID（16字节hex）——小浣熊服务器不读设备ID字段，仅作为客户端身份的一部分
+function randomDeviceId() {
+  let s = "";
+  for (let i = 0; i < 16; i++) s += Math.floor(Math.random() * 256).toString(16).padStart(2, "0");
+  return s;
+}
+// 每次签到用独立随机客户端身份：平台为手机 App（随机安卓/iOS，版本 v1.0.3 手机端真实值），设备ID/UA 随机，防风控
+function randomCheckinHeaders() {
+  const isIos = Math.random() < 0.5;
+  return {
+    "X-Client-Platform": isIos ? "app-ios" : "app-android",
+    "X-Client-Version": "v1.0.3",
+    "X-Raccoon-Language": "zh",
+    "X-Client-Device-Id": randomDeviceId(),
+    "User-Agent": isIos
+      ? "Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1"
+      : "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/1" + Math.floor(Math.random() * 90) + ".0 Mobile Safari/537.36"
+  };
+}
 function toastText(data) {
   if (!data) return "";
   const parts = [];
@@ -382,9 +415,11 @@ function requestJson(method, path2, token, headers, timeout, cb) {
 function checkinOne(i, cb) {
   ensureToken(i, function (e, token) {
     if (e) return cb({ ok: false, title: "小浣熊签到失败", subtitle: e.message, body: "", sum: 0, balance: null });
-    requestJson("GET", "/api/web/office/v3/setting_info", token, desktopHeaders(), 20, function (err1, info) {
+    // 每个账号签到用独立随机客户端身份（防风控）
+    const hdr = randomCheckinHeaders();
+    requestJson("GET", "/api/web/office/v3/setting_info", token, hdr, 20, function (err1, info) {
       const grantNote = err1 ? ("发放接口: " + err1.message) : toastText(info);
-      requestJson("GET", "/api/web/points/v1/bills?paging.limit=20&paging.offset=0", token, {}, 25, function (err2, bills) {
+      requestJson("GET", "/api/web/points/v1/bills?paging.limit=20&paging.offset=0", token, hdr, 25, function (err2, bills) {
         let sum = 0;
         const names = [];
         const today = beijingToday();
@@ -396,7 +431,7 @@ function checkinOne(i, cb) {
             names.push((it.event_name || "积分") + " +" + pts);
           }
         }
-        requestJson("GET", "/api/web/points/v1/balance", token, {}, 20, function (err3, bal) {
+        requestJson("GET", "/api/web/points/v1/balance", token, hdr, 20, function (err3, bal) {
           const wallets = [];
           if (bal && typeof bal === "object") {
             for (const pair of [["daily_points", "每日"], ["monthly_points", "会员"], ["reward_points", "奖励"], ["topup_points", "充值"]]) {
