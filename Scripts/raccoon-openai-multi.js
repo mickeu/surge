@@ -419,7 +419,7 @@ function checkinOne(i, cb) {
     const hdr = randomCheckinHeaders();
     requestJson("GET", "/api/web/office/v3/setting_info", token, hdr, 20, function (err1, info) {
       const grantNote = err1 ? ("发放接口: " + err1.message) : toastText(info);
-      requestJson("GET", "/api/web/points/v1/bills?paging.limit=200&paging.offset=0", token, hdr, 25, function (err2, bills) {
+      requestJson("GET", "/api/web/points/v1/bills?paging.limit=500&paging.offset=0", token, hdr, 25, function (err2, bills) {
         let sum = 0;
         const names = [];
         const today = beijingToday();
