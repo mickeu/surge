@@ -4,8 +4,8 @@
 # UPDATED: 2026-10-19
 # DOMAIN: 18
 # DOMAIN-KEYWORD: 3
-# DOMAIN-SUFFIX: 47
-# TOTAL: 68
+# DOMAIN-SUFFIX: 50
+# TOTAL: 71
 
 # blackmatrix7 原版规则
 DOMAIN,ai.google.dev
@@ -114,3 +114,12 @@ DOMAIN-SUFFIX,manuscdn.com
 DOMAIN,copilot.microsoft.com
 DOMAIN,sydney.bing.com
 DOMAIN,gateway.bingviz.microsoftapp.net
+
+# Groq（AI 推理加速，免费 tier）
+DOMAIN-SUFFIX,groq.com
+
+# xKiro（AI 中转，OpenAI/Anthropic 兼容）
+DOMAIN-SUFFIX,xkiro.com
+
+# OpenRouter（AI 模型聚合）
+DOMAIN-SUFFIX,openrouter.ai
