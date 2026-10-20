@@ -104,3 +104,5 @@ DOMAIN-SUFFIX,cc.cd
 DOMAIN-SUFFIX,qd.je
 DOMAIN-SUFFIX,1678520.xyz
 DOMAIN-SUFFIX,jdshipin.com
+# 港澳台直播源（国内 IP 被误送代理，应直连）
+DOMAIN-SUFFIX,jackgao.top
