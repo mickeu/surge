@@ -141,3 +141,5 @@ DOMAIN-SUFFIX,lhxzyyy.com
 DOMAIN-SUFFIX,erebor.douban.com
 # 云知声语音云（蛋蛋不语语音功能，被广告规则误杀）
 DOMAIN-SUFFIX,ossp.voicecloud.cn
+# 友盟推送合法接口（被广告规则误杀）
+DOMAIN,aspect-upush.umeng.com
