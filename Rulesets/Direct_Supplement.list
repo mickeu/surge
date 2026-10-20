@@ -103,6 +103,7 @@ IP-CIDR,38.75.136.137/32,no-resolve
 IP-CIDR,63.141.250.98/32,no-resolve
 IP-CIDR,69.197.146.178/32,no-resolve
 IP-CIDR,142.54.162.26/32,no-resolve
+IP-CIDR,204.12.241.18/32,no-resolve // 蛋蛋不语播放源 CDN IP
 # 视频 CDN（联合数字/Longzu，DNS 解析到英国 IP）
 DOMAIN-SUFFIX,lzcdn31.com
 DOMAIN-SUFFIX,lzcdn32.com
@@ -138,3 +139,5 @@ DOMAIN-SUFFIX,xiaobai51.top // 国内站点走代理连接超时
 DOMAIN-SUFFIX,lhxzyyy.com
 # 豆瓣接口（蛋蛋不语影视App依赖，被 Advertising_All 误杀）
 DOMAIN-SUFFIX,erebor.douban.com
+# 云知声语音云（蛋蛋不语语音功能，被广告规则误杀）
+DOMAIN-SUFFIX,ossp.voicecloud.cn

@@ -90,3 +90,11 @@ DOMAIN-SUFFIX,jimxtc.com
 DOMAIN-SUFFIX,imarkr.com
 DOMAIN-SUFFIX,i95.me
 DOMAIN-SUFFIX,xi-xu.me
+
+# 蛋蛋不语播放源/CDN（原被 FINAL 送代理，dns-failed 卡顿）
+DOMAIN-SUFFIX,modujx17.com
+DOMAIN-SUFFIX,fffgood.com
+DOMAIN-SUFFIX,xgplay20.com
+DOMAIN-SUFFIX,gsuus.com
+DOMAIN-SUFFIX,adfg8.vip
+DOMAIN-SUFFIX,xiguazyimg.com
