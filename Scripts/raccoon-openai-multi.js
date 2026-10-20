@@ -555,7 +555,7 @@ if (typeof $request === "undefined" || !$request || !$request.url) {
       });
     });
   } else if (/\/checkin\/?$/.test(path)) {
-    runCheckin(function (r) { jsonResp(200, r); });
+    runCheckin(function (r) { if (r && r.title) $notification.post(r.title, r.subtitle, r.body || ""); jsonResp(200, r); });
   } else if (/\/probe\/?$/.test(path)) {
     ensureToken(fixedIdx, function (e, token) {
       if (e) return errResp(401, "token: " + e.message);
