@@ -367,7 +367,7 @@ function beijingToday() {
 function desktopHeaders() {
   return { "X-Client-Platform": "desktop-windows", "X-Client-Version": "v1.0.0", "X-Raccoon-Language": "zh" };
 }
-// 随机设备 ID（16字节hex）——小浣熊服务器不读设备ID字段，仅作为客户端身份的一部分
+// 随机设备 ID（16字节hex）——Xiaoxiong OpenAI服务器不读设备ID字段，仅作为客户端身份的一部分
 function randomDeviceId() {
   let s = "";
   for (let i = 0; i < 16; i++) s += Math.floor(Math.random() * 256).toString(16).padStart(2, "0");
@@ -414,7 +414,7 @@ function requestJson(method, path2, token, headers, timeout, cb) {
 // 单个账号签到：① setting_info 触发发放（按天幂等）② bills 核对今日入账 ③ balance 查总余额
 function checkinOne(i, cb) {
   ensureToken(i, function (e, token) {
-    if (e) return cb({ ok: false, title: "小浣熊签到失败", subtitle: e.message, body: "", sum: 0, balance: null });
+    if (e) return cb({ ok: false, title: "Xiaoxiong OpenAI签到失败", subtitle: e.message, body: "", sum: 0, balance: null });
     // 每个账号签到用独立随机客户端身份（防风控）
     const hdr = randomCheckinHeaders();
     requestJson("GET", "/api/web/office/v3/setting_info", token, hdr, 20, function (err1, info) {
@@ -449,12 +449,12 @@ function checkinOne(i, cb) {
             return String(it.created_at || "").slice(5, 19) + " | " + (it.event_name || "积分") + " " + (Number(it.points) > 0 ? "+" : "") + Number(it.points || 0);
           });
           if (sum > 0) {
-            r.title = "小浣熊签到成功"; r.subtitle = "今日 +" + sum + " · " + (isNaN(avail) ? "余额未知" : "余额 " + avail);
+            r.title = "Xiaoxiong OpenAI签到成功"; r.subtitle = "今日 +" + sum + " · " + (isNaN(avail) ? "余额未知" : "余额 " + avail);
             r.body = (names.join("；") + (balanceLine ? "；" + balanceLine : "")) + (grantNote ? "（" + grantNote + "）" : "");
           } else if (err1 && err2) {
-            r.title = "小浣熊签到失败"; r.subtitle = "发放与账单查询均失败"; r.body = r.err_grant + "；" + r.err_bills;
+            r.title = "Xiaoxiong OpenAI签到失败"; r.subtitle = "发放与账单查询均失败"; r.body = r.err_grant + "；" + r.err_bills;
           } else {
-            r.title = "小浣熊签到"; r.subtitle = "账单未见今日入账" + (isNaN(avail) ? "" : " · 余额 " + avail);
+            r.title = "Xiaoxiong OpenAI签到"; r.subtitle = "账单未见今日入账" + (isNaN(avail) ? "" : " · 余额 " + avail);
             r.body = grantNote || (err2 ? "账单: " + r.err_bills : "可能今日已领过或发放延迟");
           }
           cb(r);
@@ -477,9 +477,9 @@ function runCheckin(cb) {
       if (total === 1) {
         title = first.title; subtitle = first.subtitle; body = first.body;
       } else {
-        title = okCount === total ? "小浣熊多账号签到成功"
-              : okCount > 0 ? "小浣熊部分签到成功"
-              : "小浣熊多账号签到失败";
+        title = okCount === total ? "Xiaoxiong OpenAI多账号签到成功"
+              : okCount > 0 ? "Xiaoxiong OpenAI部分签到成功"
+              : "Xiaoxiong OpenAI多账号签到失败";
         subtitle = "成功 " + okCount + "/" + total + " · 今日 +" + totalSum;
         body = results.map(function (r, n) {
           return "账号" + (n + 1) + " " + (r.ok ? ("+" + r.sum + " 余额" + (r.balance == null ? "?" : r.balance)) : r.subtitle);
@@ -525,7 +525,7 @@ if (typeof $request === "undefined" || !$request || !$request.url) {
     //   多账号：轮询选下一个账号，token 过期在请求前预检。
     const acctIdx = pickAccount();
     ensureToken(acctIdx, function (e, token) {
-      if (e) return errResp(401, "小浣熊代理(账号" + (acctIdx + 1) + "): " + e.message);
+      if (e) return errResp(401, "Xiaoxiong OpenAI代理(账号" + (acctIdx + 1) + "): " + e.message);
       let reqBody;
       try { reqBody = JSON.parse($request.body || "{}"); } catch (err) { return errResp(400, "请求体不是合法 JSON"); }
       reqBody.model = mapModel(reqBody.model);
