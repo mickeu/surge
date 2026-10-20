@@ -107,6 +107,10 @@ IP-CIDR,142.54.162.26/32,no-resolve
 DOMAIN-SUFFIX,lzcdn31.com
 DOMAIN-SUFFIX,lzcdn32.com
 DOMAIN-SUFFIX,lzcdn.com
+# 蛋蛋不语播放源 CDN（原被 FINAL 送代理，卡顿/dns-failed）
+DOMAIN-SUFFIX,lzcdn27.com
+DOMAIN-SUFFIX,blbtgg.com // 暴风 ppvod 视频
+DOMAIN-SUFFIX,bfvp26.com // 暴风 VIP 播放源
 # 国内音源 API 直连（lx-music 源，原走代理被站点 403 拒绝）
 DOMAIN-SUFFIX,nxinxz.com
 DOMAIN-SUFFIX,oiapi.net
@@ -132,3 +136,5 @@ DOMAIN-SUFFIX,live800.com // 在线客服系统
 DOMAIN-SUFFIX,xiaobai51.top // 国内站点走代理连接超时
 # 医院官网（国内电信服务器，走境外代理被掐 TLS）
 DOMAIN-SUFFIX,lhxzyyy.com
+# 豆瓣接口（蛋蛋不语影视App依赖，被 Advertising_All 误杀）
+DOMAIN-SUFFIX,erebor.douban.com
