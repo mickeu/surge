@@ -503,7 +503,8 @@ if (typeof $request === "undefined" || !$request || !$request.url) {
     $notification.post(r.title, r.subtitle, r.body || "");
     console.log("[raccoon-checkin] " + JSON.stringify(r));
     // 面板不长期保留签到结果：每次点击后恢复默认提示（cron 触发时该返回值被忽略）
-    $done({ content: "点此手动签到" });
+    // 必须同时返回 title+content，否则 Surge 面板标题会卡在上次执行结果不重绘
+    $done({ title: "🦝 Xiaoxiong 签到", content: "点此手动签到" });
   });
 } else {
   let path = $request.url.split("?")[0];
