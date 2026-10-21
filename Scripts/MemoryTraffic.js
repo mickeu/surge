@@ -30,6 +30,16 @@
  * 数据来源：
  *   GET /v1/metrics            —— 内存、运行时间、请求/DNS/封禁、本机总流量
  *   GET /v1/requests/recent     —— 按设备名统计 Tailscale 入站设备的连接数与流量
+ *
+ * ⚠️ 注意事项：Tailscale 入站设备访问被 MITM 的域名需安装 CA 证书
+ *   入站设备（如 iphone-xr）通过本机转发流量时，若访问本机 [MITM] hostname
+ *   列表中的域名（如 weatherkit.apple.com 苹果天气），会命中本机 HTTPS 解密。
+ *   因为入站设备不信任 Surge 的 MITM CA（surge-ca），TLS 握手会失败，
+ *   典型现象：入站设备的天气 App 打不开，连接详情里策略/规则/远端 IP 全是 N/A。
+ *   解决：在入站设备上安装并完全信任【接受入站的那台 Surge（本机）】的 MITM CA 证书，
+ *   不能是其他设备导出的证书——本机 Surge App → 设置 → MITM → 导出描述文件（.mobileconfig），
+ *   装到入站设备后，到「设置 → 通用 → 关于本机 → 证书信任设置」开启该证书的完全信任。
+ *   注意：iOS 的文件 App 识别描述文件只看扩展名，传输后需确保 .mobileconfig 后缀存在。
  */
 
 const DEFAULT_API_HOST = "127.0.0.1";
