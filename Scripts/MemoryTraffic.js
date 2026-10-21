@@ -1,5 +1,5 @@
 /*
- * 内存流量（Memory Traffic）v7
+ * 内存和流量实时监控（Memory Traffic）v7
  *
  * 本机流量 + Tailscale 入站设备累计流量监控面板
  * 独立于原「内存」模块（SurgeMonitor），互不影响。
@@ -284,7 +284,7 @@ function finishPanel(title, content, style, icon, iconColor) {
 
 setTimeout(function () {
     finishPanel(
-        "内存流量",
+        "内存和流量实时监控",
         "请求超时",
         "error",
         "exclamationmark.triangle.fill",
@@ -315,7 +315,7 @@ function maybeFinish() {
 
     if (metricsFailed) {
         finishPanel(
-            "内存流量",
+            "内存和流量实时监控",
             "无法获取数据\n\n" + String(metricsFailed),
             "error",
             "exclamationmark.triangle.fill",
@@ -474,7 +474,7 @@ function maybeFinish() {
     lines.push("Surge " + version + " · Build " + build);
 
     finishPanel(
-        "内存流量",
+        "内存和流量实时监控",
         lines.join("\n"),
         null,
         "chart.bar.xaxis",
