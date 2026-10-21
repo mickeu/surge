@@ -505,7 +505,7 @@ if (typeof $request === "undefined" || !$request || !$request.url) {
     // 面板不长期保留签到结果：每次点击后恢复默认提示（cron 触发时该返回值被忽略）
     // 必须同时返回 title+content，否则 Surge 面板标题会卡在上次执行结果不重绘
     // icon 为 SF Symbol 大图标（与贴吧/实时油价一致），icon-color 指定图标颜色
-    $done({ title: "🦝 Xiaoxiong 签到", content: "点此手动签到", icon: "hare.fill", "icon-color": "#8B5A2B" });
+    $done({ title: "🦝 Xiaoxiong 签到", content: "点此手动签到", icon: "pawprint.fill", "icon-color": "#8B5A2B" });
   });
 } else {
   let path = $request.url.split("?")[0];
