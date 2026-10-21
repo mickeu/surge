@@ -1,5 +1,5 @@
 /*
- * 内存和流量实时监控（Memory Traffic）v7
+ * 内存和流量实时监控（Memory Traffic）v8
  *
  * 本机流量 + Tailscale 入站设备累计流量监控面板
  * 独立于原「内存」模块（SurgeMonitor），互不影响。
@@ -14,6 +14,10 @@
  * 会把游标推高，导致入站设备请求被误判为旧请求、累计长期卡住；
  * 且 recent 内 id 与时间顺序不一致会漏统计。现改用请求开始时间做游标，
  * 先取窗口内各设备最大 startDate 再累加新请求，乱序不丢、同请求不重。
+ *
+ * v8 修复：检测 Surge 引擎重启（升级/reload 使接口总流量归零）。当总流量小于上次
+ * 保存的基准时，自动重置入站设备累计与增量游标，避免「本机流量 = 接口总流量 - 入站累计」
+ * 在引擎重启后出现负数被 clamp 成 0.00 B。
  *
  * 配置方式（Surge App → 模块 → 编辑本模块 → 脚本参数 argument 中修改）：
  *   每个设备对应一个参数口：dev1=设备名1,dev2=设备名2,...
@@ -377,6 +381,19 @@ function maybeFinish() {
     // 先取窗口内各设备最大 startDate 作为新游标，再累加所有 startDate 大于
     // 上一轮游标的请求，乱序窗口也不会漏。
     const state = loadState();
+    // v8: 检测 Surge 引擎重启（升级/reload 会使接口总流量计数器归零）。
+    // 无 lastDownload 基准（v8 首次迁移）或当前总流量小于上次基准 → 引擎已重启，
+    // 历史入站累计/增量游标基于旧会话已无意义，重置为 0，从本次重启后重新统计。
+    const prevDownload = Number(state.lastDownload);
+    const hasBaseline = typeof state.lastDownload === "number";
+    const prevUpload = Number(state.lastUpload);
+    if (!hasBaseline || download < prevDownload || upload < prevUpload) {
+        state.devices = {};
+        state.lastStartByDevice = {};
+        state.lastMaxId = 0;
+    }
+    state.lastDownload = download;
+    state.lastUpload = upload;
     const devicesState = state.devices || {};
     const lastStartByDev = state.lastStartByDevice || {};
 
