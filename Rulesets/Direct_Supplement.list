@@ -143,3 +143,5 @@ DOMAIN-SUFFIX,erebor.douban.com
 DOMAIN-SUFFIX,ossp.voicecloud.cn
 # 友盟推送合法接口（被广告规则误杀）
 DOMAIN,aspect-upush.umeng.com
+# Scripting 脚本商店（Cloudflare 托管，走代理连接被重置/超时，需直连）
+DOMAIN,scripting.roayc.com
