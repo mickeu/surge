@@ -1,5 +1,5 @@
 /*
- * 内存流量（Memory Traffic）v4
+ * 内存流量（Memory Traffic）v7
  *
  * 本机流量 + Tailscale 入站设备累计流量监控面板
  * 独立于原「内存」模块（SurgeMonitor），互不影响。
@@ -8,6 +8,12 @@
  * 每 10 秒轮询 /v1/requests/recent 并只累加新请求，避免重复统计。
  * 本机流量 = Surge 接口总流量 - 所有入站设备累计流量；
  * 总计流量 = 本机流量 + 所有入站设备流量 = Surge 接口总流量。
+ *
+ * v7 修复：增量游标改为按设备记录 startDate（lastStartByDevice）。
+ * 旧版用全局最大请求 id 做增量，recent 中本机出站请求 id 增长更快，
+ * 会把游标推高，导致入站设备请求被误判为旧请求、累计长期卡住；
+ * 且 recent 内 id 与时间顺序不一致会漏统计。现改用请求开始时间做游标，
+ * 先取窗口内各设备最大 startDate 再累加新请求，乱序不丢、同请求不重。
  *
  * 配置方式（Surge App → 模块 → 编辑本模块 → 脚本参数 argument 中修改）：
  *   每个设备对应一个参数口：dev1=设备名1,dev2=设备名2,...
@@ -353,36 +359,64 @@ function maybeFinish() {
     }
 
     // 持久化累计各设备的入站流量（只累加新请求，避免重复）
+    // 注意：必须按设备分开记录增量游标。/v1/requests/recent 只返回最近一批请求，
+    // 且混有大量本机出站请求。若用全局最大 id 作增量，本机请求会把游标快速推高，
+    // 导致入站设备请求永远被误判为旧请求、累计长期卡住（面板不涨）。
+    // 另外 recent 内请求 id 与时间顺序并不严格一致（长连接 id 大但开始早），
+    // 用 id 做增量会漏统计。故改用 startDate（请求开始时间）做增量游标：
+    // 先取窗口内各设备最大 startDate 作为新游标，再累加所有 startDate 大于
+    // 上一轮游标的请求，乱序窗口也不会漏。
     const state = loadState();
-    const prevLastMaxId = Number(state.lastMaxId) || 0;
     const devicesState = state.devices || {};
-    let maxId = prevLastMaxId;
+    const lastStartByDev = state.lastStartByDevice || {};
 
-    for (let i = 0; i < requests.length; i++) {
-        const id = Number((requests[i] || {}).id) || 0;
-        if (id > maxId) {
-            maxId = id;
-        }
-    }
-
+    // 本轮窗口内各配置设备的最大 startDate（作为新的增量游标）
+    const newLastStart = {};
     for (let i = 0; i < requests.length; i++) {
         const r = requests[i] || {};
-        const id = Number(r.id) || 0;
         const devName = String(r.deviceName || "");
-        if (id <= prevLastMaxId) {
-            continue;
-        }
         if (devices.indexOf(devName) === -1) {
             continue;
         }
-        const entry = devicesState[devName] || { in: 0, out: 0, count: 0 };
-        entry.in += Number(r.inBytes) || 0;
-        entry.out += Number(r.outBytes) || 0;
-        entry.count += 1;
-        devicesState[devName] = entry;
+        const sd = Number(r.startDate) || 0;
+        if (!(devName in newLastStart) || sd > newLastStart[devName]) {
+            newLastStart[devName] = sd;
+        }
     }
 
-    state.lastMaxId = maxId;
+    // 旧版本升级首次运行：仅初始化游标到窗口内最大 startDate，不累加历史，
+    // 避免把窗口内既有请求重复计入导致数值跳变。
+    if (state.lastStartByDevice) {
+        const seen = {};
+        for (let i = 0; i < requests.length; i++) {
+            const r = requests[i] || {};
+            const devName = String(r.deviceName || "");
+            if (devices.indexOf(devName) === -1) {
+                continue;
+            }
+            const rid = String(r.id || "");
+            if (seen[rid]) {
+                continue; // 同一请求在窗口内重复出现，只累加一次
+            }
+            const sd = Number(r.startDate) || 0;
+            const prev = Number(lastStartByDev[devName]) || 0;
+            if (sd <= prev) {
+                continue;
+            }
+            seen[rid] = true;
+            const entry = devicesState[devName] || { in: 0, out: 0, count: 0 };
+            entry.in += Number(r.inBytes) || 0;
+            entry.out += Number(r.outBytes) || 0;
+            entry.count += 1;
+            devicesState[devName] = entry;
+        }
+    }
+
+    // 用窗口内最大 startDate 推进游标；窗口内未出现的设备游标保持不变
+    for (const devName in newLastStart) {
+        lastStartByDev[devName] = newLastStart[devName];
+    }
+    state.lastStartByDevice = lastStartByDev;
     state.devices = devicesState;
     saveState(state);
 
