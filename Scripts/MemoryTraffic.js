@@ -458,7 +458,7 @@ function maybeFinish() {
     ];
 
     lines.push("");
-    lines.push("Tailscale 入站流量（近似）");
+    lines.push("Tailscale 入站流量");
     if (devices.length === 0) {
         lines.push("（未配置设备）");
         lines.push("编辑脚本参数添加设备名");
