@@ -1,0 +1,14 @@
+#!name=MiniWatts 真实电池
+#!desc=通过 CDTK 读取真实电芯电压 / 电池健康数据（需在 Minis 中运行 battery_server.py；WiFi 下可用）
+#!author=mickeu
+#!category=mickeu
+
+[Rule]
+# 放行局域网，供面板脚本直连本机电池桥服务
+IP-CIDR,192.168.0.0/16,DIRECT
+
+[Script]
+BatteryReal = type=generic,timeout=8,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/battery-panel.js
+
+[Panel]
+BatteryReal = script-name=BatteryReal,title="🔋 真实电池",content="点此刷新",style=info,update-interval=5
