@@ -81,8 +81,6 @@ DOMAIN-SUFFIX,intern-ai.org.cn
 DOMAIN-SUFFIX,smartmidea.com
 DOMAIN-SUFFIX,midea-mcc.com
 DOMAIN-SUFFIX,did-cloud.com
-# 阿里统计（也在广告规则集，防误杀需前置直连）
-DOMAIN-SUFFIX,mmstat.com
 # 阿里用户域（ChinaMax 未收录）
 DOMAIN-SUFFIX,alibabauser.com
 # 视频资源站通用 CDN（ChinaMax 未收录的，漏走代理会卡）

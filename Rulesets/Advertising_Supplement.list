@@ -16,6 +16,8 @@ DOMAIN-SUFFIX,baidumobads.com
 DOMAIN-SUFFIX,adsame.cn
 DOMAIN-SUFFIX,adsame1.cn
 DOMAIN-SUFFIX,mads.weather.com.cn
+# 阿里统计/广告监测（原在 Direct_Supplement 直连，改为拦截）
+DOMAIN-SUFFIX,mmstat.com
 
 # 恶意广告域名/IP（Advertising_All 漏掉）
 DOMAIN-SUFFIX,adsame.com
