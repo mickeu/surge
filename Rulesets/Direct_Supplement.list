@@ -143,3 +143,6 @@ DOMAIN-SUFFIX,ossp.voicecloud.cn
 DOMAIN,aspect-upush.umeng.com
 # Scripting 脚本商店（Cloudflare 托管，走代理连接被重置/超时，需直连）
 DOMAIN,scripting.roayc.com
+# Oracle 注册/控制台全程直连（Global_All 会把 cloud.oracle.com 和 *.oraclecloud.com 送代理，需前置直连压过）
+DOMAIN-SUFFIX,oracle.com
+DOMAIN-SUFFIX,oraclecloud.com
