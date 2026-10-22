@@ -146,3 +146,5 @@ DOMAIN,scripting.roayc.com
 # Oracle 注册/控制台全程直连（Global_All 会把 cloud.oracle.com 和 *.oraclecloud.com 送代理，需前置直连压过）
 DOMAIN-SUFFIX,oracle.com
 DOMAIN-SUFFIX,oraclecloud.com
+# Oracle 验卡支付 cybersource（走代理会失败，需直连）
+DOMAIN-SUFFIX,cybersource.com
