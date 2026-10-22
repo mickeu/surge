@@ -481,9 +481,12 @@ function runCheckin(cb) {
               : okCount > 0 ? "Xiaoxiong OpenAI部分签到成功"
               : "Xiaoxiong OpenAI多账号签到失败";
         subtitle = "成功 " + okCount + "/" + total + " · 今日 +" + totalSum;
+        // 通知正文有 iOS 显示长度限制，成功账号压缩为「1+300/7542」短格式（序号+今日/余额），失败账号保留完整原因
         body = results.map(function (r, n) {
-          return "账号" + (n + 1) + " " + (r.ok ? ("+" + r.sum + " 余额" + (r.balance == null ? "?" : r.balance)) : r.subtitle);
-        }).join("；");
+          return r.ok
+            ? ((n + 1) + "+" + r.sum + "/" + (r.balance == null ? "?" : r.balance))
+            : ("账号" + (n + 1) + "失败:" + r.subtitle);
+        }).join(" ");
       }
       return cb({ ok: okCount > 0, total: total, okCount: okCount, sum: totalSum, results: results, title: title, subtitle: subtitle, body: body });
     }
