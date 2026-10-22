@@ -40,7 +40,6 @@ DOMAIN,accountcapabilities-pa.googleapis.com
 DOMAIN,notifications-pa.googleapis.com
 DOMAIN,oauthaccountmanager.googleapis.com
 DOMAIN,subscriptionsfirstparty-pa.googleapis.com
-DOMAIN,firebaselogging-pa.googleapis.com
 
 # ============================================================
 # 其他 AI 服务统一走 AIGC（源自 ddgksf2013 Ai.yaml + Muse.list）
@@ -110,8 +109,7 @@ DOMAIN-SUFFIX,hf.space
 DOMAIN-SUFFIX,manus.im
 DOMAIN-SUFFIX,manuscdn.com
 
-# Microsoft Copilot（纯 AI 端点，不走 Microsoft 组直连）
-DOMAIN,copilot.microsoft.com
+# Microsoft AI 端点（Copilot 已在 Proxy_Supplement 走 PROXY，这里只留必应 AI）
 DOMAIN,sydney.bing.com
 DOMAIN,gateway.bingviz.microsoftapp.net
 
