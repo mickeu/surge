@@ -2,9 +2,9 @@
 # AUTHOR: mickeu
 # REPO: https://github.com/mickeu/surge
 # DOMAIN-SUFFIX: 16
-# DOMAIN: 5
+# DOMAIN: 6
 # IP-CIDR: 2
-# TOTAL: 23
+# TOTAL: 24
 
 # 社区与 AI 入口不能被 Game/Microsoft 的直连策略覆盖
 DOMAIN-SUFFIX,steamcommunity.com
@@ -39,7 +39,7 @@ DOMAIN,stun.miwifi.com
 DOMAIN-SUFFIX,browserleaks.com
 # steam.com/akamai.com 被 ChinaMax_All 误判为国内域名（全球服务，走直连打不开或慢）
 DOMAIN-SUFFIX,steam.com
-DOMAIN-SUFFIX,akamai.com
+DOMAIN-SUFFIX,steamcontent.com  # steam 内容 CDN（akamai.com 官网域过宽，收窄为实际内容域）
 
 # Google 被墙段误入 ChinaMax_All 直连（74.125.16.64/26 实测超时不可达，2026-10-04）
 IP-CIDR,74.125.16.64/26
@@ -48,3 +48,4 @@ IP-CIDR,104.27.168.0/24
 
 # fanmingming.cn（IPTV 直播源）解析到境外 Cloudflare/CDN，被 ChinaMax 误判为国内域名直连导致 443 连不上
 DOMAIN-SUFFIX,fanmingming.cn
+DOMAIN,m.hotmail.com  # Hotmail 邮箱（直连被 RST，原误放 Apple_Services AIGC，改走通用代理）

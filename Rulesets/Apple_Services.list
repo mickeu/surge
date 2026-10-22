@@ -12,6 +12,3 @@ DOMAIN,sandbox.itunes.apple.com
 
 # 设备管理（GDMF）
 DOMAIN-KEYWORD,gdmf
-
-# Microsoft 系统服务（m.hotmail.com 直连被 RST）
-DOMAIN,m.hotmail.com
