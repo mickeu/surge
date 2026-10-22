@@ -1,0 +1,19 @@
+#!name=麦片屏幕翻译 高级会员解锁
+#!desc=解锁「麦片屏幕翻译」高级订阅（VIP）
+#!author=mickeu
+#!category=mickeu
+#!homepage=https://github.com/chxm1023/Rewrite
+
+# ===== 引用脚本来源 =====
+# 原始仓库：chxm1023/Rewrite | 脚本作者 @ddm1023
+# 原始脚本：https://raw.githubusercontent.com/chxm1023/Rewrite/main/mppmfy.js
+# 项目名称：麦片屏幕翻译（下载 https://too.st/9uj）
+# 电报：https://t.me/ddm1023
+# 使用声明：仅供参考，禁止转载与售卖
+# 本仓库副本：Scripts/mppmfy.js（原样托管，来源见上）
+
+[Script]
+麦片翻译解锁 = type=http-response,pattern=^https?:\/\/youxifanyizhushou\.com\/ios\/api\/product\/user\/remain\/ios,requires-body=true,max-size=0,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/mppmfy.js
+
+[MITM]
+hostname = youxifanyizhushou.com
