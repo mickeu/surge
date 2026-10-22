@@ -2,16 +2,16 @@
 #!desc=把商汤 Xiaoxiong（小浣熊）包装成 OpenAI 兼容 API，支持多账号轮询负载均衡：accounts 填多个「手机号:密码」用竖线分隔，每账号独立 token 缓存与自动续期；附每日批量签到（串行防风控）+ 面板手动签到。账号数不限。
 #!author=mickeu
 #!category=mickeu
-#!arguments=nation:86,accounts:none,phones:none,password:none,cron:12 0 * * *
-#!arguments-desc=\n📌 参数说明\n\n1️⃣ accounts / phones 账号\n两种填法任选其一：\n ① 每账号独立密码：accounts 填「手机1:密码1|手机2:密码2|...」\n ② 所有账号同密码：phones 填「手机1|手机2|...」（竖线分隔），password 填统一密码\n不用的项保持 none\n\n2️⃣ nation 区号\n默认 86\n\n3️⃣ cron 签到定时\ncron 表达式，默认 "12 0 * * *"（每天 0:12 签到）\n\n✅ 常规正确示例：\n  "30 0 * * *"      每天 0:30 一次\n  "0 9 * * *"       每天 9:00 一次\n  "30 0/12 * * *"   每12小时（0:30、12:30）\n  "30 */8 * * *"    每8小时（0:30、8:30、16:30）\n  "30 0 * * 1"      每周一 0:30\n\n⚠️ 避坑示例（不要照抄）：\n  "0 8,20 * * *"   ✗ 含逗号，Surge 会当参数分隔符\n  "30 0,12 * * *"  ✗ 同上，逗号会导致模块解析失败、脚本不注册！\n  如需每天多次，请用 */N 或 0/N 步进写法（从 0 点起每 N 小时一次）\n\n改完参数需 Reload Profile 生效。\n\n修改者：mickeu
+#!arguments=nation:86,accounts:none,phones:none,password:none,cron:12 0 * * *,batch:6
+#!arguments-desc=\n📌 参数说明\n\n1️⃣ accounts / phones 账号\n两种填法任选其一：\n ① 每账号独立密码：accounts 填「手机1:密码1|手机2:密码2|...」\n ② 所有账号同密码：phones 填「手机1|手机2|...」（竖线分隔），password 填统一密码\n不用的项保持 none\n\n2️⃣ nation 区号\n默认 86\n\n3️⃣ batch 分批通知\n每签完几个账号发一条通知，默认 6\n参考贴吧签到的分批通知：账号多时一条长通知会被 iOS 截断，分批发不会丢\n设 1 = 每个账号一条通知；设很大（如 99）= 所有账号挤一条（可能被截断）\n\n4️⃣ cron 签到定时\ncron 表达式，默认 "12 0 * * *"（每天 0:12 签到）\n\n✅ 常规正确示例：\n  "30 0 * * *"      每天 0:30 一次\n  "0 9 * * *"       每天 9:00 一次\n  "30 0/12 * * *"   每12小时（0:30、12:30）\n  "30 */8 * * *"    每8小时（0:30、8:30、16:30）\n  "30 0 * * 1"      每周一 0:30\n\n⚠️ 避坑示例（不要照抄）：\n  "0 8,20 * * *"   ✗ 含逗号，Surge 会当参数分隔符\n  "30 0,12 * * *"  ✗ 同上，逗号会导致模块解析失败、脚本不注册！\n  如需每天多次，请用 */N 或 0/N 步进写法（从 0 点起每 N 小时一次）\n\n改完参数需 Reload Profile 生效。\n\n修改者：mickeu
 
 [MITM]
 hostname = %APPEND% xiaohuanxiong.com
 
 [Script]
-Xiaoxiong 多账号反代 = type=http-request,pattern=^https://xiaohuanxiong\.com/v1/(acc\d+/)?(chat/completions|models|checkin|probe),requires-body=true,max-size=10485760,engine=webview,timeout=600,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/raccoon-openai-multi.js?v=5,argument="nation={{{nation}}}&accounts={{{accounts}}}&phones={{{phones}}}&password={{{password}}}"
-Xiaoxiong 多账号签到 = type=cron,cronexp="{{{cron}}}",wake-system=1,engine=webview,timeout=600,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/raccoon-openai-multi.js?v=5,argument="nation={{{nation}}}&accounts={{{accounts}}}&phones={{{phones}}}&password={{{password}}}"
-Xiaoxiong 签到面板 = type=generic,timeout=120,engine=webview,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/raccoon-openai-multi.js?v=5,argument="nation={{{nation}}}&accounts={{{accounts}}}&phones={{{phones}}}&password={{{password}}}"
+Xiaoxiong 多账号反代 = type=http-request,pattern=^https://xiaohuanxiong\.com/v1/(acc\d+/)?(chat/completions|models|checkin|probe),requires-body=true,max-size=10485760,engine=webview,timeout=600,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/raccoon-openai-multi.js?v=6,argument="nation={{{nation}}}&accounts={{{accounts}}}&phones={{{phones}}}&password={{{password}}}&batch={{{batch}}}"
+Xiaoxiong 多账号签到 = type=cron,cronexp="{{{cron}}}",wake-system=1,engine=webview,timeout=600,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/raccoon-openai-multi.js?v=6,argument="nation={{{nation}}}&accounts={{{accounts}}}&phones={{{phones}}}&password={{{password}}}&batch={{{batch}}}"
+Xiaoxiong 签到面板 = type=generic,timeout=120,engine=webview,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/raccoon-openai-multi.js?v=6,argument="nation={{{nation}}}&accounts={{{accounts}}}&phones={{{phones}}}&password={{{password}}}&batch={{{batch}}}"
 
 [Panel]
 Xiaoxiong 签到面板 = script-name=Xiaoxiong 签到面板,title="🦝 Xiaoxiong 签到",content="点此手动签到",style=info,update-interval=0

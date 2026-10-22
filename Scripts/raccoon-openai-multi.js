@@ -464,10 +464,30 @@ function checkinOne(i, cb) {
   });
 }
 // 多账号签到：串行遍历，账号间随机延时 1-3s 防风控；单账号时行为与原版一致
+// 分批通知（参考贴吧 singleNotifyCount）：每签完 BATCH 个账号发一条通知，防 iOS 长通知截断
+const BATCH = Math.max(1, parseInt(A.batch, 10) || 6);
 function runCheckin(cb) {
   const total = ACCOUNT_COUNT > 0 ? ACCOUNT_COUNT : 1;
   const results = [];
   let idx = 0;
+  // 一批结果拼通知正文：每批账号少，用完整格式「账号N +300 余额XXXX」不会超 iOS 显示上限
+  function batchBody(from, to) {
+    return results.slice(from, to).map(function (r, k) {
+      return "账号" + (from + k + 1) + " " + (r.ok ? ("+" + r.sum + " 余额" + (r.balance == null ? "?" : r.balance)) : r.subtitle);
+    }).join("；");
+  }
+  // 每满一批（或最后一不满批）发一条分批通知
+  function postBatch(done) {
+    const from = done - ((done - 1) % BATCH + 1);
+    const part = results.slice(from, done);
+    const okN = part.filter(function (x) { return x.ok; }).length;
+    const cumSum = results.slice(0, done).reduce(function (s, x) { return s + (x.ok ? x.sum : 0); }, 0);
+    $notification.post(
+      "Xiaoxiong OpenAI签到 " + Math.ceil(done / BATCH) + "/" + Math.ceil(total / BATCH) + " 批",
+      "本批 " + okN + "/" + part.length + " · 累计 +" + cumSum,
+      batchBody(from, done)
+    );
+  }
   function next() {
     if (idx >= total) {
       const okCount = results.filter(function (r) { return r.ok; }).length;
@@ -477,22 +497,19 @@ function runCheckin(cb) {
       if (total === 1) {
         title = first.title; subtitle = first.subtitle; body = first.body;
       } else {
-        title = okCount === total ? "Xiaoxiong OpenAI多账号签到成功"
+        title = okCount === total ? "Xiaoxiong OpenAI多账号签到完成"
               : okCount > 0 ? "Xiaoxiong OpenAI部分签到成功"
               : "Xiaoxiong OpenAI多账号签到失败";
         subtitle = "成功 " + okCount + "/" + total + " · 今日 +" + totalSum;
-        // 通知正文有 iOS 显示长度限制，成功账号压缩为「1+300/7542」短格式（序号+今日/余额），失败账号保留完整原因
-        body = results.map(function (r, n) {
-          return r.ok
-            ? ((n + 1) + "+" + r.sum + "/" + (r.balance == null ? "?" : r.balance))
-            : ("账号" + (n + 1) + "失败:" + r.subtitle);
-        }).join(" ");
+        // 多账号时明细已由分批通知发出，汇总通知不再重复正文
+        body = "";
       }
       return cb({ ok: okCount > 0, total: total, okCount: okCount, sum: totalSum, results: results, title: title, subtitle: subtitle, body: body });
     }
     const cur = idx++;
     checkinOne(cur, function (r) {
       results.push(r);
+      if (total > 1 && (idx % BATCH === 0 || idx === total)) postBatch(idx);
       delay(next, cur >= total - 1 ? 0 : 1000 + Math.floor(Math.random() * 2000));
     });
   }
