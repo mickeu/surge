@@ -5,11 +5,11 @@
 # DOMAIN: 10
 # DOMAIN-KEYWORD: 7
 # DOMAIN-SUFFIX: 1016
-# IP-CIDR: 10
+# IP-CIDR: 9
 # IP-CIDR6: 3
 # PROCESS-NAME: 13
 # USER-AGENT: 23
-# TOTAL: 1082
+# TOTAL: 1081
 DOMAIN,apple-events.akamaized.net
 DOMAIN,appleworldwidedeveloper.hb-api.omtrdc.net
 DOMAIN,appleworldwidedeveloper.sc.omtrdc.net
@@ -1047,7 +1047,7 @@ IP-CIDR,139.178.128.0/18,no-resolve
 IP-CIDR,144.178.0.0/19,no-resolve
 IP-CIDR,144.178.36.0/22,no-resolve
 IP-CIDR,144.178.48.0/20,no-resolve
-IP-CIDR,17.0.0.0/8,no-resolve
+# Apple 公共服务 IPv4；过宽网段已移除，避免覆盖 Apple Intelligence 代理网段
 IP-CIDR,192.35.50.0/24,no-resolve
 IP-CIDR,198.183.17.0/24,no-resolve
 IP-CIDR,205.180.175.0/24,no-resolve

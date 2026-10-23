@@ -39,13 +39,13 @@ DOMAIN,stun.miwifi.com
 DOMAIN-SUFFIX,browserleaks.com
 # steam.com/akamai.com 被 ChinaMax_All 误判为国内域名（全球服务，走直连打不开或慢）
 DOMAIN-SUFFIX,steam.com
-DOMAIN-SUFFIX,steamcontent.com  # steam 内容 CDN（akamai.com 官网域过宽，收窄为实际内容域）
+DOMAIN-SUFFIX,steamcontent.com
 
 # Google 被墙段误入 ChinaMax_All 直连（74.125.16.64/26 实测超时不可达，2026-10-04）
-IP-CIDR,74.125.16.64/26
+IP-CIDR,74.125.16.64/26,no-resolve
 # Cloudflare 被墙段误入 ChinaMax_All 直连（104.27.168.0/24 实测超时不可达，2026-10-04）
-IP-CIDR,104.27.168.0/24
+IP-CIDR,104.27.168.0/24,no-resolve
 
 # fanmingming.cn（IPTV 直播源）解析到境外 Cloudflare/CDN，被 ChinaMax 误判为国内域名直连导致 443 连不上
 DOMAIN-SUFFIX,fanmingming.cn
-DOMAIN,m.hotmail.com  # Hotmail 邮箱（直连被 RST，原误放 Apple_Services AIGC，改走通用代理）
+DOMAIN,m.hotmail.com
