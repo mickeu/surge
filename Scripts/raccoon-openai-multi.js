@@ -546,6 +546,16 @@ if (typeof $request === "undefined" || !$request || !$request.url) {
     // ★ 真流式：只改写请求（URL → llm/v2 网关、Bearer token、模型名归一化），
     //   不返回 response —— 上游的标准 OpenAI SSE 流由 Surge 原生透传给客户端。
     //   多账号：轮询选下一个账号，token 过期在请求前预检。
+    // ⚠️ 上游对超大请求体会直接断连（实测 ~1.4MB body 触发连接重置 -1005），
+    //    提前拦截并返回明确的 413，避免客户端莫名连接中断。
+    const _hdrLen = parseInt(($request.headers && ($request.headers["Content-Length"] || $request.headers["content-length"])) || "0", 10);
+    const _bodyLen = typeof $request.body === "string" ? $request.body.length : 0;
+    const _totalLen = _hdrLen || _bodyLen;
+    const BODY_LIMIT = 1000000; // 1MB
+    if (_totalLen > BODY_LIMIT) {
+      errResp(413, "Xiaoxiong OpenAI代理: 请求体过大（" + Math.round(_totalLen / 1024) + "KB），超过小浣熊上游可处理上限（约1MB）。请精简对话上下文，或改用其他模型处理长任务。");
+      return;
+    }
     const acctIdx = pickAccount();
     ensureToken(acctIdx, function (e, token) {
       if (e) return errResp(401, "Xiaoxiong OpenAI代理(账号" + (acctIdx + 1) + "): " + e.message);
