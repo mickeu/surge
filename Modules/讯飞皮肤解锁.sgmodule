@@ -1,0 +1,10 @@
+#!name=讯飞皮肤解锁（实验）
+#!desc=改写讯飞皮肤详情接口（resource/do）响应，付费皮肤变为免费可下载使用（实验性）
+#!author=mickeu
+#!category=mickeu
+
+[Script]
+iflySkinUnlock = type=http-response, pattern=^https://imeclient\.openspeech\.cn/resource/do\?, requires-body=true, binary-body-mode=1, script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/ifly_skin_unlock.js
+
+[MITM]
+hostname = %APPEND% imeclient.openspeech.cn
