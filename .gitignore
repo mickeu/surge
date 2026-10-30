@@ -1,0 +1,4 @@
+# 讯飞逆向/解锁模块只存私库 config-backup，禁止推送公开仓库
+Modules/讯飞*
+Scripts/ifly_probe*.js
+Scripts/ifly_skin_unlock.js
