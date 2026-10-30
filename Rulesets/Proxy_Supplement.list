@@ -49,5 +49,4 @@ IP-CIDR,104.27.168.0/24,no-resolve
 # fanmingming.cn（IPTV 直播源）解析到境外 Cloudflare/CDN，被 ChinaMax 误判为国内域名直连导致 443 连不上
 DOMAIN-SUFFIX,fanmingming.cn
 DOMAIN,m.hotmail.com
-# Z.AI 海外服务被 ChinaMax_All 误判为国内域名直连，导致 ZCode/Z.AI 检测到中国 IP 拦截授权（2026-10-31）
-DOMAIN-SUFFIX,z.ai
+

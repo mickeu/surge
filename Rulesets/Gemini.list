@@ -143,3 +143,5 @@ DOMAIN-SUFFIX,together.ai
 DOMAIN-SUFFIX,fireworks.ai
 DOMAIN-SUFFIX,deepinfra.com
 DOMAIN-SUFFIX,replicate.com
+# Z.AI（智谱海外，ZCode/GLM Coding Plan 走 AIGC，避免被 ChinaMax 误判国内直连）
+DOMAIN-SUFFIX,z.ai
