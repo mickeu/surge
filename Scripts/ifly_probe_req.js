@@ -1,5 +1,5 @@
 // 讯飞请求捕获（调试）：捕获讯飞 App 请求 URL + 头 + body，POST 到本机捕获服务器
-// b64 兼容 string 与 Uint8Array（Surge binary-body-mode=1 时 body 是 Uint8Array）
+// b64 兼容 string 与 Uint8Array；关键接口弹通知便于确认触发
 function b64(input) {
   if (input == null) return '';
   var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
@@ -38,15 +38,30 @@ try {
         reqHeaders: headers,
         reqBodyB64: b64($request.body)
       };
+      var posted = false;
       $httpClient.post({
         url: 'http://127.0.0.1:8123/capture',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       }, function (err, resp, data) {
-        console.log('[iflyProbeReq] post ' + url + ' err=' + err);
+        posted = true;
+        if (err) {
+          console.log('[iflyProbeReq] POST FAIL ' + url + ' err=' + err);
+          if (/(resEnableCheck|queryUserVips|vip|order\/submit)/i.test(url)) {
+            $notification.post('讯飞探针-回传失败', url.slice(0, 120), 'err=' + err);
+          }
+        }
         finish();
       });
-      setTimeout(finish, 3000);
+      setTimeout(function () { if (!posted) { console.log('[iflyProbeReq] POST TIMEOUT ' + url); } finish(); }, 3000);
+      // 关键接口弹通知确认触发（每 URL 一次）
+      if (/(resEnableCheck|queryUserVips|\/vip\/|order\/submit)/i.test(url)) {
+        var seenKey = 'ifly_note_' + url.slice(0, 160);
+        if (!$persistentStore.read(seenKey)) {
+          $persistentStore.write('1', seenKey);
+          $notification.post('讯飞探针触发', url.slice(0, 180), '请求已捕获（正在回传）');
+        }
+      }
     } else {
       finish();
     }
