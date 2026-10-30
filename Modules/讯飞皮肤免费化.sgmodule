@@ -4,7 +4,7 @@
 #!category=mickeu
 
 [Script]
-iflySkinFree = type=http-response, pattern=^https://imeclient\.openspeech\.cn/resource/getres, requires-body=true, script-path=surge_ifly_skin.js
+iflySkinFree = type=http-response, pattern=^https://imeclient\.openspeech\.cn/resource/getres, requires-body=true, script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/surge_ifly_skin.js
 
 [MITM]
 hostname = %APPEND% imeclient.openspeech.cn
