@@ -1,0 +1,10 @@
+#!name=讯飞协议探针（调试）
+#!desc=捕获讯飞 App 商店/广告请求，通知显示 URL 与响应体摘要，用于确定 App 内真实协议（调试用，确认后移除）
+#!author=mickeu
+#!category=mickeu
+
+[Script]
+iflyProbe = type=http-response, pattern=^https?://(imeclient\.openspeech\.cn|ime\.voicecloud\.cn|.*\.voicecloud\.cn|.*\.xfinfr\.com|.*\.openspeech\.cn|.*\.xfyun\.cn)/, requires-body=true, script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/ifly_probe.js
+
+[MITM]
+hostname = %APPEND% imeclient.openspeech.cn, ime.voicecloud.cn, *.voicecloud.cn, *.xfinfr.com, *.openspeech.cn, *.xfyun.cn
