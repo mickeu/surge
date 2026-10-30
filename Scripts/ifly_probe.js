@@ -1,5 +1,5 @@
 // 讯飞响应捕获（调试）：捕获讯飞 App 请求的响应（含 body），POST 到本机捕获服务器
-// 纯 JS base64（不依赖 btoa/$utils），全程 try-catch 保证不影响正常网络
+// 纯 JS base64，$done 在 POST 回调中执行（确保异步回传完成），带超时兜底
 function b64(s) {
   if (!s) return '';
   var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
@@ -17,6 +17,10 @@ function b64(s) {
     out += chars[(n2 >> 18) & 63] + chars[(n2 >> 12) & 63] + chars[(n2 >> 6) & 63] + '=';
   }
   return out;
+}
+var finished = false;
+function finish() {
+  if (!finished) { finished = true; $done(); }
 }
 try {
   if ($response && $request) {
@@ -39,11 +43,18 @@ try {
         url: 'http://127.0.0.1:8123/capture',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
-      }, function (err, resp, data) {});
-      console.log('[iflyProbe] ' + ($response.status || 0) + ' ' + url);
+      }, function (err, resp, data) {
+        console.log('[iflyProbe] post ' + url + ' err=' + err);
+        finish();
+      });
+      setTimeout(finish, 3000);
+    } else {
+      finish();
     }
+  } else {
+    finish();
   }
 } catch (e) {
   console.log('[iflyProbe] err: ' + e);
+  finish();
 }
-$done();
