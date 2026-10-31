@@ -22,4 +22,4 @@ PingMe签到面板v2 = type=generic,timeout=180,script-path=https://raw.githubus
 PingMe签到面板v2 = script-name=PingMe签到面板v2,title="🔄 PingMe 签到",content="运行签到",style=info,update-interval=0
 
 [MITM]
-hostname = %APPEND% api.pingmeapp.net%APPEND% api.pingmeapp.net
+hostname = %APPEND% api.pingmeapp.net
