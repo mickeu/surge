@@ -1,0 +1,59 @@
+# NAME: Claude_All
+# AUTHOR: mickeu
+# REPO: https://github.com/mickeu/surge
+# UPDATED: 2026-10-31
+# 说明：Claude/Anthropic 全链路优先走 AIGC（支付/认证/遥测/客服/CDN/IP 兜底）
+
+# 时区检测（NTP 同步）
+DEST-PORT,123
+
+# 支付
+DOMAIN-SUFFIX,stripe.com
+DOMAIN-KEYWORD,stripe
+
+# Desktop（macOS 路径；iOS 上无效，仅保留兼容性，占位符已去除）
+# PROCESS-NAME,/Users/*/.local/share/claude/*
+# PROCESS-NAME,/Applications/Claude.app/
+
+# Claude / Anthropic 核心域名
+DOMAIN-KEYWORD,claude
+DOMAIN-SUFFIX,clau.de
+DOMAIN-SUFFIX,claude.ai
+DOMAIN-SUFFIX,claude.com
+DOMAIN-SUFFIX,anthropic.com
+DOMAIN-SUFFIX,claudemcpclient.com
+DOMAIN-SUFFIX,claudemcpcontent.com
+DOMAIN-SUFFIX,claudeusercontent.com
+
+# CDN 和静态资源
+DOMAIN,servd-anthropic-website.b-cdn.net
+DOMAIN,anthropic.com.cdn.cloudflare.net
+
+# 认证 / 内容
+DOMAIN,anthropic.auth0.com
+DOMAIN,anthropic-com.ghost.io
+
+# 监控和遥测
+DOMAIN-SUFFIX,sentry.io
+DOMAIN-SUFFIX,statsigapi.net
+DOMAIN-SUFFIX,browser-intake-us5-datadoghq.com
+DOMAIN-KEYWORD,datadog
+DOMAIN-KEYWORD,sift
+
+# 客服 / 第三方 widget
+DOMAIN-SUFFIX,intercom.io
+DOMAIN-SUFFIX,intercomcdn.com
+DOMAIN,cdn.usefathom.com
+
+# IP 段 / ASN 兜底
+IP-CIDR,160.79.104.0/21,no-resolve
+IP-CIDR6,2607:6bc0::/32,no-resolve
+IP-ASN,399358,no-resolve
+
+# 精确上报域名
+DOMAIN,http-intake.logs.us5.datadoghq.com
+DOMAIN,o1158394.ingest.us.sentry.io
+DOMAIN,browser-intake-us5-datadoghq.com
+DOMAIN,a-cdn.anthropic.com
+DOMAIN,a-api.anthropic.com
+DOMAIN,api3.siftscience.com
