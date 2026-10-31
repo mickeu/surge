@@ -145,3 +145,5 @@ DOMAIN-SUFFIX,deepinfra.com
 DOMAIN-SUFFIX,replicate.com
 # Z.AI（智谱海外，ZCode/GLM Coding Plan 走 AIGC，避免被 ChinaMax 误判国内直连）
 DOMAIN-SUFFIX,z.ai
+# Sub2API Grok 网关
+DOMAIN-SUFFIX,aaam.tech
