@@ -176,3 +176,5 @@ DOMAIN-SUFFIX,replicate.com
 DOMAIN-SUFFIX,z.ai
 # Sub2API Grok 网关
 DOMAIN-SUFFIX,aaam.tech
+# IFM（MBZUAI 基座模型 API，api.ifm.ai / platform.ifm.ai / docs.ifm.ai）
+DOMAIN-SUFFIX,ifm.ai
