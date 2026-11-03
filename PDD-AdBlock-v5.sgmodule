@@ -1,0 +1,10 @@
+#!name=拼多多广告屏蔽 v5
+#!desc=屏蔽答题横幅、优惠券、月卡、短视频与推广活动卡片。
+#!author=mickeu
+#!category=mickeu
+
+[Script]
+拼多多广告屏蔽 = type=http-response,pattern=^https://[^/]*pinduoduo\.com/.*,requires-body=true,max-size=5242880,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/PDD-AdBlock-v5.js
+
+[MITM]
+hostname = %APPEND% *.pinduoduo.com
