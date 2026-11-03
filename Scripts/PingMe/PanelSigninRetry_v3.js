@@ -46,12 +46,12 @@ startTasks().then(() => finishTask()).catch(async err => {
 });
 
 function finishTask() {
-    const summary = $.taskFailure ? `❌ ${$.taskFailure}` : ($.balanceSummary || '完成');
-    try { $surge?.logbook(`PingMe签到 ${summary}`); } catch (_) {}
+    // 面板只展示余额摘要：失败信息只进日志/系统通知，避免错误文本长期挂在首页面板
+    const panelText = $.balanceSummary || '点击运行签到';
+    try { $surge?.logbook(`PingMe签到 ${$.taskFailure ? '失败：' + $.taskFailure : panelText}`); } catch (_) {}
     if (typeof $script !== 'undefined' && $script.type === 'generic') {
-        $.done({title: '🔄 PingMe 签到', content: summary,
-            icon: $.taskFailure ? 'exclamationmark.triangle' : 'arrow.down.message',
-            'icon-color': $.taskFailure ? '#FF3B30' : '#007AFF'});
+        $.done({title: '🔄 PingMe 签到', content: panelText,
+            icon: 'arrow.down.message', 'icon-color': '#007AFF'});
     } else $.done();
 }
 
