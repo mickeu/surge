@@ -1,0 +1,10 @@
+#!name=拼多多接口探针 v1
+#!desc=临时诊断：仅记录页面接口路径及JSON键名，不改写响应；定位完成后停用。
+#!author=mickeu
+#!category=mickeu
+
+[Script]
+拼多多接口探针 = type=http-response,pattern=^https://(api\.pinduoduo\.com|m\.pinduoduo\.net|mobile\.yangkeduo\.com|api\.yangkeduo\.com|m\.yangkeduo\.com)/,requires-body=true,max-size=524288,debug=true,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/PDD-Probe-v1.js
+
+[MITM]
+hostname = %APPEND% api.pinduoduo.com, m.pinduoduo.net, mobile.yangkeduo.com, api.yangkeduo.com, m.yangkeduo.com
