@@ -1,0 +1,13 @@
+#!name=拼多多首页观测 v2
+#!desc=仅记录首页接口字段名，不修改响应；禁用原探针，避免活动页白屏。
+#!author=mickeu
+#!category=mickeu
+
+[Rule]
+AND,((DOMAIN,api.pinduoduo.com,extended-matching),(PROTOCOL,QUIC)),REJECT
+
+[Script]
+拼多多首页字段观测 = type=http-response,pattern=^https://api\.pinduoduo\.com/api/alexa/homepage/hub(?:\?|$),requires-body=true,max-size=2097152,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/PDD-Observe-v2.js
+
+[MITM]
+hostname = %APPEND% api.pinduoduo.com
