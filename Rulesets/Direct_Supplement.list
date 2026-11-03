@@ -148,3 +148,6 @@ DOMAIN-SUFFIX,oracle.com
 DOMAIN-SUFFIX,oraclecloud.com
 # Oracle 验卡支付 cybersource（走代理会失败，需直连）
 DOMAIN-SUFFIX,cybersource.com
+# Tunnel 边缘走代理会在 TLS 握手时断开，直连可建立连接
+DOMAIN-SUFFIX,region1.v2.argotunnel.com
+DOMAIN-SUFFIX,region2.v2.argotunnel.com
