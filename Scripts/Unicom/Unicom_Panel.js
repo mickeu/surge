@@ -60,6 +60,7 @@ function formatFlowValue(value, unit) {
 function parseFlowDetail(data) {
   let generalRemain = 0, directionalRemain = 0;
   let generalTotal = 0, directionalTotal = 0;
+  let generalUsed = 0, directionalUsed = 0;
 
   for (const key of Object.keys(FLOW_RESOURCE_NAMES)) {
     const resourceName = FLOW_RESOURCE_NAMES[key];
@@ -74,13 +75,16 @@ function parseFlowDetail(data) {
         const directional = isDirectionalFlowItem(item, resourceName);
         const remain = Math.max(0, parseFloat(item.remain) || 0);
         const total = Math.max(0, parseFloat(item.total) || 0);
+        const used = Math.max(0, parseFloat(item.use) || 0);
 
         if (directional) {
           directionalRemain += remain;
           directionalTotal += total;
+          directionalUsed += used;
         } else {
           generalRemain += remain;
           generalTotal += total;
+          generalUsed += used;
         }
       }
     }
@@ -89,6 +93,7 @@ function parseFlowDetail(data) {
   return {
     generalRemain, directionalRemain,
     generalTotal, directionalTotal,
+    generalUsed, directionalUsed,
   };
 }
 
@@ -204,7 +209,7 @@ function main() {
       try { data = parseUnicomData(res); }
       catch (e) { doneError(e.message); return; }
 
-      // 第二数据源：流量明细，用于推算「已用通用流量」
+      // 第二数据源：流量明细，取联通接口原值「已用通用流量」
       $httpClient.post(
         { url: FLOW_DETAIL_URL, headers: headers, timeout: 10000 },
         function (err2, resp2, body2) {
@@ -215,8 +220,7 @@ function main() {
               if (d && String(d.code) === '0000') {
                 const f = parseFlowDetail(d);
                 if (showGeneralFlow) {
-                  usedGeneral = f.generalTotal - f.generalRemain;
-                  if (usedGeneral < 0) usedGeneral = 0;
+                  usedGeneral = f.generalUsed; // 直接取接口 use 字段累加，即「本月已用通用流量」
                 }
               }
             } catch (e) {}

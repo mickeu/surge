@@ -10,7 +10,7 @@
 
 [Script]
 # 面板数据源（generic，由 Panel 调用）
-unicom-panel = type=generic, timeout=15, script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/Unicom/Unicom_Panel.js?v=1, argument=cookie_enabled={{{cookie_enabled}}};show_general_flow={{{show_general_flow}}}
+unicom-panel = type=generic, timeout=15, script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/Unicom/Unicom_Panel.js?v=2, argument=cookie_enabled={{{cookie_enabled}}};show_general_flow={{{show_general_flow}}}
 # 自动抓取 Cookie / 手机号（http-request，开关受 cookie_enabled 控制；关掉则不再写入，已存Cookie仍可用于刷新）
 unicom-capture = type=http-request, pattern=^https?://m\.client\.10010\.com/, requires-body=false, script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/Unicom/Unicom_Capture.js?v=1, argument=cookie_enabled={{{cookie_enabled}}}
 
