@@ -1,5 +1,6 @@
 #!name=中国联通面板
 #!desc=话费/语音/通用流量信息面板（含自动抓取 Cookie）。参数页可开关「抓取Cookie」与「显示已用通用流量」。
+#!icon=https://iili.io/nEuB6Jt.png
 #!author=mickeu
 #!category=mickeu
 #!arguments=cookie_enabled:true,show_general_flow:true
