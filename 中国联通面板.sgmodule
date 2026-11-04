@@ -1,0 +1,19 @@
+#!name=中国联通面板
+#!desc=话费/语音/通用流量信息面板（含自动抓取 Cookie）。参数页可开关「抓取Cookie」与「显示已用通用流量」。
+#!author=mickeu
+#!category=mickeu
+#!arguments=cookie_enabled:true,show_general_flow:true
+#!arguments-desc=\n📌 参数说明\n\n1️⃣ cookie_enabled 抓Cookie开关\n默认 true 开启抓参；设 false 关闭抓参\n打开联通App首页点一下余额/话费，自动抓到Cookie并弹通知，成功后关掉即可\n\n2️⃣ show_general_flow 显示已用通用流量\n默认 true 显示「已用通用流量」；设 false 只显示话费+语音
+
+[Panel]
+中国联通 = title="中国联通", content="加载中…", icon=antenna.radiowaves.left.and.right, icon-color=#E60012, script-name=unicom-panel, update-interval=600
+
+[Script]
+# 面板数据源（generic，由 Panel 调用）
+unicom-panel = type=generic, timeout=15, script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/Unicom/Unicom_Panel.js?v=1, argument=cookie_enabled={{{cookie_enabled}}};show_general_flow={{{show_general_flow}}}
+# 自动抓取 Cookie / 手机号（http-request，开关受 cookie_enabled 控制；关掉则不再写入，已存Cookie仍可用于刷新）
+unicom-capture = type=http-request, pattern=^https?://m\.client\.10010\.com/, requires-body=false, script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/Unicom/Unicom_Capture.js?v=1, argument=cookie_enabled={{{cookie_enabled}}}
+
+[MITM]
+# 抓取需要 MITM 解密，用 %APPEND% 追加，不覆盖你原有的 MITM 列表
+hostname = %APPEND% m.client.10010.com
