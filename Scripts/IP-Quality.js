@@ -272,7 +272,7 @@ function normIpwho(d) {
   else { iconColor = "#8E8E93"; iconName = "questionmark.shield"; }
 
   done({
-    title: f + " " + main.ip + (realMismatch ? " ⚠️" : ""),
+    title: f + " " + groupName + (realMismatch ? " ⚠️" : ""),
     content: panelLines.join("\n"),
     icon: iconName,
     "icon-color": iconColor
