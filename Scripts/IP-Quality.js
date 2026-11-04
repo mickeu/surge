@@ -48,6 +48,17 @@ function httpAPI(path, method = "GET") {
     $httpAPI(method, path, null, (result) => resolve(result));
   });
 }
+// 抓最近请求里目标域名的真实出口节点名（originalPolicyName 才是叶节点，照网络信息模块 getRequestInfo 逻辑）
+async function getCurrentNode() {
+  try {
+    const { requests } = await httpAPI("/v1/requests/recent", "GET");
+    if (!requests || !requests.length) return null;
+    const hit = requests.slice(0, 30).find(r => /ip-api\.com|ipinfo\.io|ipwho\.is|api\.ip\.sb|ifconfig|ip\.me|ipify/.test(r.URL || ""));
+    if (!hit) return null;
+    const n = hit.originalPolicyName || hit.policyName;
+    return n && n !== "None" ? n : null;
+  } catch (e) { return null; }
+}
 
 // ---------- 超时兜底（19s，配合模块 timeout=20，留 1s 给 $done 收尾） ----------
 setTimeout(() => done({
@@ -198,13 +209,14 @@ function normIpwho(d) {
     return;
   }
 
-  // Phase 1.5: 取策略组当前选中的真实节点名（Surge API，照网络信息模块逻辑）
+  // Phase 1.5: 取策略组当前选中的真实节点名（抓最近请求 originalPolicyName，照网络信息模块逻辑）
   let nodeName = groupName;
-  try {
-    const pg = await httpAPI("/v1/policy_groups/" + encodeURIComponent(groupName));
-    const cur = pg && (pg.current_policy || (pg.policy && pg.policy.history && pg.policy.history[0]) || pg.selected);
-    if (cur && typeof cur === "string" && cur !== groupName) nodeName = cur;
-  } catch (e) { nodeName = groupName; }
+  let cur = null;
+  for (let i = 0; i < 3 && !cur; i++) {
+    cur = await getCurrentNode();
+    if (!cur) await new Promise(r => setTimeout(r, 300));
+  }
+  if (cur && typeof cur === "string" && cur !== groupName && !cur.includes("DIRECT")) nodeName = cur;
 
   // Phase 2: 交叉验证（v4/v6 分组）
   const allIPs = [ipapi && ipapi.ip, ipinfo && ipinfo.ip, ipwho && ipwho.ip, ipsb, ipcfg].filter(Boolean);
