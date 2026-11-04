@@ -217,6 +217,8 @@ function normIpwho(d) {
     if (!cur) await new Promise(r => setTimeout(r, 300));
   }
   if (cur && typeof cur === "string" && cur !== groupName && !cur.includes("DIRECT")) nodeName = cur;
+  // 节点名自带国旗则直接用(不重复加)，回退到策略组名时再补归属国旗
+  if (nodeName === groupName && !/^[\u{1F1E6}-\u{1F1FF}]/.test(nodeName)) nodeName = f + " " + nodeName;
 
   // Phase 2: 交叉验证（v4/v6 分组）
   const allIPs = [ipapi && ipapi.ip, ipinfo && ipinfo.ip, ipwho && ipwho.ip, ipsb, ipcfg].filter(Boolean);
@@ -299,7 +301,7 @@ function normIpwho(d) {
   else { iconColor = "#8E8E93"; iconName = "questionmark.shield"; }
 
   done({
-    title: "代理策略: " + f + " " + nodeName + (realMismatch ? " ⚠️" : ""),
+    title: "代理策略: " + nodeName + (realMismatch ? " ⚠️" : ""),
     content: panelLines.join("\n"),
     icon: iconName,
     "icon-color": iconColor
