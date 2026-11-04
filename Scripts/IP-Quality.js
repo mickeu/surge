@@ -218,7 +218,7 @@ function normIpwho(d) {
   }
   if (cur && typeof cur === "string" && cur !== groupName && !cur.includes("DIRECT")) nodeName = cur;
   // 节点名自带国旗则直接用(不重复加)，回退到策略组名时再补归属国旗
-  if (nodeName === groupName && !/^[\u{1F1E6}-\u{1F1FF}]/.test(nodeName)) nodeName = f + " " + nodeName;
+  if (nodeName === groupName && !/^[\uD83C][\uDDE6-\uDDFF]/.test(nodeName)) nodeName = f + " " + nodeName;
 
   // Phase 2: 交叉验证（v4/v6 分组）
   const allIPs = [ipapi && ipapi.ip, ipinfo && ipinfo.ip, ipwho && ipwho.ip, ipsb, ipcfg].filter(Boolean);
