@@ -42,6 +42,13 @@ function done(obj) {
   try { $done(obj); } catch (e) {}
 }
 
+// ---------- Surge HTTP API 辅助（照网络信息模块写法） ----------
+function httpAPI(path, method = "GET") {
+  return new Promise((resolve) => {
+    $httpAPI(method, path, null, (result) => resolve(result));
+  });
+}
+
 // ---------- 超时兜底（19s，配合模块 timeout=20，留 1s 给 $done 收尾） ----------
 setTimeout(() => done({
   title: META + " · 超时",
@@ -191,6 +198,14 @@ function normIpwho(d) {
     return;
   }
 
+  // Phase 1.5: 取策略组当前选中的真实节点名（Surge API，照网络信息模块逻辑）
+  let nodeName = groupName;
+  try {
+    const pg = await httpAPI("/v1/policy_groups/" + encodeURIComponent(groupName));
+    const cur = pg && (pg.current_policy || (pg.policy && pg.policy.history && pg.policy.history[0]) || pg.selected);
+    if (cur && typeof cur === "string" && cur !== groupName) nodeName = cur;
+  } catch (e) { nodeName = groupName; }
+
   // Phase 2: 交叉验证（v4/v6 分组）
   const allIPs = [ipapi && ipapi.ip, ipinfo && ipinfo.ip, ipwho && ipwho.ip, ipsb, ipcfg].filter(Boolean);
   const v4 = allIPs.filter(x => x && x.includes("."));
@@ -272,7 +287,7 @@ function normIpwho(d) {
   else { iconColor = "#8E8E93"; iconName = "questionmark.shield"; }
 
   done({
-    title: "代理策略: " + f + " " + groupName + (realMismatch ? " ⚠️" : ""),
+    title: "代理策略: " + f + " " + nodeName + (realMismatch ? " ⚠️" : ""),
     content: panelLines.join("\n"),
     icon: iconName,
     "icon-color": iconColor
