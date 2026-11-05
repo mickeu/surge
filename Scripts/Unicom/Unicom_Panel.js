@@ -166,9 +166,8 @@ function main() {
     $done({
       title: '中国联通',
       content: '尚未捕获登录信息\n打开联通 App 首页刷新一次',
-      icon: 'antenna.radiowaves.left.and.right',
+      icon: 'tower.broadcast.fill',
       'icon-color': '#E60012',
-      style: 'alert',
     });
     return;
   }
@@ -191,9 +190,8 @@ function main() {
         $done({
           title: '中国联通',
           content: '登录已过期\n请重新打开联通 App 获取登录信息',
-          icon: 'antenna.radiowaves.left.and.right',
+          icon: 'tower.broadcast.fill',
           'icon-color': '#E60012',
-          style: 'error',
         });
         return;
       }
@@ -244,9 +242,8 @@ function main() {
           $done({
             title: '中国联通',
             content: lines.join('\n'),
-            icon: 'antenna.radiowaves.left.and.right',
+            icon: 'tower.broadcast.fill',
             'icon-color': '#E60012',
-            style: 'good',
           });
         }
       );
@@ -261,9 +258,8 @@ function doneError(msg) {
   $done({
     title: '中国联通',
     content: content,
-    icon: 'antenna.radiowaves.left.and.right',
+    icon: 'tower.broadcast.fill',
     'icon-color': '#E60012',
-    style: 'error',
   });
 }
 
