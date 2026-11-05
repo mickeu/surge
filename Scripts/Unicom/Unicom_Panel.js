@@ -166,7 +166,7 @@ function main() {
     $done({
       title: '中国联通',
       content: '尚未捕获登录信息\n打开联通 App 首页刷新一次',
-      icon: 'fuelpump.fill',
+      icon: 'arrow.down.message',
       'icon-color': '#E60012',
     });
     return;
@@ -190,7 +190,7 @@ function main() {
         $done({
           title: '中国联通',
           content: '登录已过期\n请重新打开联通 App 获取登录信息',
-          icon: 'fuelpump.fill',
+          icon: 'arrow.down.message',
           'icon-color': '#E60012',
         });
         return;
@@ -242,7 +242,7 @@ function main() {
           $done({
             title: '中国联通',
             content: lines.join('\n'),
-            icon: 'fuelpump.fill',
+            icon: 'arrow.down.message',
             'icon-color': '#E60012',
           });
         }
@@ -258,7 +258,7 @@ function doneError(msg) {
   $done({
     title: '中国联通',
     content: content,
-    icon: 'fuelpump.fill',
+    icon: 'arrow.down.message',
     'icon-color': '#E60012',
   });
 }
