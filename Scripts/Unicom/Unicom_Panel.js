@@ -166,7 +166,7 @@ function main() {
     $done({
       title: '中国联通',
       content: '尚未捕获登录信息\n打开联通 App 首页刷新一次',
-      icon: 'tower.broadcast.fill',
+      icon: 'fuelpump.fill',
       'icon-color': '#E60012',
     });
     return;
@@ -190,7 +190,7 @@ function main() {
         $done({
           title: '中国联通',
           content: '登录已过期\n请重新打开联通 App 获取登录信息',
-          icon: 'tower.broadcast.fill',
+          icon: 'fuelpump.fill',
           'icon-color': '#E60012',
         });
         return;
@@ -224,17 +224,17 @@ function main() {
             } catch (e) {}
           }
 
-          // 组装面板内容
+          // 组装面板内容（标签后 4 空格，留足间距）
           const lines = [];
-          lines.push('剩余话费  ' + data.fee.value + ' ' + data.fee.unit);
-          lines.push('剩余语音  ' + data.voice.value + ' ' + data.voice.unit);
+          lines.push('剩余话费    ' + data.fee.value + ' ' + data.fee.unit);
+          lines.push('剩余语音    ' + data.voice.value + ' ' + data.voice.unit);
 
           if (showGeneralFlow && usedGeneral !== null) {
             const uf = formatFlowValue(usedGeneral, 'MB');
-            lines.push('已用通用流量  ' + uf.value + ' ' + uf.unit);
+            lines.push('已用流量    ' + uf.value + ' ' + uf.unit);
           } else if (showGeneralFlow) {
             // 明细接口失败，降级显示汇总剩余流量
-            lines.push('剩余流量  ' + data.flow.value + ' ' + data.flow.unit);
+            lines.push('剩余流量    ' + data.flow.value + ' ' + data.flow.unit);
           }
 
           lines.push('更新 ' + nowTime());
@@ -242,7 +242,7 @@ function main() {
           $done({
             title: '中国联通',
             content: lines.join('\n'),
-            icon: 'tower.broadcast.fill',
+            icon: 'fuelpump.fill',
             'icon-color': '#E60012',
           });
         }
@@ -258,7 +258,7 @@ function doneError(msg) {
   $done({
     title: '中国联通',
     content: content,
-    icon: 'tower.broadcast.fill',
+    icon: 'fuelpump.fill',
     'icon-color': '#E60012',
   });
 }
