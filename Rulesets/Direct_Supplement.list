@@ -151,3 +151,7 @@ DOMAIN-SUFFIX,cybersource.com
 # Tunnel 边缘走代理会在 TLS 握手时断开，直连可建立连接
 DOMAIN-SUFFIX,region1.v2.argotunnel.com
 DOMAIN-SUFFIX,region2.v2.argotunnel.com
+# Tailscale 控制面/DERP 走代理会握手失败（Minis 内置 tsnet 需真实 IP + 直连才能连上）
+DOMAIN-SUFFIX,tailscale.com
+DOMAIN-SUFFIX,tailscale.io
+DOMAIN-SUFFIX,ts.net
