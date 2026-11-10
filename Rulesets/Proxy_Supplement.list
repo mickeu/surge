@@ -49,7 +49,5 @@ IP-CIDR,104.27.168.0/24,no-resolve
 # fanmingming.cn（IPTV 直播源）解析到境外 Cloudflare/CDN，被 ChinaMax 误判为国内域名直连导致 443 连不上
 DOMAIN-SUFFIX,fanmingming.cn
 
-# 8009.cc.cd 被 Video_RESOURCE 的 DOMAIN-SUFFIX,cc.cd 吃掉走直连，直连 Cloudflare 边缘单请求 1.5-3s
-DOMAIN-SUFFIX,8009.cc.cd
 DOMAIN,m.hotmail.com
 
