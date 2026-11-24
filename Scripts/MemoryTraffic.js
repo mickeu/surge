@@ -49,7 +49,7 @@
 const DEFAULT_API_HOST = "127.0.0.1";
 const DEFAULT_API_PORT = "6171";
 const DEFAULT_API_KEY = "surgetest";
-const REQUEST_TIMEOUT = 8000;
+const REQUEST_TIMEOUT = 3;
 
 function isFiniteNumber(value) {
     return isFinite(Number(value));
