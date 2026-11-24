@@ -179,7 +179,7 @@ function main() {
       url: API_URL + '?version=iphone_c@10.0100&desmobiel=' +
            encodeURIComponent(phone) + '&showType=0',
       headers: headers,
-      timeout: 10000,
+      timeout: 10,
     },
     function (err, resp, body) {
       if (err) {
@@ -209,7 +209,7 @@ function main() {
 
       // 第二数据源：流量明细，取联通接口原值「已用通用流量」
       $httpClient.post(
-        { url: FLOW_DETAIL_URL, headers: headers, timeout: 10000 },
+        { url: FLOW_DETAIL_URL, headers: headers, timeout: 10 },
         function (err2, resp2, body2) {
           let usedGeneral = null;
           if (!err2 && resp2 && resp2.status === 200) {
