@@ -8,8 +8,6 @@
 [General]
 ipv6-vif = {{{IPV6_VIF}}}
 tun-included-routes = %INSERT% 10.7.0.1/32
-# 苹果配对协议原始透传，避免被 TLS 劫持破坏配对握手
-always-raw-tcp-keywords = %APPEND% Content-Type: application/pairing+tlv8
 
 [IP Rewrite]
 10.7.0.1 = reflect
