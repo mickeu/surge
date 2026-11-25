@@ -12,32 +12,42 @@ const $ = new Env("京东比价");
 $.version = $.getdata('mmb_v') || 'V1'
 
 if (url.includes(path2)) {
-    const reqbody = $request.body
-    $.setdata(reqbody, manmanbuy_key);
-    $.msg($.name, '获取ck成功🎉', reqbody);
+    const reqbody = $request.body || '';
+    if (reqbody) {
+        $.setdata(reqbody, manmanbuy_key);
+        // 只报字段数与长度：cookie 含 c_mmbDevId / c_session，不能进通知和日志
+        $.msg($.name, '获取ck成功🎉', `${reqbody.split('&').length} 个字段，${reqbody.length} 字符`);
+    } else {
+        $.msg($.name, '未取到 Cookie', '响应里没有 body，请重试');
+    }
+    // http-request 必须收尾，否则 Surge 会等到模块 timeout 才放行
+    $done({});
 }
 
 if (url.includes(path1)) {
     const responseBody = $response?.body;
     main()
-        .then(res => $done(res || { body: responseBody }))
+        .then(res => $done(res || { body: responseBody || '' }))
         .catch(err => {
                 const html = `<div style= "max-width: 90%;margin: 20px auto;padding: 16px;background: #ffffff;color: #d32f2f;border: 2px solid #f44336;border-radius: 12px;font-size: 16px;text-align:left;box-shadow: 0 2px 6px rgba(0,0,0,0.06);"><strong>${err.message}</strong></div>`;
-                $done({
-                    body: responseBody.replace("<body>", `<body>${html}`)
-                });
+                // body 为空时不能 replace，否则在 catch 里再抛错，$done 永不调用 → 页面挂到超时
+                $done(responseBody
+                    ? { body: responseBody.replace(/<body[^>]*>/i, m => m + html) }
+                    : {});
             }
         )
 }
 
 async function main() {
-    intCryptoJS();
+    // CryptoJS 20KB+，同一脚本实例内复用，不必每次请求重建
+    if (!globalThis.CryptoJS) intCryptoJS();
 
     const match = url.match(/product\/graphext\/(\d+)\.html/);
     if (!match) throw new Error("京东URL匹配失败");
 
     const JD_Url = `https://item.jd.com/${match[1]}.html`;
     const responseBody = $response?.body;
+    if (!responseBody) throw new Error("响应为空，无法插入比价");
 
     const version = $.version || "V1";
     let link = JD_Url, stteId;
@@ -51,11 +61,15 @@ async function main() {
     const jiagequshi = checkRes(await get_jiagequshi(basic?.result?.url, basic?.result?.spbh), '获取价格趋势')
     const trend = checkRes(await get_priceRemark(jiagequshi?.result?.trend), '价格备注')
     const ListPriceDetail = trend?.remark?.ListPriceDetail;
-    const exclude = new Set(['当前到手价', '历史最低价', '618价格', '双11价格', '30天最低价', '60天最低价', '180天最低价']);
-    const list = ListPriceDetail.filter(i => exclude.has(i.Name));
+    // 接口在 token 过期 / 商品无历史价时返回 remark:null，直接 filter 会 TypeError
+    if (!Array.isArray(ListPriceDetail) || !ListPriceDetail.length) {
+        throw new Error("慢慢买未返回价格明细");
+    }
+    const keep = new Set(['当前到手价', '历史最低价', '618价格', '双11价格', '30天最低价', '60天最低价', '180天最低价']);
+    const list = ListPriceDetail.filter(i => keep.has(i.Name));
     const html = Price_HTML(list);
-    //body = $response.body.replace(/<body[^>]*>/, match => `${match}\n${html}`);
-    const body = responseBody.replace("<body>", `<body>${html}`);
+    // 京东 H5 的 body 常带 class/id，只匹配字面 <body> 会替换不到
+    const body = responseBody.replace(/<body[^>]*>/i, m => m + html);
     return {body};
 }
 
@@ -158,7 +172,6 @@ function get_priceRemark(jiagequshiyh) {
         "jiagequshiyh": jiagequshiyh
     };
     const res = mmbRequest(payload, url);
-    $.log($.toStr(res))
     return res
 }
 
@@ -217,14 +230,26 @@ async function httpRequest(options) {
         return await Promise.race(_http);
     } catch (err) {
         $.logErr(err);
+        // 原来这里吞掉错误返回 undefined，上层 checkRes 只会报 "Cannot read properties of undefined"
+        throw err instanceof Error ? err : new Error(String(err));
     }
 }
 
 // param 按key取值
 function getParam(queryStr, paramName) {const params = new URLSearchParams(queryStr);return params.get(paramName);}
 
-//param 2 json
-function parseQueryString(queryString) {const jsonObject = {};const pairs = queryString.split('&');pairs.forEach(pair => {const [key, value] = pair.split('=');jsonObject[decodeURIComponent(key)] = decodeURIComponent(value || '');});return jsonObject;}
+//param 2 json（按第一个 = 切分，值里含 = 时不会截断）
+function parseQueryString(queryString) {
+    const jsonObject = {};
+    if (!queryString) return jsonObject;
+    queryString.split('&').forEach(pair => {
+        const idx = pair.indexOf('=');
+        const key = idx < 0 ? pair : pair.slice(0, idx);
+        const value = idx < 0 ? '' : pair.slice(idx + 1);
+        if (key) jsonObject[decodeURIComponent(key)] = decodeURIComponent(value);
+    });
+    return jsonObject;
+}
 
 // json 2 param
 function jsonToQueryString(jsonObject) {return Object.keys(jsonObject).map(key => `${encodeURIComponent(key)}=${encodeURIComponent(jsonObject[key])}`).join('&');}
