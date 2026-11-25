@@ -12,11 +12,11 @@ DOMAIN-SUFFIX,api.pingmeapp.net,{{{PingMePolicy}}}
 
 [Script]
 # 抓 Cookie（http-request，拦截余额查询自动抓参，参数会明文写入 Surge 存储）
-PingMe获取签到参数 = type=http-request,pattern=^https:\/\/api\.pingmeapp\.net\/app\/queryBalanceAndBonus,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/PingMe/pingme_capture.js?v=20261002,argument="capture={{{capture}}}",timeout=60,script-update-interval=-1
+PingMe获取签到参数 = type=http-request,pattern=^https:\/\/api\.pingmeapp\.net\/app\/queryBalanceAndBonus,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/PingMe/pingme_capture.js?v=20261002,argument="capture={{{capture}}}",timeout=60,script-update-interval=86400
 # 签到+视频奖励（cron 定时任务，默认每3小时）
-PingMe签到 = type=cron,cronexp="{{{cron}}}",script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/PingMe/SigninRetry_v3.js,timeout=300,wake-system=true,script-update-interval=-1
+PingMe签到 = type=cron,cronexp="{{{cron}}}",script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/PingMe/SigninRetry_v3.js,timeout=300,wake-system=true,script-update-interval=86400
 # 面板签到（点击面板执行完整签到，面板只显示余额，失败信息走通知不进面板）
-PingMe签到面板v4 = type=generic,timeout=180,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/PingMe/PanelSigninRetry_v4.js,script-update-interval=-1
+PingMe签到面板v4 = type=generic,timeout=180,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/PingMe/PanelSigninRetry_v4.js,script-update-interval=86400
 
 [Panel]
 PingMe签到面板v4 = script-name=PingMe签到面板v4,title="🔄 PingMe 签到",content="运行签到",style=info,update-interval=0
