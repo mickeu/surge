@@ -66,6 +66,8 @@ async function mainSign() {
   console.log('📋 Cookie状态: ' + (cookieVal ? '已获取' : '未获取'));
   var useParallel = parseInt($persistentStore.read('BDTB_DailyBonus_Mode') || '0', 10);
   var singleNotifyCount = parseInt($persistentStore.read('BDTB_DailyBonus_notify') || '20', 10);
+  // 该值来自持久化，若是 "abc"/"0"/负数：NaN 会让下面整批通知静默丢失，0 会让 Math.ceil 变 Infinity 死循环
+  if (!isFinite(singleNotifyCount) || singleNotifyCount < 1) singleNotifyCount = 20;
   console.log('📋 并行模式: ' + (useParallel === 2 ? '强制并行' : (useParallel === 1 ? '强制串行' : '自动')) + ', 单次通知条数: ' + singleNotifyCount);
 
   if (!cookieVal) {

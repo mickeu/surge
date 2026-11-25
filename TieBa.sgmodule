@@ -14,9 +14,9 @@ DOMAIN-SUFFIX,tiebac.baidu.com,DIRECT
 
 [Script]
 # 抓 Cookie（http-request，打开App点"我的"自动抓Cookie）
-百度贴吧[Cookie] = type=http-request,pattern=^https?:\/\/(c\.tieba|tiebac)\.baidu\.com\/c\/s\/login,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/TieBa/TieBa.js?v=2,argument="cookie_enabled={{{cookie_enabled}}}",timeout=60
+百度贴吧[Cookie] = type=http-request,pattern=^https?:\/\/(c\.tieba|tiebac)\.baidu\.com\/c\/s\/login,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/TieBa/TieBa.js?v=3,argument="cookie_enabled={{{cookie_enabled}}}",timeout=60
 # 签到（cron 定时任务，用同一个 TieBa.js，靠 $request 自动分流到签到逻辑；定时由模块参数 cron 控制）
-百度贴吧签到 = type=cron,cronexp="{{{cron}}}",script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/TieBa/TieBa.js?v=2,timeout=600,wake-system=true
+百度贴吧签到 = type=cron,cronexp="{{{cron}}}",script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/TieBa/TieBa.js?v=3,timeout=600,wake-system=true
 # 面板签到（点面板即签到，详情走通知，面板显示固定图标）
 百度贴吧签到面板 = type=generic,timeout=600,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/TieBa/TieBaPanel-v4.js?v=2
 
