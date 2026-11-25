@@ -15,8 +15,6 @@
  *     POST https://m.client.10010.com/servicequerybusiness/operationservice/queryOcsPackageFlowLeftContentRevisedInJune
  */
 
-const API_HOST = 'm.client.10010.com';
-
 const API_URL =
   'https://m.client.10010.com/mobileserviceimportant/home/queryUserInfoSeven';
 
@@ -172,7 +170,9 @@ function main() {
     return;
   }
 
-  const headers = { Host: API_HOST, 'User-Agent': UA, Cookie: cookie };
+  // 不能设 Host：Surge 的 $httpClient 在 HTTP/2 下禁止 Host 字段（会告警），
+  // 且会自动用 URL 的 host 生成 :authority，显式指定没有意义
+  const headers = { 'User-Agent': UA, Cookie: cookie };
 
   $httpClient.get(
     {
