@@ -50,8 +50,10 @@ function dateDiff(startDateString, endDateString) {
 
 //计算输入序号对应的时间与现在的天数间隔
 function tnumcount(num) {
-  let dnum = num;
-  return dateDiff(tnowf, tlist[dnum][1]);
+  // tlist 只排到 2029-10-01；越过表尾时 now() 返回 undefined，这里必须兜住，否则 tlist[NaN][1] 直接抛错
+  const item = tlist[num];
+  if (!item) return null;
+  return dateDiff(tnowf, item[1]);
 }
 
 //获取最接近的日期
@@ -804,22 +806,24 @@ function getRandomTitle(daysLeft) {
 }
 
 function getFestivalText(index, isCurrent = false) {
-  const name = tlist[index]?.[0] || "暂无";
+  const item = tlist[index];
+  if (!item) return null;
   const days = tnumcount(index);
   const text = isCurrent ? today(days) : `${days}天`;
 
-  return `${name}:${text}`;
+  return `${item[0]}:${text}`;
 }
 
 const currentIndex = Number(nowlist);
 const daysLeft = tnumcount(currentIndex);
+const content = [
+  getFestivalText(currentIndex, true),
+  getFestivalText(currentIndex + 1),
+  getFestivalText(currentIndex + 2)
+].filter(Boolean).join(",");
 
 $done({
   title: getRandomTitle(daysLeft),
   icon: icon_now(daysLeft),
-  content: [
-    getFestivalText(currentIndex, true),
-    getFestivalText(currentIndex + 1),
-    getFestivalText(currentIndex + 2)
-  ].join(",")
+  content: content || "节日数据已过期，请更新脚本"
 });
