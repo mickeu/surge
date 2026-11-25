@@ -11,4 +11,4 @@
 youjia-cn = script-name=youjia-cn,title="⛽ 实时油价",content="刷新",style=info,update-interval=43200
 
 [Script]
-youjia-cn = type=generic,timeout=5,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/youjia-cn.js,argument={{{CITY}}}
+youjia-cn = type=generic,timeout=15,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/youjia-cn.js?v=2,argument={{{CITY}}}

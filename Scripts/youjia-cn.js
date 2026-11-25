@@ -17,19 +17,19 @@ const CITY_MAP = {
   "临汾": "shanxi/linfen", "晋中": "shanxi/jinzhong", "长治": "shanxi/changzhi",
   "晋城": "shanxi/jincheng", "阳泉": "shanxi/yangquan", "朔州": "shanxi/shuozhou", "忻州": "shanxi/xinzhou", "吕梁": "shanxi/lvliang",
   // 内蒙古
-  "呼和浩特": "neimenggu/huhehaote", "包头": "neimenggu/baotou", "鄂尔多斯": "neimenggu/eerduosi",
-  "赤峰": "neimenggu/chifeng", "通辽": "neimenggu/tongliao", "呼伦贝尔": "neimenggu/hulunbeier",
+  "呼和浩特": "neimenggu/huhehaote", "包头": "neimenggu/baotou", "鄂尔多斯": "neimenggu",
+  "赤峰": "neimenggu/chifeng", "通辽": "neimenggu/tongliao", "呼伦贝尔": "neimenggu",
   // 辽宁
   "沈阳": "liaoning/shenyang", "大连": "liaoning/dalian", "鞍山": "liaoning/anshan",
   "抚顺": "liaoning/fushun", "本溪": "liaoning/benxi", "丹东": "liaoning/dandong",
   "锦州": "liaoning/jinzhou", "营口": "liaoning/yingkou", "盘锦": "liaoning/panjin", "阜新": "liaoning/fuxin",
   "辽阳": "liaoning/liaoyang", "铁岭": "liaoning/tieling", "朝阳": "liaoning/chaoyang", "葫芦岛": "liaoning/huludao",
   // 吉林
-  "长春": "jilin/changchun", "吉林": "jilin/jilin", "四平": "jilin/siping",
+  "长春": "jilin/changchun", "吉林": "jilin/jilinshi", "四平": "jilin/siping",
   "辽源": "jilin/liaoyuan", "通化": "jilin/tonghua", "白山": "jilin/baishan",
   "松原": "jilin/songyuan", "白城": "jilin/baicheng", "延边": "jilin/yanbian",
   // 黑龙江
-  "哈尔滨": "heilongjiang/haerbin", "齐齐哈尔": "heilongjiang/qiqihaer", "大庆": "heilongjiang/daqing",
+  "哈尔滨": "heilongjiang/haerbin", "齐齐哈尔": "heilongjiang", "大庆": "heilongjiang/daqing",
   "牡丹江": "heilongjiang/mudanjiang", "佳木斯": "heilongjiang/jiamusi", "绥化": "heilongjiang/suihua",
   // 江苏
   "南京": "jiangsu/nanjing", "苏州": "jiangsu/suzhou", "无锡": "jiangsu/wuxi",
@@ -40,11 +40,11 @@ const CITY_MAP = {
   "杭州": "zhejiang/hangzhou", "宁波": "zhejiang/ningbo", "温州": "zhejiang/wenzhou",
   "嘉兴": "zhejiang/jiaxing", "湖州": "zhejiang/huzhou", "绍兴": "zhejiang/shaoxing",
   "金华": "zhejiang/jinhua", "衢州": "zhejiang/quzhou", "舟山": "zhejiang/zhoushan",
-  "台州": "zhejiang/taizhou", "丽水": "zhejiang/lishui", "义乌": "zhejiang/yiwu",
+  "台州": "zhejiang/taizhou", "丽水": "zhejiang/lishui", "义乌": "zhejiang/jinhua",
   // 安徽
   "合肥": "anhui/hefei", "芜湖": "anhui/wuhu", "蚌埠": "anhui/bengbu",
-  "淮南": "anhui/huainan", "马鞍山": "anhui/maanshan", "安庆": "anhui/anshan",
-  "六安": "anhui/liuan", "阜阳": "anhui/fuyang", "滁州": "anhui/chuzhou", "铜陵": "anhui/tongling",
+  "淮南": "anhui/huainan", "马鞍山": "anhui/maanshan", "安庆": "anhui/anqing",
+  "六安": "anhui/luan", "阜阳": "anhui/fuyang", "滁州": "anhui/chuzhou", "铜陵": "anhui/tongling",
   // 福建
   "福州": "fujian/fuzhou", "厦门": "fujian/xiamen", "泉州": "fujian/quanzhou",
   "漳州": "fujian/zhangzhou", "莆田": "fujian/putian", "三明": "fujian/sanming",
@@ -63,7 +63,7 @@ const CITY_MAP = {
   "新乡": "henan/xinxiang", "安阳": "henan/anyang", "南阳": "henan/nanyang",
   "许昌": "henan/xuchang", "周口": "henan/zhoukou", "商丘": "henan/shangqiu", "平顶山": "henan/pingdingshan",
   // 湖北
-  "武汉": "hubei/wuhan", "宜昌": "hubei/yichang", "襄阳": "hubei/xiangyang",
+  "武汉": "hubei/wuhan", "宜昌": "hubei/yichang", "襄阳": "hubei/xiangfan",
   "荆州": "hubei/jingzhou", "黄冈": "hubei/huanggang", "十堰": "hubei/shiyan",
   "孝感": "hubei/xiaogan", "荆门": "hubei/jingmen", "黄石": "hubei/huangshi", "咸宁": "hubei/xianning",
   // 湖南
@@ -104,8 +104,8 @@ const CITY_MAP = {
   // 宁夏
   "银川": "ningxia/yinchuan", "石嘴山": "ningxia/shizuishan", "吴忠": "ningxia/wuzhong",
   // 新疆
-  "乌鲁木齐": "xinjiang/wulumuqi", "克拉玛依": "xinjiang/kelamayi", "喀什": "xinjiang/kashi",
-  "伊犁": "xinjiang/yili", "吐鲁番": "xinjiang/tulufan"
+  "乌鲁木齐": "xinjiang/wulumuqi", "克拉玛依": "xinjiang", "喀什": "xinjiang",
+  "伊犁": "xinjiang", "吐鲁番": "xinjiang"
 };
 
 // ── 参数解析 ──
@@ -127,6 +127,7 @@ if (!REGION) {
   const query_addr = `http://m.qiyoujiage.com/${REGION}.shtml`;
   $httpClient.get({
     url: query_addr,
+    timeout: 8,   // 秒；模块 timeout 给 15，留解析余量
     headers: {
       'referer': 'http://m.qiyoujiage.com/',
       'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36'

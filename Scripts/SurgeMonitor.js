@@ -31,7 +31,8 @@
 
 const API_KEY = "surgetest";
 const METRICS_URL = "http://127.0.0.1:6171/v1/metrics";
-const REQUEST_TIMEOUT = 8000;
+// Surge 的 $httpClient timeout 单位是秒，不是毫秒
+const REQUEST_TIMEOUT = 8;
 
 function isFiniteNumber(value) {
     return isFinite(Number(value));
