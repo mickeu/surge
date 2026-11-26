@@ -279,6 +279,11 @@ function finishPanel(title, content, style, icon, iconColor) {
     }
     finished = true;
 
+    if (IS_CRON) {
+        $done({});
+        return;
+    }
+
     const result = {
         title: title,
         content: content
@@ -297,7 +302,7 @@ function finishPanel(title, content, style, icon, iconColor) {
     $done(result);
 }
 
-setTimeout(function () {
+var sgFallbackTimer = setTimeout(function () {
     finishPanel(
         "内存和流量实时监控",
         "请求超时",
@@ -317,11 +322,25 @@ const RECENT_URL = apiBase + "/v1/requests/recent";
 const ACTIVE_URL = apiBase + "/v1/requests/active";
 const devices = collectDevices(argument);
 
+// v12: 面板脚本只在面板可见时才被调度，没人盯着面板就等于不统计。
+// 增加 cron 模式：由 cron 脚本常驻采样（默认 5 分钟一轮、跑 280 秒），
+// 不依赖面板可见；两种模式共用同一 state，按请求 id 增量累加，天然去重。
+const MODE = String(argument.mode || "panel").trim().toLowerCase();
+const IS_CRON = MODE === "cron";
+const RUN_MS = Math.max(3000, Number(argument.run_ms) || (IS_CRON ? 280000 : 0));
+const GAP_MS = Math.max(200, Number(argument.gap_ms) || (IS_CRON ? 1200 : 750));
+const SAMPLE_COUNT = IS_CRON ? 0 : 12;
+const RUN_DEADLINE = IS_CRON ? Date.now() + RUN_MS : 0;
+if (IS_CRON) {
+    clearTimeout(sgFallbackTimer);
+    setTimeout(function () {
+        render();
+    }, RUN_MS + 8000);
+}
+
 // v10: /v1/requests/recent 固定只回 50 条且整机共用，入站设备的请求会被本机请求挤出窗口；
 // 单次 10 秒采样大量漏计。改为每轮内部高频采样（SAMPLE_COUNT 次，间隔 SAMPLE_GAP ms），
 // 并按请求 id 记录已计入的字节数（seen），只累加增量，长连接后续流量也能补上。
-const SAMPLE_COUNT = 12;
-const SAMPLE_GAP = 750;
 const SEEN_MAX = 600;
 
 let metricsBody = null;
@@ -492,7 +511,8 @@ function nextSample() {
     if (finished) {
         return;
     }
-    if (sampleIndex >= SAMPLE_COUNT) {
+    const more = IS_CRON ? Date.now() < RUN_DEADLINE : sampleIndex < SAMPLE_COUNT;
+    if (!more) {
         render();
         return;
     }
@@ -503,7 +523,7 @@ function nextSample() {
         } catch (e) {
             // 单轮统计异常不影响面板
         }
-        setTimeout(nextSample, SAMPLE_GAP);
+        setTimeout(nextSample, GAP_MS);
     });
 }
 
