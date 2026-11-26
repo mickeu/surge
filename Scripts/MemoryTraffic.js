@@ -618,30 +618,57 @@ function render() {
     finishPanel("内存和流量实时监控", lines.join("\n"), null, "chart.bar.xaxis", "#4A90E2");
 }
 
-$httpClient.get(
-    {
-        url: METRICS_URL,
-        timeout: REQUEST_TIMEOUT,
-        headers: {
-            Accept: "text/plain",
-            "X-Key": apiKey
+function requestMetrics(key, callback) {
+    $httpClient.get(
+        {
+            url: METRICS_URL,
+            timeout: REQUEST_TIMEOUT,
+            headers: {
+                Accept: "text/plain",
+                "X-Key": key
+            }
+        },
+        function (error, response, body) {
+            if (error) {
+                callback(String(error), null);
+            } else if (response && response.status && (response.status < 200 || response.status >= 300)) {
+                callback("Metrics HTTP " + response.status, null);
+            } else if (!body) {
+                callback("Metrics 返回为空", null);
+            } else {
+                callback(null, body);
+            }
         }
-    },
-    function (error, response, body) {
-        if (error) {
-            metricsFailed = String(error);
-        } else if (response && response.status && (response.status < 200 || response.status >= 300)) {
-            metricsFailed = "Metrics HTTP " + response.status;
-        } else if (!body) {
-            metricsFailed = "Metrics 返回为空";
+    );
+}
+
+// api_key 有大小写误填（surgeTest）会 401，而 Surge iOS 默认口令就是小写 surgetest，自动降级重试
+function loadMetrics() {
+    requestMetrics(apiKey, function (err, body) {
+        if (err && String(err).indexOf("401") >= 0 && apiKey !== "surgetest") {
+            requestMetrics("surgetest", function (err2, body2) {
+                if (!err2) {
+                    metricsBody = body2;
+                    try {
+                        prepareBaseline();
+                    } catch (e) {}
+                } else {
+                    metricsFailed = err2;
+                }
+                nextSample();
+            });
+            return;
+        }
+        if (err) {
+            metricsFailed = err;
         } else {
             metricsBody = body;
             try {
                 prepareBaseline();
-            } catch (e) {
-                // 基准处理异常不影响统计
-            }
+            } catch (e) {}
         }
         nextSample();
-    }
-);
+    });
+}
+
+loadMetrics();
