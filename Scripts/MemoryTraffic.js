@@ -1,5 +1,5 @@
 /*
- * 内存和流量实时监控（Memory Traffic）v13
+ * 内存和流量实时监控（Memory Traffic）v14
  *
  * 本机流量 + Tailscale 入站设备累计流量监控面板
  * 独立于原「内存」模块（SurgeMonitor），互不影响。
@@ -328,7 +328,7 @@ const devices = collectDevices(argument);
 const MODE = String(argument.mode || "panel").trim().toLowerCase();
 const IS_CRON = MODE === "cron";
 const RUN_MS = Math.max(3000, Number(argument.run_ms) || (IS_CRON ? 300000 : 0));
-const GAP_MS = Math.max(3000, Number(argument.gap_ms) || 6000);
+const GAP_MS = Math.max(2000, Number(argument.gap_ms) || 4000);
 const SAMPLE_COUNT = IS_CRON ? 0 : 2;
 const RUN_DEADLINE = IS_CRON ? Date.now() + RUN_MS : 0;
 if (IS_CRON) {
@@ -463,10 +463,33 @@ function getJson(url, callback) {
     );
 }
 
+// 官方 API：$httpAPI 直连 Surge 引擎，不经真实网络，因此不会占用「最近请求」的 50 条窗口。
+// 之前用 $httpClient 打 127.0.0.1:6171，每次采样都变成一条可记录请求，把窗口刷满、
+// 把自己的统计对象挤出去——这是入站流量长期偏小的根本原因。
+function apiGet(path, callback) {
+    try {
+        $httpAPI("GET", path, null, function (result) {
+            callback(null, result);
+        });
+    } catch (e) {
+        callback(String(e), null);
+    }
+}
+
+function requestList(result) {
+    if (!result) {
+        return [];
+    }
+    if (Array.isArray(result)) {
+        return result;
+    }
+    return result.requests || [];
+}
+
 function fetchPair(callback) {
-    // recent 已包含在飞请求，因此不再额外请求 active，避免自己的轮询占满 50 条窗口
-    getJson(RECENT_URL, function (err, list) {
-        callback(list);
+    // recent 已包含在飞请求，不再额外请求 active
+    apiGet("/v1/requests/recent", function (err, result) {
+        callback(err ? [] : requestList(result));
     });
 }
 
