@@ -1,11 +1,12 @@
 /*
- * 内存和流量实时监控（Memory Traffic）v8
+ * 内存和流量实时监控（Memory Traffic）v13
  *
  * 本机流量 + Tailscale 入站设备累计流量监控面板
  * 独立于原「内存」模块（SurgeMonitor），互不影响。
  *
- * 累计说明：入站设备流量为自模块启用以来的累计值（持久化保存），
- * 每 10 秒轮询 /v1/requests/recent 并只累加新请求，避免重复统计。
+ * 累计说明：入站设备流量为自模块启用以来的累计值（持久化保存）。
+ * 每轮内部高频采样 /v1/requests/recent 与 /v1/requests/active，
+ * 按请求 id 记录已计入字节、只累加增量，避免重复统计。
  * 本机流量 = Surge 接口总流量 - 所有入站设备累计流量；
  * 总计流量 = 本机流量 + 所有入站设备流量 = Surge 接口总流量。
  *
@@ -278,6 +279,11 @@ function finishPanel(title, content, style, icon, iconColor) {
     }
     finished = true;
 
+    if (IS_CRON) {
+        $done({});
+        return;
+    }
+
     const result = {
         title: title,
         content: content
@@ -296,7 +302,7 @@ function finishPanel(title, content, style, icon, iconColor) {
     $done(result);
 }
 
-setTimeout(function () {
+var sgFallbackTimer = setTimeout(function () {
     finishPanel(
         "内存和流量实时监控",
         "请求超时",
@@ -304,7 +310,7 @@ setTimeout(function () {
         "exclamationmark.triangle.fill",
         "#FF3B30"
     );
-}, 9000);
+}, 20000);
 
 const argument = parseArgument($argument);
 const apiHost = String(argument.api_host || DEFAULT_API_HOST).trim() || DEFAULT_API_HOST;
@@ -312,21 +318,205 @@ const apiPort = String(argument.api_port || DEFAULT_API_PORT).trim() || DEFAULT_
 const apiKey = String(argument.api_key || DEFAULT_API_KEY).trim() || DEFAULT_API_KEY;
 const apiBase = "http://" + apiHost + ":" + apiPort;
 const METRICS_URL = apiBase + "/v1/metrics";
-const REQUESTS_URL = apiBase + "/v1/requests/recent";
+const RECENT_URL = apiBase + "/v1/requests/recent";
+const ACTIVE_URL = apiBase + "/v1/requests/active";
 const devices = collectDevices(argument);
 
-let metricsBody = null;
-let requestsBody = null;
-let metricsFailed = null;
-let requestsFailed = null;
-let pending = 2;
+// v12: 面板脚本只在面板可见时才被调度，没人盯着面板就等于不统计。
+// 增加 cron 模式：由 cron 脚本常驻采样（默认 5 分钟一轮、跑 280 秒），
+// 不依赖面板可见；两种模式共用同一 state，按请求 id 增量累加，天然去重。
+const MODE = String(argument.mode || "panel").trim().toLowerCase();
+const IS_CRON = MODE === "cron";
+const RUN_MS = Math.max(3000, Number(argument.run_ms) || (IS_CRON ? 300000 : 0));
+const GAP_MS = Math.max(200, Number(argument.gap_ms) || (IS_CRON ? 6000 : 6000));
+const SAMPLE_COUNT = IS_CRON ? 0 : 2;
+const RUN_DEADLINE = IS_CRON ? Date.now() + RUN_MS : 0;
+if (IS_CRON) {
+    clearTimeout(sgFallbackTimer);
+    setTimeout(function () {
+        render();
+    }, RUN_MS + 8000);
+}
 
-function maybeFinish() {
-    pending--;
-    if (pending > 0) {
+// v10: /v1/requests/recent 固定只回 50 条且整机共用，入站设备的请求会被本机请求挤出窗口；
+// 单次 10 秒采样大量漏计。改为每轮内部高频采样（SAMPLE_COUNT 次，间隔 SAMPLE_GAP ms），
+// 并按请求 id 记录已计入的字节数（seen），只累加增量，长连接后续流量也能补上。
+const SEEN_MAX = 600;
+
+let metricsBody = null;
+let metricsFailed = null;
+let sampleIndex = 0;
+let stateCache = null;
+
+function getState() {
+    if (!stateCache) {
+        stateCache = loadState();
+    }
+    return stateCache;
+}
+
+function trimSeen(seen) {
+    const ids = [];
+    for (const id in seen) {
+        if (Object.prototype.hasOwnProperty.call(seen, id)) {
+            ids.push(id);
+        }
+    }
+    if (ids.length <= SEEN_MAX) {
         return;
     }
+    ids.sort(function (a, b) {
+        return (Number(seen[b][2]) || 0) - (Number(seen[a][2]) || 0);
+    });
+    for (let i = SEEN_MAX; i < ids.length; i++) {
+        delete seen[ids[i]];
+    }
+}
 
+function absorbRequests(list) {
+    const st = getState();
+    if (!st.devices) {
+        st.devices = {};
+    }
+    if (!st.seen) {
+        st.seen = {};
+    }
+    const devicesState = st.devices;
+    const seen = st.seen;
+    const now = Date.now() / 1000;
+
+    for (let i = 0; i < list.length; i++) {
+        const r = list[i] || {};
+        const name = String(r.deviceName || "");
+        if (devices.indexOf(name) === -1) {
+            continue;
+        }
+        const id = String(r.id || "");
+        if (!id) {
+            continue;
+        }
+        const inBytes = Number(r.inBytes) || 0;
+        const outBytes = Number(r.outBytes) || 0;
+        const key = name + "#" + id;
+        let entry = devicesState[name];
+        if (!entry) {
+            entry = { in: 0, out: 0, count: 0 };
+            devicesState[name] = entry;
+        }
+        const prev = seen[key];
+        if (!prev) {
+            entry.in += inBytes;
+            entry.out += outBytes;
+            entry.count += 1;
+            seen[key] = [inBytes, outBytes, now];
+        } else {
+            if (inBytes > prev[0]) {
+                entry.in += inBytes - prev[0];
+                prev[0] = inBytes;
+            }
+            if (outBytes > prev[1]) {
+                entry.out += outBytes - prev[1];
+                prev[1] = outBytes;
+            }
+            prev[2] = now;
+        }
+    }
+
+    trimSeen(seen);
+}
+
+function parseRequestList(body) {
+    if (!body) {
+        return [];
+    }
+    try {
+        const parsed = JSON.parse(body);
+        return Array.isArray(parsed) ? parsed : (parsed.requests || []);
+    } catch (e) {
+        return [];
+    }
+}
+
+function getJson(url, callback) {
+    $httpClient.get(
+        {
+            url: url,
+            timeout: REQUEST_TIMEOUT,
+            headers: {
+                Accept: "application/json",
+                "X-Key": apiKey
+            }
+        },
+        function (error, response, body) {
+            let failed = null;
+            if (error) {
+                failed = String(error);
+            } else if (
+                response &&
+                response.status &&
+                (response.status < 200 || response.status >= 300)
+            ) {
+                failed = "HTTP " + response.status;
+            }
+            callback(failed, failed ? [] : parseRequestList(body));
+        }
+    );
+}
+
+function fetchPair(callback) {
+    // recent 已包含在飞请求，因此不再额外请求 active，避免自己的轮询占满 50 条窗口
+    getJson(RECENT_URL, function (err, list) {
+        callback(list);
+    });
+}
+
+function prepareBaseline() {
+    const metrics = parseMetrics(metricsBody || "");
+    const download = sumMetrics(metrics, "surge_interface_in_bytes_total");
+    const upload = sumMetrics(metrics, "surge_interface_out_bytes_total");
+    if (!isFiniteNumber(download) || !isFiniteNumber(upload)) {
+        return;
+    }
+    const state = getState();
+    const hasBaseline = typeof state.lastDownload === "number";
+    const prevDownload = Number(state.lastDownload);
+    const prevUpload = Number(state.lastUpload);
+    // 引擎重启（reload/升级）后接口计数器归零，历史累计与游标全部作废
+    // 只有计数器明显回退（引擎重启/reload 归零）才重置，避免偶发抖动误清累计
+    const restarted = !hasBaseline || download < prevDownload * 0.5 || upload < prevUpload * 0.5;
+    if (restarted) {
+        state.devices = {};
+        state.seen = {};
+    }
+    state.lastDownload = download;
+    state.lastUpload = upload;
+    saveState(state);
+}
+
+function nextSample() {
+    if (finished) {
+        return;
+    }
+    const more = IS_CRON ? Date.now() < RUN_DEADLINE : sampleIndex < SAMPLE_COUNT;
+    if (!more) {
+        render();
+        return;
+    }
+    sampleIndex++;
+    fetchPair(function (list) {
+        try {
+            absorbRequests(list);
+        } catch (e) {
+            // 单轮统计异常不影响面板
+        }
+        setTimeout(nextSample, GAP_MS);
+    });
+}
+
+function render() {
+    if (finished) {
+        return;
+    }
     if (metricsFailed) {
         finishPanel(
             "内存和流量实时监控",
@@ -346,108 +536,15 @@ function maybeFinish() {
     const dnsCache = getMetric(metrics, "surge_dns_cache_entries");
     const activeBans = getMetric(metrics, "surge_active_bans");
 
-    const version = buildInfo && buildInfo.labels.version
-        ? buildInfo.labels.version
-        : "未知";
-    const build = buildInfo && buildInfo.labels.build
-        ? buildInfo.labels.build
-        : "未知";
+    const version = buildInfo && buildInfo.labels.version ? buildInfo.labels.version : "未知";
+    const build = buildInfo && buildInfo.labels.build ? buildInfo.labels.build : "未知";
 
-    const download = sumMetrics(
-        metrics,
-        "surge_interface_in_bytes_total"
-    );
-    const upload = sumMetrics(
-        metrics,
-        "surge_interface_out_bytes_total"
-    );
+    const download = sumMetrics(metrics, "surge_interface_in_bytes_total");
+    const upload = sumMetrics(metrics, "surge_interface_out_bytes_total");
 
-    let requests = [];
-    if (!requestsFailed && requestsBody) {
-        try {
-            const parsed = JSON.parse(requestsBody);
-            requests = Array.isArray(parsed) ? parsed : (parsed.requests || []);
-        } catch (e) {
-            requests = [];
-        }
-    }
-
-    // 持久化累计各设备的入站流量（只累加新请求，避免重复）
-    // 注意：必须按设备分开记录增量游标。/v1/requests/recent 只返回最近一批请求，
-    // 且混有大量本机出站请求。若用全局最大 id 作增量，本机请求会把游标快速推高，
-    // 导致入站设备请求永远被误判为旧请求、累计长期卡住（面板不涨）。
-    // 另外 recent 内请求 id 与时间顺序并不严格一致（长连接 id 大但开始早），
-    // 用 id 做增量会漏统计。故改用 startDate（请求开始时间）做增量游标：
-    // 先取窗口内各设备最大 startDate 作为新游标，再累加所有 startDate 大于
-    // 上一轮游标的请求，乱序窗口也不会漏。
-    const state = loadState();
-    // v8: 检测 Surge 引擎重启（升级/reload 会使接口总流量计数器归零）。
-    // 无 lastDownload 基准（v8 首次迁移）或当前总流量小于上次基准 → 引擎已重启，
-    // 历史入站累计/增量游标基于旧会话已无意义，重置为 0，从本次重启后重新统计。
-    const prevDownload = Number(state.lastDownload);
-    const hasBaseline = typeof state.lastDownload === "number";
-    const prevUpload = Number(state.lastUpload);
-    if (!hasBaseline || download < prevDownload || upload < prevUpload) {
-        state.devices = {};
-        state.lastStartByDevice = {};
-        state.lastMaxId = 0;
-    }
-    state.lastDownload = download;
-    state.lastUpload = upload;
-    const devicesState = state.devices || {};
-    const lastStartByDev = state.lastStartByDevice || {};
-
-    // 本轮窗口内各配置设备的最大 startDate（作为新的增量游标）
-    const newLastStart = {};
-    for (let i = 0; i < requests.length; i++) {
-        const r = requests[i] || {};
-        const devName = String(r.deviceName || "");
-        if (devices.indexOf(devName) === -1) {
-            continue;
-        }
-        const sd = Number(r.startDate) || 0;
-        if (!(devName in newLastStart) || sd > newLastStart[devName]) {
-            newLastStart[devName] = sd;
-        }
-    }
-
-    // 旧版本升级首次运行：仅初始化游标到窗口内最大 startDate，不累加历史，
-    // 避免把窗口内既有请求重复计入导致数值跳变。
-    if (state.lastStartByDevice) {
-        const seen = {};
-        for (let i = 0; i < requests.length; i++) {
-            const r = requests[i] || {};
-            const devName = String(r.deviceName || "");
-            if (devices.indexOf(devName) === -1) {
-                continue;
-            }
-            const rid = String(r.id || "");
-            if (seen[rid]) {
-                continue; // 同一请求在窗口内重复出现，只累加一次
-            }
-            const sd = Number(r.startDate) || 0;
-            const prev = Number(lastStartByDev[devName]) || 0;
-            if (sd <= prev) {
-                continue;
-            }
-            seen[rid] = true;
-            const entry = devicesState[devName] || { in: 0, out: 0, count: 0 };
-            entry.in += Number(r.inBytes) || 0;
-            entry.out += Number(r.outBytes) || 0;
-            entry.count += 1;
-            devicesState[devName] = entry;
-        }
-    }
-
-    // 用窗口内最大 startDate 推进游标；窗口内未出现的设备游标保持不变
-    for (const devName in newLastStart) {
-        lastStartByDev[devName] = newLastStart[devName];
-    }
-    state.lastStartByDevice = lastStartByDev;
-    state.devices = devicesState;
+    const state = getState();
     saveState(state);
-
-    // 各设备累计流量（面板直接显示累计数值，不写「累计/总计」标签）
+    const devicesState = state.devices || {};
     let inboundTotalIn = 0;
     let inboundTotalOut = 0;
     const deviceLines = [];
@@ -457,15 +554,10 @@ function maybeFinish() {
         inboundTotalIn += entry.in;
         inboundTotalOut += entry.out;
         deviceLines.push(
-            devices[i] +
-                "： ↓ " +
-                formatBytes(entry.in) +
-                " ↑ " +
-                formatBytes(entry.out)
+            devices[i] + "： ↓ " + formatBytes(entry.in) + " ↑ " + formatBytes(entry.out)
         );
     }
 
-    // 本机流量 = 接口总流量 - 入站总流量（扣除所有入站设备）
     const localIn = Math.max(0, download - inboundTotalIn);
     const localOut = Math.max(0, upload - inboundTotalOut);
 
@@ -481,11 +573,11 @@ function maybeFinish() {
             " · 封禁：" +
             formatNumber(activeBans ? activeBans.value : NaN),
         "",
-        "本机流量： ↓ " + formatBytes(localIn) + " ↑ " + formatBytes(localOut)
+        "本机流量： ↓ " + formatBytes(localIn) + " ↑ " + formatBytes(localOut),
+        "",
+        "Tailscale 入站流量"
     ];
 
-    lines.push("");
-    lines.push("Tailscale 入站流量");
     if (devices.length === 0) {
         lines.push("（未配置设备）");
         lines.push("编辑脚本参数添加设备名");
@@ -500,13 +592,7 @@ function maybeFinish() {
     lines.push("");
     lines.push("Surge " + version + " · Build " + build);
 
-    finishPanel(
-        "内存和流量实时监控",
-        lines.join("\n"),
-        null,
-        "chart.bar.xaxis",
-        "#4A90E2"
-    );
+    finishPanel("内存和流量实时监控", lines.join("\n"), null, "chart.bar.xaxis", "#4A90E2");
 }
 
 $httpClient.get(
@@ -521,42 +607,18 @@ $httpClient.get(
     function (error, response, body) {
         if (error) {
             metricsFailed = String(error);
-        } else if (
-            response &&
-            response.status &&
-            (response.status < 200 || response.status >= 300)
-        ) {
+        } else if (response && response.status && (response.status < 200 || response.status >= 300)) {
             metricsFailed = "Metrics HTTP " + response.status;
         } else if (!body) {
             metricsFailed = "Metrics 返回为空";
         } else {
             metricsBody = body;
+            try {
+                prepareBaseline();
+            } catch (e) {
+                // 基准处理异常不影响统计
+            }
         }
-        maybeFinish();
-    }
-);
-
-$httpClient.get(
-    {
-        url: REQUESTS_URL,
-        timeout: REQUEST_TIMEOUT,
-        headers: {
-            Accept: "application/json",
-            "X-Key": apiKey
-        }
-    },
-    function (error, response, body) {
-        if (error) {
-            requestsFailed = String(error);
-        } else if (
-            response &&
-            response.status &&
-            (response.status < 200 || response.status >= 300)
-        ) {
-            requestsFailed = "Requests HTTP " + response.status;
-        } else {
-            requestsBody = body;
-        }
-        maybeFinish();
+        nextSample();
     }
 );
