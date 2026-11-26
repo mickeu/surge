@@ -1,5 +1,5 @@
 /*
- * 内存和流量实时监控（Memory Traffic）v10
+ * 内存和流量实时监控（Memory Traffic）v11
  *
  * 本机流量 + Tailscale 入站设备累计流量监控面板
  * 独立于原「内存」模块（SurgeMonitor），互不影响。
@@ -537,6 +537,7 @@ function render() {
     const upload = sumMetrics(metrics, "surge_interface_out_bytes_total");
 
     const state = getState();
+    saveState(state);
     const devicesState = state.devices || {};
     let inboundTotalIn = 0;
     let inboundTotalOut = 0;
