@@ -1,0 +1,9 @@
+#!name=MemoryTraffic Cron
+#!desc=为「内存和流量实时监控」提供后台常驻采样。recent 只保留最近 50 条、整机共用，面板不看就不刷新，靠本模块每 2 分钟常驻采样 110 秒补齐入站统计
+#!author=mickeu
+#!category=mickeu
+#!arguments=dev1:iphone-xr,dev2:iphone-12,dev3:选填,dev4:选填,dev5:选填,api_host:127.0.0.1,api_port:6171,api_key:surgetest
+#!arguments-desc=\n设备名必须与「内存和流量实时监控」模块完全一致，两个模块共用同一份累计数据（按请求 id 增量去重）。\n\n参数含义与主模块相同：dev1~dev5 填 Tailscale 设备名，api_host/api_port/api_key 为本机 Surge HTTP API。\n\n主模块负责面板显示，本模块负责后台采样；两者缺一不可。
+
+[Script]
+memory-traffic-cron = type=cron,cronexp="*/2 * * * *",timeout=130,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/MemoryTraffic.js?v=12,argument=mode=cron&run_ms=110000&gap_ms=1200&dev1={{{dev1}}}&dev2={{{dev2}}}&dev3={{{dev3}}}&dev4={{{dev4}}}&dev5={{{dev5}}}&api_host={{{api_host}}}&api_port={{{api_port}}}&api_key={{{api_key}}}
