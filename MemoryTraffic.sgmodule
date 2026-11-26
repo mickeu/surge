@@ -11,5 +11,3 @@ MemoryTraffic = title="内存和流量实时监控",content="正在获取数据.
 [Script]
 # 面板脚本：面板可见时刷新显示（只在面板显示时才被调度）
 memory-traffic = type=generic,timeout=30,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/MemoryTraffic.js?v=12,argument=mode=panel&dev1={{{dev1}}}&dev2={{{dev2}}}&dev3={{{dev3}}}&dev4={{{dev4}}}&dev5={{{dev5}}}&api_host={{{api_host}}}&api_port={{{api_port}}}&api_key={{{api_key}}}
-# 后台常驻采样：recent 只保留最近 50 条且整机共用，漏一次就是永久漏，必须不依赖面板可见持续采
-memory-traffic-cron = type=cron,cronexp="*/2 * * * *",timeout=130,script-path=https://raw.githubusercontent.com/mickeu/surge/main/Scripts/MemoryTraffic.js?v=12,argument=mode=cron&run_ms=110000&gap_ms=1200&dev1={{{dev1}}}&dev2={{{dev2}}}&dev3={{{dev3}}}&dev4={{{dev4}}}&dev5={{{dev5}}}&api_host={{{api_host}}}&api_port={{{api_port}}}&api_key={{{api_key}}}
