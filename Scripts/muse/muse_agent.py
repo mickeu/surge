@@ -23,6 +23,7 @@ PROXY = os.environ.get("MUSEQ_PROXY", "").strip()
 POLL = float(os.environ.get("MUSEQ_POLL", "2"))
 TIMEOUT = int(os.environ.get("MUSEQ_CMD_TIMEOUT", "900"))
 WORKDIR = os.environ.get("MUSEQ_WORKDIR", os.path.expanduser("~"))
+DRY = os.environ.get("MUSEQ_DRY", "") == "1"
 
 
 def call(path, payload=None, timeout=30):
@@ -43,7 +44,7 @@ def call(path, payload=None, timeout=30):
 def main():
     if not URL or not TOKEN:
         sys.exit("需要 MUSEQ_URL 与 MUSEQ_TOKEN")
-    print("agent start url=%s proxy=%s poll=%ss" % (URL, PROXY or "-", POLL), flush=True)
+    print("agent start url=%s proxy=%s poll=%ss dry=%s" % (URL, PROXY or "-", POLL, DRY), flush=True)
     while True:
         try:
             code, body = call("/next")
@@ -54,6 +55,11 @@ def main():
             cmd = item.get("cmd", "")
             print("RUN %s" % cmd.replace("\n", " ; ")[:200], flush=True)
             t0 = time.time()
+            if DRY:
+                call("/done", {"cmd": cmd, "out": "DRY-RUN：未执行。命令原文见上。",
+                               "code": 0, "cost": 0})
+                print("DRY %s" % cmd.replace("\n", " ; ")[:200], flush=True)
+                continue
             try:
                 p = subprocess.run(cmd, shell=True, cwd=WORKDIR,
                                    capture_output=True, timeout=TIMEOUT)
