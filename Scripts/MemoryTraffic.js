@@ -1,5 +1,5 @@
 /*
- * 内存流量Tailscale实时监控（Memory Traffic）v33
+ * 内存流量Tailscale实时监控（Memory Traffic）v35
  *
  * 内存 + 流量 + Tailscale 状态卡。
  * Tailscale 段完全按「Tailscale 状态」卡的标准呈现：
@@ -177,6 +177,19 @@ function parseArgument(arg) {
 // peer 名带 MagicDNS 后缀（iphone-12.tailf4e00c.ts.net），面板上只显示短名
 function shortPeerName(name) {
     return String(name || "").split(".")[0].trim();
+}
+
+var CITY_SHORT = {
+    nue: "纽伦", sfo: "旧金", lax: "洛城", ams: "阿姆", sjc: "圣何",
+    sto: "斯德", jnb: "约堡", blr: "班加", fra: "法兰", hkg: "香港",
+    nyc: "纽约", tok: "东京", sin: "新加坡", syd: "悉尼", tor: "多伦",
+    ord: "芝加哥", dfw: "达拉斯", mia: "迈阿密", sea: "西雅图", lhr: "伦敦",
+    par: "巴黎", mad: "马德里", waw: "华沙", sao: "圣保罗", dbi: "巴厘"
+};
+
+function shortCity(code) {
+    var k = String(code || "").toLowerCase();
+    return CITY_SHORT[k] || derpCity(code);
 }
 
 function derpCity(code) {
@@ -522,10 +535,19 @@ function tailscaleLines() {
         var item = online[o];
         // 面板纯文本无行内着色；emoji 上色会把点撑大，改用与正文同号的实心/空心圆
         var isDirect = item.status === "direct";
-        // 中文等宽：把「中继/直连」放行首固定前缀，设备名随后，两列都不用猜空格宽度
+        // 中文等宽：把「中继/直连」放行首固定前缀，设备名随后，两列都不用猜空格宽度。
+        // 城市与延迟用空格连在一起，省掉一个「 · 」宽度，保证长名字行不折行。
         var line = (isDirect ? "● 直连" : "○ 中继") + " · " + shortPeerName(item.name);
         if (!isDirect) {
-            line += " · " + derpCity(item.derpRegionCode);
+            line += " " + shortCity(item.derpRegionCode);
+        }
+        // 中继时 Surge 不总给 peer 级延迟，用 netcheck 测到的该 DERP 区域 RTT 近似
+        var regionLat = (ts.netcheck && ts.netcheck.regionLatencyMs) || {};
+        var lat = typeof item.latencyMs === "number"
+            ? item.latencyMs
+            : regionLat[String(item.derpRegionID)];
+        if (typeof lat === "number" && lat > 0) {
+            line += " " + Math.round(lat) + "ms";
         }
         lines.push(line);
         listed++;
