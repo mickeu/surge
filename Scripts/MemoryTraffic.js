@@ -1,5 +1,5 @@
 /*
- * 内存流量Tailscale实时监控（Memory Traffic）v30
+ * 内存流量Tailscale实时监控（Memory Traffic）v31
  *
  * 内存 + 流量 + Tailscale 状态卡。
  * Tailscale 段完全按「Tailscale 状态」卡的标准呈现：
@@ -193,7 +193,7 @@ var CHAR_WIDTH = {
     s: 0.5, e: 0.556, o: 0.579, n: 0.565, u: 0.565, p: 0.579,
     h: 0.565, a: 0.55, b: 0.579, c: 0.53, d: 0.579, g: 0.579,
     k: 0.53, v: 0.51, x: 0.5, y: 0.5, z: 0.48, q: 0.579,
-    ".": 0.26, ",": 0.26, "-": 0.34, "_": 0.5, " ": 0.26,
+    ".": 0.26, ",": 0.26, "-": 0.34, "_": 0.5, " ": 0.22,
     m: 0.878, w: 0.75, M: 0.88, W: 0.95
 };
 
@@ -215,9 +215,9 @@ function textWidth(text) {
 }
 
 function padToWidth(text, target) {
-    // 只用半角空格：粒度 0.26em，比「全角+半角」组合连续，误差可压到 1px 内
+    // 只用半角空格：粒度 0.22em（实测值，0.26 会让空格多的行累计偏左）
     var rem = target - textWidth(text);
-    var count = Math.round(rem / 0.26);
+    var count = Math.round(rem / 0.22);
     if (count < 1) {
         count = 1;
     }
