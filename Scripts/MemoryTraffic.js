@@ -1,5 +1,5 @@
 /*
- * 内存和流量实时监控（Memory Traffic）v16
+ * 内存和流量实时监控（Memory Traffic）v17
  *
  * 内存 + 流量 + Tailscale 状态卡。
  * Tailscale 段完全按「Tailscale 状态」卡的标准呈现：
@@ -440,14 +440,6 @@ function tailscaleLines() {
     }
     lines.push("出口：" + exitText + (exit.status ? " (" + exit.status + ")" : ""));
 
-    var traffic = runtime.traffic || {};
-    var tcp = ts.activeTCPConnections === undefined ? "—" : ts.activeTCPConnections;
-    var udp = ts.activeUDPConnections === undefined ? "—" : ts.activeUDPConnections;
-    lines.push(
-        "流量：↓ " + formatBytes(traffic.in) + " ↑ " + formatBytes(traffic.out) +
-        " · TCP " + tcp + " / UDP " + udp
-    );
-
     lines.push(
         "设备：" + online.length + "/" + peers.length + " 在线 · 直连 " + direct + " / 中继 " + relay
     );
@@ -504,9 +496,7 @@ function render() {
 
     var lines = [
         "内存占用： " + formatBytes(memory ? memory.value : NaN),
-        "",
         "运行时间： " + formatUptime(uptime ? uptime.value : NaN),
-        "",
         "流量： ↓ " + formatBytes(download) + " ↑ " + formatBytes(upload),
         ""
     ];
