@@ -1,5 +1,5 @@
 /*
- * 内存流量Tailscale实时监控（Memory Traffic）v28
+ * 内存流量Tailscale实时监控（Memory Traffic）v30
  *
  * 内存 + 流量 + Tailscale 状态卡。
  * Tailscale 段完全按「Tailscale 状态」卡的标准呈现：
@@ -189,9 +189,12 @@ function derpCity(code) {
 // 面板用系统比例字体：名字补空格必须按字宽估算，不能按字符数。
 // 半角空格在 SF Pro 里约 0.26em，全角空格 1em，用两者组合逼近目标宽度。
 var CHAR_WIDTH = {
-    i: 0.28, l: 0.28, j: 0.28, t: 0.33, f: 0.33, r: 0.35,
-    ".": 0.28, ",": 0.28, "-": 0.33, "_": 0.5, " ": 0.26,
-    m: 0.85, w: 0.76, M: 0.85, W: 0.95
+    i: 0.264, l: 0.264, j: 0.264, t: 0.335, f: 0.335, r: 0.365,
+    s: 0.5, e: 0.556, o: 0.579, n: 0.565, u: 0.565, p: 0.579,
+    h: 0.565, a: 0.55, b: 0.579, c: 0.53, d: 0.579, g: 0.579,
+    k: 0.53, v: 0.51, x: 0.5, y: 0.5, z: 0.48, q: 0.579,
+    ".": 0.26, ",": 0.26, "-": 0.34, "_": 0.5, " ": 0.26,
+    m: 0.878, w: 0.75, M: 0.88, W: 0.95
 };
 
 function textWidth(text) {
@@ -212,14 +215,14 @@ function textWidth(text) {
 }
 
 function padToWidth(text, target) {
+    // 只用半角空格：粒度 0.26em，比「全角+半角」组合连续，误差可压到 1px 内
     var rem = target - textWidth(text);
-    var out = text;
-    var full = Math.floor(rem);
-    for (var i = 0; i < full; i++) {
-        out += "\u3000";
+    var count = Math.round(rem / 0.26);
+    if (count < 1) {
+        count = 1;
     }
-    var half = Math.round((rem - full) / 0.26);
-    for (var j = 0; j < half; j++) {
+    var out = text;
+    for (var i = 0; i < count; i++) {
         out += " ";
     }
     return out;
@@ -464,10 +467,25 @@ function tailscaleLines() {
             derpConnected++;
         }
     }
-    var home =
-        derpCity(ts.homeDERPRegionCode) +
-        " #" + (ts.homeDERPRegionID === undefined ? "?" : ts.homeDERPRegionID);
-    lines.push("区域：" + home + " · " + derpConnected + "/" + derpConnections.length + " 连");
+    var stArea = loadState();
+    if (ts.homeDERPRegionCode) {
+        stArea.lastArea = {
+            code: ts.homeDERPRegionCode,
+            id: ts.homeDERPRegionID,
+            conn: derpConnected,
+            total: derpConnections.length
+        };
+        saveState(stArea);
+    }
+    var area = ts.homeDERPRegionCode
+        ? { code: ts.homeDERPRegionCode, id: ts.homeDERPRegionID,
+            conn: derpConnected, total: derpConnections.length }
+        : (stArea.lastArea || null);
+    var areaText = area && area.code
+        ? derpCity(area.code) + " #" + (area.id === undefined ? "?" : area.id)
+        : "—";
+    var areaConn = area ? area.conn + "/" + area.total : "0/0";
+    lines.push("区域：" + areaText + " · " + areaConn + " 连");
 
     var exit = ts.exitNode || {};
     var exitText = "未使用";
@@ -497,7 +515,7 @@ function tailscaleLines() {
         var nw = textWidth(shortPeerName(online[n].name));
         if (nw > nameTarget) nameTarget = nw;
     }
-    nameTarget = Math.ceil(nameTarget * 10) / 10;
+    nameTarget = Math.ceil((nameTarget + 1.6) * 10) / 10;
 
     var listed = 0;
     for (var o = 0; o < online.length && listed < 6; o++) {
