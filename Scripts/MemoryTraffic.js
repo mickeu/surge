@@ -1,56 +1,46 @@
 /*
- * 内存和流量实时监控（Memory Traffic）v14
+ * 内存和流量实时监控（Memory Traffic）v15
  *
- * 本机流量 + Tailscale 入站设备累计流量监控面板
- * 独立于原「内存」模块（SurgeMonitor），互不影响。
- *
- * 累计说明：入站设备流量为自模块启用以来的累计值（持久化保存）。
- * 每轮内部高频采样 /v1/requests/recent 与 /v1/requests/active，
- * 按请求 id 记录已计入字节、只累加增量，避免重复统计。
- * 本机流量 = Surge 接口总流量 - 所有入站设备累计流量；
- * 总计流量 = 本机流量 + 所有入站设备流量 = Surge 接口总流量。
- *
- * v7 修复：增量游标改为按设备记录 startDate（lastStartByDevice）。
- * 旧版用全局最大请求 id 做增量，recent 中本机出站请求 id 增长更快，
- * 会把游标推高，导致入站设备请求被误判为旧请求、累计长期卡住；
- * 且 recent 内 id 与时间顺序不一致会漏统计。现改用请求开始时间做游标，
- * 先取窗口内各设备最大 startDate 再累加新请求，乱序不丢、同请求不重。
- *
- * v8 修复：检测 Surge 引擎重启（升级/reload 使接口总流量归零）。当总流量小于上次
- * 保存的基准时，自动重置入站设备累计与增量游标，避免「本机流量 = 接口总流量 - 入站累计」
- * 在引擎重启后出现负数被 clamp 成 0.00 B。
- *
- * 配置方式（Surge App → 模块 → 编辑本模块 → 脚本参数 argument 中修改）：
- *   每个设备对应一个参数口：dev1=设备名1,dev2=设备名2,...
- *   设备名为 Tailscale 中显示的设备名称（deviceName）。
- *   例如：argument=dev1=iphone-xr,dev2=iphone-15-pro
- *   以后新增设备只需在参数里追加 ,devN=新设备名。
- *
- *   API 配置（可选，默认使用本机 HTTP API）：
- *   api_host=HTTP API 地址（默认 127.0.0.1）
- *   api_port=HTTP API 端口（默认 6171）
- *   api_key=HTTP API 密码（默认 surgetest）
- *   例如：argument=dev1=iphone-xr&api_host=127.0.0.1&api_port=6171&api_key=surgetest
+ * 内存 + 本机流量 + Tailscale 运行状态面板。
+ * Tailscale 部分按「Tailscale 状态」模块的标准呈现：会话状态、本机地址与名称、
+ * DERP 区域与连接数、出口节点、策略流量、在线设备数与直连/中继分布、设备列表。
+ * 入站设备全部自动识别（取自策略运行时的 peer 列表），不再需要在模块参数里手填设备名。
  *
  * 数据来源：
- *   GET /v1/metrics            —— 内存、运行时间、请求/DNS/封禁、本机总流量
- *   GET /v1/requests/recent     —— 按设备名统计 Tailscale 入站设备的连接数与流量
+ *   GET  /v1/metrics                     —— 内存、运行时间、接口总流量
+ *   POST /v1/mcp (get_proxy_runtime_status) —— Tailscale 会话、DERP、出口、peer 路径
+ *   GET  /v1/requests/recent             —— 按 peer 名统计入站设备的连接与流量增量
  *
- * ⚠️ 注意事项：Tailscale 入站设备访问被 MITM 的域名需安装 CA 证书
- *   入站设备（如 iphone-xr）通过本机转发流量时，若访问本机 [MITM] hostname
- *   列表中的域名（如 weatherkit.apple.com 苹果天气），会命中本机 HTTPS 解密。
- *   因为入站设备不信任 Surge 的 MITM CA（surge-ca），TLS 握手会失败，
- *   典型现象：入站设备的天气 App 打不开，连接详情里策略/规则/远端 IP 全是 N/A。
- *   解决：在入站设备上安装并完全信任【接受入站的那台 Surge（本机）】的 MITM CA 证书，
- *   不能是其他设备导出的证书——本机 Surge App → 设置 → MITM → 导出描述文件（.mobileconfig），
- *   装到入站设备后，到「设置 → 通用 → 关于本机 → 证书信任设置」开启该证书的完全信任。
- *   注意：iOS 的文件 App 识别描述文件只看扩展名，传输后需确保 .mobileconfig 后缀存在。
+ * 累计说明：入站设备流量为自模块启用以来的累计值（持久化）。每轮高频采样请求列表，
+ * 按「设备名#请求id」记录已计入字节，只累加增量，长连接后续流量也能补上。
+ * 本机流量 = Surge 接口总流量 - 各 peer 入站累计；流量行显示本机自身部分。
+ *
+ * 策略名自动发现：参数 policy 留空时，从当前 Profile 中找 `xxx = tailscale` 的策略行，
+ * 结果缓存到持久化状态；策略改名或换配置后首次调用失败会自动重新探测一次。
+ *
+ * ⚠️ 依赖 http-api-mcp：Surge → 设置 → HTTP API → 勾选 MCP（http-api-mcp = true）。
+ *    未开启时 Tailscale 段显示「不可用」，其余指标不受影响。
+ *
+ * ⚠️ Tailscale 入站设备访问被本机 MITM 的域名需在本机 Surge 导出 CA 证书并装到入站设备，
+ *    否则该设备上这些域名会握手失败（典型：入站设备打不开苹果天气）。
  */
 
-const DEFAULT_API_HOST = "127.0.0.1";
-const DEFAULT_API_PORT = "6171";
-const DEFAULT_API_KEY = "surgetest";
-const REQUEST_TIMEOUT = 3;
+var DEFAULT_API_HOST = "127.0.0.1";
+var DEFAULT_API_PORT = "6171";
+var DEFAULT_API_KEY = "surgetest";
+var REQUEST_TIMEOUT = 3;
+var STATE_KEY = "MemoryTrafficAccum";
+
+var DERP_CITY = {
+    nyc: "纽约", sfo: "旧金山", lax: "洛杉矶", sea: "西雅图", dfw: "达拉斯",
+    ord: "芝加哥", mia: "迈阿密", atl: "亚特兰大", den: "丹佛", sjc: "圣何塞",
+    tor: "多伦多", yyz: "多伦多", hkg: "香港", tok: "东京", sin: "新加坡",
+    syd: "悉尼", blr: "班加罗尔", fra: "法兰克福", nue: "纽伦堡",
+    ams: "阿姆斯特丹", lhr: "伦敦", par: "巴黎", mad: "马德里", waw: "华沙",
+    sto: "斯德哥尔摩", sao: "圣保罗", dbi: "巴厘岛", hnl: "檀香山",
+    jnb: "约翰内斯堡", hel: "赫尔辛基", vie: "维也纳", prg: "布拉格",
+    tpe: "台北", sel: "首尔", bom: "孟买", dxb: "迪拜", kix: "大阪"
+};
 
 function isFiniteNumber(value) {
     return isFinite(Number(value));
@@ -68,9 +58,9 @@ function formatBytes(value) {
         return "—";
     }
 
-    let bytes = Math.max(0, Number(value));
-    const units = ["B", "KB", "MB", "GB", "TB"];
-    let unitIndex = 0;
+    var bytes = Math.max(0, Number(value));
+    var units = ["B", "KB", "MB", "GB", "TB"];
+    var unitIndex = 0;
 
     while (bytes >= 1024 && unitIndex < units.length - 1) {
         bytes /= 1024;
@@ -85,17 +75,17 @@ function formatUptime(value) {
         return "—";
     }
 
-    let seconds = Math.max(0, Math.floor(Number(value)));
-    const days = Math.floor(seconds / 86400);
+    var seconds = Math.max(0, Math.floor(Number(value)));
+    var days = Math.floor(seconds / 86400);
     seconds -= days * 86400;
 
-    const hours = Math.floor(seconds / 3600);
+    var hours = Math.floor(seconds / 3600);
     seconds -= hours * 3600;
 
-    const minutes = Math.floor(seconds / 60);
+    var minutes = Math.floor(seconds / 60);
     seconds -= minutes * 60;
 
-    const parts = [];
+    var parts = [];
     if (days > 0) {
         parts.push(days + "天");
     }
@@ -113,27 +103,26 @@ function formatUptime(value) {
 }
 
 function parseMetrics(text) {
-    const metrics = [];
-    const lines = String(text).split(/\r?\n/);
-    const metricPattern =
+    var metrics = [];
+    var lines = String(text).split(/\r?\n/);
+    var metricPattern =
         /^([a-zA-Z_:][a-zA-Z0-9_:]*)(?:\{([^}]*)\})?\s+([-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?)$/;
-    const labelPattern =
-        /([a-zA-Z_][a-zA-Z0-9_]*)="((?:\\.|[^"])*)"/g;
+    var labelPattern = /([a-zA-Z_][a-zA-Z0-9_]*)="((?:\\.|[^"])*)"/g;
 
-    for (let i = 0; i < lines.length; i++) {
-        const line = lines[i].trim();
+    for (var i = 0; i < lines.length; i++) {
+        var line = lines[i].trim();
         if (!line || line.charAt(0) === "#") {
             continue;
         }
 
-        const match = line.match(metricPattern);
+        var match = line.match(metricPattern);
         if (!match) {
             continue;
         }
 
-        const labels = {};
-        const labelText = match[2] || "";
-        let labelMatch;
+        var labels = {};
+        var labelText = match[2] || "";
+        var labelMatch;
 
         labelPattern.lastIndex = 0;
         while ((labelMatch = labelPattern.exec(labelText)) !== null) {
@@ -153,7 +142,7 @@ function parseMetrics(text) {
 }
 
 function getMetric(metrics, metricName) {
-    for (let i = 0; i < metrics.length; i++) {
+    for (var i = 0; i < metrics.length; i++) {
         if (metrics[i].name === metricName) {
             return metrics[i];
         }
@@ -162,15 +151,12 @@ function getMetric(metrics, metricName) {
 }
 
 function sumMetrics(metrics, metricName) {
-    let total = 0;
-    let found = false;
+    var total = 0;
+    var found = false;
 
-    for (let i = 0; i < metrics.length; i++) {
-        if (
-            metrics[i].name === metricName &&
-            isFiniteNumber(metrics[i].value)
-        ) {
-            // 排除本机回环(lo0)接口，避免统计到 Surge 自身流量
+    for (var i = 0; i < metrics.length; i++) {
+        if (metrics[i].name === metricName && isFiniteNumber(metrics[i].value)) {
+            // 排除回环接口，避免把 Surge 自身流量算进本机
             if (metrics[i].labels && metrics[i].labels.interface === "lo0") {
                 continue;
             }
@@ -183,91 +169,58 @@ function sumMetrics(metrics, metricName) {
 }
 
 function parseArgument(arg) {
-    const result = {};
+    var result = {};
     if (typeof arg === "string") {
-        // 支持 &（query-string 风格）和逗号/分号分隔的 key=value
         arg.split(/[&,;]/).forEach(function (part) {
-            const idx = part.indexOf("=");
+            var idx = part.indexOf("=");
             if (idx > 0) {
                 result[part.slice(0, idx).trim()] = part.slice(idx + 1).trim();
             }
         });
     } else if (arg && typeof arg === "object") {
-        for (const key in arg) {
+        for (var key in arg) {
             result[key] = arg[key];
         }
     }
     return result;
 }
 
-function aggregateDeviceRequests(requests, deviceName) {
-    let count = 0;
-    let inBytes = 0;
-    let outBytes = 0;
-    const target = String(deviceName).toLowerCase();
-
-    for (let i = 0; i < requests.length; i++) {
-        const r = requests[i];
-        if (String(r.deviceName || "").toLowerCase() !== target) {
-            continue;
-        }
-        count++;
-        inBytes += Number(r.inBytes) || 0;
-        outBytes += Number(r.outBytes) || 0;
-    }
-
-    return { count: count, inBytes: inBytes, outBytes: outBytes };
+// peer 名带 MagicDNS 后缀（iphone-12.tailf4e00c.ts.net），请求列表里只有短名，
+// 统计与显示统一用短名，避免同一个设备出现两条记录。
+function shortPeerName(name) {
+    return String(name || "").split(".")[0].trim();
 }
 
-function collectDevices(arg) {
-    const devices = [];
-    const keys = [];
-
-    for (const key in arg) {
-        if (arg.hasOwnProperty(key) && /^dev\d+$/.test(key)) {
-            keys.push(key);
-        }
-    }
-
-    keys.sort(function (a, b) {
-        const na = parseInt(a.replace(/[^0-9]/g, ""), 10) || 0;
-        const nb = parseInt(b.replace(/[^0-9]/g, ""), 10) || 0;
-        return na - nb;
-    });
-
-    for (let i = 0; i < keys.length; i++) {
-        const value = String(arg[keys[i]] || "").trim();
-        // 过滤空值和「选填」占位符（未填写的参数口不显示在面板）
-        if (value.length > 0 && value !== "选填") {
-            devices.push(value);
-        }
-    }
-
-    return devices;
+function peerKey(name) {
+    return shortPeerName(name).toLowerCase();
 }
 
-const STATE_KEY = "MemoryTrafficAccum";
-
+function derpCity(code) {
+    if (!code) {
+        return "未知";
+    }
+    return DERP_CITY[String(code).toLowerCase()] || String(code).toUpperCase();
+}
 function loadState() {
     try {
-        const raw = $persistentStore.read(STATE_KEY);
+        var raw = $persistentStore.read(STATE_KEY);
         if (raw) {
-            const parsed = JSON.parse(raw);
+            var parsed = JSON.parse(raw);
             if (parsed && typeof parsed === "object") {
                 return parsed;
             }
         }
     } catch (e) {
-        // 忽略损坏的状态
+        // 损坏的状态直接重建
     }
-    return { lastMaxId: 0, devices: {} };
+    return { devices: {}, seen: {} };
 }
 
 function saveState(state) {
     try {
         $persistentStore.write(JSON.stringify(state), STATE_KEY);
     } catch (e) {
-        // 忽略写入失败
+        // 写入失败不影响面板
     }
 }
 
@@ -284,11 +237,7 @@ function finishPanel(title, content, style, icon, iconColor) {
         return;
     }
 
-    const result = {
-        title: title,
-        content: content
-    };
-
+    var result = { title: title, content: content };
     if (style) {
         result.style = style;
     }
@@ -312,25 +261,29 @@ var sgFallbackTimer = setTimeout(function () {
     );
 }, 20000);
 
-const argument = parseArgument($argument);
-const apiHost = String(argument.api_host || DEFAULT_API_HOST).trim() || DEFAULT_API_HOST;
-const apiPort = String(argument.api_port || DEFAULT_API_PORT).trim() || DEFAULT_API_PORT;
-const apiKey = String(argument.api_key || DEFAULT_API_KEY).trim() || DEFAULT_API_KEY;
-const apiBase = "http://" + apiHost + ":" + apiPort;
-const METRICS_URL = apiBase + "/v1/metrics";
-const RECENT_URL = apiBase + "/v1/requests/recent";
-const ACTIVE_URL = apiBase + "/v1/requests/active";
-const devices = collectDevices(argument);
+var argument = parseArgument(typeof $argument === "undefined" ? "" : $argument);
+var apiHost = String(argument.api_host || DEFAULT_API_HOST).trim() || DEFAULT_API_HOST;
+var apiPort = String(argument.api_port || DEFAULT_API_PORT).trim() || DEFAULT_API_PORT;
+var apiKey = String(argument.api_key || DEFAULT_API_KEY).trim() || DEFAULT_API_KEY;
+var apiBase = "http://" + apiHost + ":" + apiPort;
+var METRICS_URL = apiBase + "/v1/metrics";
+var policyArgument = String(argument.policy || "").trim();
+// 参数口留默认占位或写「自动」时一律走自动探测
+if (/^(自动|auto|选填|留空自动识别)$/.test(policyArgument)) {
+    policyArgument = "";
+}
 
-// v12: 面板脚本只在面板可见时才被调度，没人盯着面板就等于不统计。
-// 增加 cron 模式：由 cron 脚本常驻采样（默认 5 分钟一轮、跑 280 秒），
-// 不依赖面板可见；两种模式共用同一 state，按请求 id 增量累加，天然去重。
-const MODE = String(argument.mode || "panel").trim().toLowerCase();
-const IS_CRON = MODE === "cron";
-const RUN_MS = Math.max(3000, Number(argument.run_ms) || (IS_CRON ? 300000 : 0));
-const GAP_MS = Math.max(2000, Number(argument.gap_ms) || 4000);
-const SAMPLE_COUNT = IS_CRON ? 0 : 2;
-const RUN_DEADLINE = IS_CRON ? Date.now() + RUN_MS : 0;
+// 面板脚本只在面板可见时才被调度，cron 模式由定时脚本常驻采样，
+// 两种模式共用同一份 state，按请求 id 增量累加，天然去重。
+var MODE = String(argument.mode || "panel").trim().toLowerCase();
+var IS_CRON = MODE === "cron";
+var RUN_MS = Math.max(3000, Number(argument.run_ms) || (IS_CRON ? 300000 : 0));
+var GAP_MS = Math.max(2000, Number(argument.gap_ms) || 4000);
+var SAMPLE_COUNT = IS_CRON ? 0 : 2;
+var RUN_DEADLINE = IS_CRON ? Date.now() + RUN_MS : 0;
+// cron 模式下 runtime 每约 1 分钟刷新一次，保证新上线的 peer 能被自动纳入统计
+var RUNTIME_REFRESH_TICKS = IS_CRON ? Math.ceil(60000 / GAP_MS) : 1;
+
 if (IS_CRON) {
     clearTimeout(sgFallbackTimer);
     setTimeout(function () {
@@ -338,15 +291,17 @@ if (IS_CRON) {
     }, RUN_MS + 8000);
 }
 
-// v10: /v1/requests/recent 固定只回 50 条且整机共用，入站设备的请求会被本机请求挤出窗口；
-// 单次 10 秒采样大量漏计。改为每轮内部高频采样（SAMPLE_COUNT 次，间隔 SAMPLE_GAP ms），
-// 并按请求 id 记录已计入的字节数（seen），只累加增量，长连接后续流量也能补上。
-const SEEN_MAX = 600;
+var SEEN_MAX = 600;
 
-let metricsBody = null;
-let metricsFailed = null;
-let sampleIndex = 0;
-let stateCache = null;
+var metricsBody = null;
+var metricsFailed = null;
+var sampleIndex = 0;
+var stateCache = null;
+var runtime = null;
+var runtimeError = null;
+var runtimeTicks = 0;
+var peerSet = null;
+var peerOrder = [];
 
 function getState() {
     if (!stateCache) {
@@ -356,8 +311,8 @@ function getState() {
 }
 
 function trimSeen(seen) {
-    const ids = [];
-    for (const id in seen) {
+    var ids = [];
+    for (var id in seen) {
         if (Object.prototype.hasOwnProperty.call(seen, id)) {
             ids.push(id);
         }
@@ -368,47 +323,72 @@ function trimSeen(seen) {
     ids.sort(function (a, b) {
         return (Number(seen[b][2]) || 0) - (Number(seen[a][2]) || 0);
     });
-    for (let i = SEEN_MAX; i < ids.length; i++) {
+    for (var i = SEEN_MAX; i < ids.length; i++) {
         delete seen[ids[i]];
     }
 }
 
+function applyPeerList(peers) {
+    peerSet = {};
+    peerOrder = [];
+    if (!peers) {
+        return;
+    }
+    for (var i = 0; i < peers.length; i++) {
+        var short = shortPeerName(peers[i].name);
+        if (!short) {
+            continue;
+        }
+        peerSet[short.toLowerCase()] = short;
+        peerOrder.push(short);
+    }
+}
+
 function absorbRequests(list) {
-    const st = getState();
+    if (!peerSet || peerOrder.length === 0) {
+        return;
+    }
+    var st = getState();
     if (!st.devices) {
         st.devices = {};
     }
     if (!st.seen) {
         st.seen = {};
     }
-    const devicesState = st.devices;
-    const seen = st.seen;
-    const now = Date.now() / 1000;
+    var devicesState = st.devices;
+    var seen = st.seen;
+    var now = Date.now() / 1000;
 
-    for (let i = 0; i < list.length; i++) {
-        const r = list[i] || {};
-        const name = String(r.deviceName || "");
-        if (devices.indexOf(name) === -1) {
+    for (var i = 0; i < list.length; i++) {
+        var r = list[i] || {};
+        var raw = String(r.deviceName || "");
+        if (!raw) {
             continue;
         }
-        const id = String(r.id || "");
+        var short = shortPeerName(raw);
+        var key = short.toLowerCase();
+        if (!peerSet[key]) {
+            continue;
+        }
+        var id = String(r.id || "");
         if (!id) {
             continue;
         }
-        const inBytes = Number(r.inBytes) || 0;
-        const outBytes = Number(r.outBytes) || 0;
-        const key = name + "#" + id;
-        let entry = devicesState[name];
+        var inBytes = Number(r.inBytes) || 0;
+        var outBytes = Number(r.outBytes) || 0;
+        var seenKey = key + "#" + id;
+        var entry = devicesState[key];
         if (!entry) {
-            entry = { in: 0, out: 0, count: 0 };
-            devicesState[name] = entry;
+            entry = { name: peerSet[key], in: 0, out: 0, count: 0 };
+            devicesState[key] = entry;
         }
-        const prev = seen[key];
+        entry.name = peerSet[key];
+        var prev = seen[seenKey];
         if (!prev) {
             entry.in += inBytes;
             entry.out += outBytes;
             entry.count += 1;
-            seen[key] = [inBytes, outBytes, now];
+            seen[seenKey] = [inBytes, outBytes, now];
         } else {
             if (inBytes > prev[0]) {
                 entry.in += inBytes - prev[0];
@@ -430,47 +410,76 @@ function parseRequestList(body) {
         return [];
     }
     try {
-        const parsed = JSON.parse(body);
+        var parsed = JSON.parse(body);
         return Array.isArray(parsed) ? parsed : (parsed.requests || []);
     } catch (e) {
         return [];
     }
 }
 
-function getJson(url, callback) {
-    $httpClient.get(
-        {
-            url: url,
-            timeout: REQUEST_TIMEOUT,
-            headers: {
-                Accept: "application/json",
-                "X-Key": apiKey
-            }
-        },
-        function (error, response, body) {
-            let failed = null;
-            if (error) {
-                failed = String(error);
-            } else if (
-                response &&
-                response.status &&
-                (response.status < 200 || response.status >= 300)
-            ) {
-                failed = "HTTP " + response.status;
-            }
-            callback(failed, failed ? [] : parseRequestList(body));
-        }
-    );
-}
-
-// 官方 API：$httpAPI 直连 Surge 引擎，不经真实网络，因此不会占用「最近请求」的 50 条窗口。
-// 之前用 $httpClient 打 127.0.0.1:6171，每次采样都变成一条可记录请求，把窗口刷满、
-// 把自己的统计对象挤出去——这是入站流量长期偏小的根本原因。
+// $httpAPI 直连引擎：不产生真实请求，不会把「最近请求」50 条窗口刷满
 function apiGet(path, callback) {
     try {
         $httpAPI("GET", path, null, function (result) {
-            callback(null, result);
+            var payload = result;
+            if (typeof payload === "string") {
+                try {
+                    payload = JSON.parse(payload);
+                } catch (e) {
+                    callback("返回非 JSON", null);
+                    return;
+                }
+            }
+            callback(null, payload);
         });
+    } catch (e) {
+        callback(String(e), null);
+    }
+}
+
+// MCP over HTTP API：脚本内唯一的 Tailscale 运行时数据来源
+function mcpCall(tool, toolArguments, callback) {
+    try {
+        $httpAPI(
+            "POST",
+            "/v1/mcp",
+            {
+                jsonrpc: "2.0",
+                id: 1,
+                method: "tools/call",
+                params: { name: tool, arguments: toolArguments }
+            },
+            function (result) {
+                var payload = result;
+                if (typeof payload === "string") {
+                    try {
+                        payload = JSON.parse(payload);
+                    } catch (e) {
+                        callback("MCP 返回非 JSON", null);
+                        return;
+                    }
+                }
+                if (!payload) {
+                    callback("MCP 无响应", null);
+                    return;
+                }
+                if (payload.error) {
+                    callback("MCP " + (payload.error.message || "错误"), null);
+                    return;
+                }
+                var content = payload.result && payload.result.content;
+                var text = content && content[0] ? content[0].text : null;
+                if (!text) {
+                    callback("MCP 空结果", null);
+                    return;
+                }
+                try {
+                    callback(null, JSON.parse(text));
+                } catch (e) {
+                    callback("MCP 结果解析失败", null);
+                }
+            }
+        );
     } catch (e) {
         callback(String(e), null);
     }
@@ -486,27 +495,102 @@ function requestList(result) {
     return result.requests || [];
 }
 
-function fetchPair(callback) {
-    // recent 已包含在飞请求，不再额外请求 active
+function fetchRecent(callback) {
     apiGet("/v1/requests/recent", function (err, result) {
         callback(err ? [] : requestList(result));
     });
 }
 
+// 策略名自动发现：优先参数，其次持久化缓存，最后从当前 Profile 里找 `xxx = tailscale`
+function findTailnetPolicyInProfile(text, callback) {
+    var match = String(text || "").match(/(?:^|\n)\s*([^=\n\[\]#][^=\n]*?)\s*=\s*tailscale\b/i);
+    if (match && match[1]) {
+        callback(match[1].trim());
+        return;
+    }
+    callback(null);
+}
+
+function resolvePolicyName(callback) {
+    if (policyArgument) {
+        callback(policyArgument, false);
+        return;
+    }
+    var st = getState();
+    apiGet("/v1/profiles/current?sensitive=0", function (err, result) {
+        if (err || !result) {
+            callback(st.tsPolicy || null, true);
+            return;
+        }
+        var text = result.profile || result.originalProfile || "";
+        findTailnetPolicyInProfile(text, function (name) {
+            if (name) {
+                st.tsPolicy = name;
+                saveState(st);
+            } else {
+                st.tsPolicy = null;
+                saveState(st);
+            }
+            callback(name, true);
+        });
+    });
+}
+
+function refreshRuntime(callback) {
+    runtimeTicks = 0;
+    resolvePolicyName(function (policy, fromProfile) {
+        if (!policy) {
+            runtimeError = "未找到 Tailscale 策略";
+            if (peerSet === null) {
+                var st = getState();
+                applyPeerList((st.peerNames || []).map(function (n) { return { name: n }; }));
+            }
+            callback();
+            return;
+        }
+        mcpCall("get_proxy_runtime_status", { policy: policy }, function (err, data) {
+            if (err || !data || !data.tailscale) {
+                // 缓存的策略名失效（改名/换配置）时重新探测一次
+                var st2 = getState();
+                if (!fromProfile && st2.tsPolicy) {
+                    st2.tsPolicy = null;
+                    saveState(st2);
+                }
+                runtimeError = err || "策略无 Tailscale 运行时数据";
+                if (peerSet === null) {
+                    applyPeerList((st2.peerNames || []).map(function (n) { return { name: n }; }));
+                }
+                callback();
+                return;
+            }
+            runtime = data;
+            runtimeError = null;
+            var ts = data.tailscale || {};
+            var peers = ts.peers || [];
+            applyPeerList(peers);
+            var st3 = getState();
+            st3.tsPolicy = policy;
+            st3.peerNames = peerOrder.slice(0);
+            saveState(st3);
+            callback();
+        });
+    });
+}
+
 function prepareBaseline() {
-    const metrics = parseMetrics(metricsBody || "");
-    const download = sumMetrics(metrics, "surge_interface_in_bytes_total");
-    const upload = sumMetrics(metrics, "surge_interface_out_bytes_total");
+    var metrics = parseMetrics(metricsBody || "");
+    var download = sumMetrics(metrics, "surge_interface_in_bytes_total");
+    var upload = sumMetrics(metrics, "surge_interface_out_bytes_total");
     if (!isFiniteNumber(download) || !isFiniteNumber(upload)) {
         return;
     }
-    const state = getState();
-    const hasBaseline = typeof state.lastDownload === "number";
-    const prevDownload = Number(state.lastDownload);
-    const prevUpload = Number(state.lastUpload);
-    // 引擎重启（reload/升级）后接口计数器归零，历史累计与游标全部作废
-    // 只有计数器明显回退（引擎重启/reload 归零）才重置，避免偶发抖动误清累计
-    const restarted = !hasBaseline || download < prevDownload * 0.5 || upload < prevUpload * 0.5;
+    var state = getState();
+    var hasBaseline = typeof state.lastDownload === "number";
+    var prevDownload = Number(state.lastDownload);
+    var prevUpload = Number(state.lastUpload);
+    // 引擎重启（reload/升级）后接口计数器归零，历史累计与游标全部作废；
+    // 只在计数器明显回退时重置，避免偶发抖动误清累计
+    var restarted = !hasBaseline || download < prevDownload * 0.5 || upload < prevUpload * 0.5;
     if (restarted) {
         state.devices = {};
         state.seen = {};
@@ -520,20 +604,163 @@ function nextSample() {
     if (finished) {
         return;
     }
-    const more = IS_CRON ? Date.now() < RUN_DEADLINE : sampleIndex < SAMPLE_COUNT;
+    var more = IS_CRON ? Date.now() < RUN_DEADLINE : sampleIndex < SAMPLE_COUNT;
     if (!more) {
         render();
         return;
     }
     sampleIndex++;
-    fetchPair(function (list) {
+    var needRuntime = peerSet === null || (IS_CRON && runtimeTicks >= RUNTIME_REFRESH_TICKS);
+    runtimeTicks++;
+    if (needRuntime) {
+        refreshRuntime(function () {
+            fetchRecent(function (list) {
+                try {
+                    absorbRequests(list);
+                } catch (e) {}
+                setTimeout(nextSample, GAP_MS);
+            });
+        });
+        return;
+    }
+    fetchRecent(function (list) {
         try {
             absorbRequests(list);
-        } catch (e) {
-            // 单轮统计异常不影响面板
-        }
+        } catch (e) {}
         setTimeout(nextSample, GAP_MS);
     });
+}
+
+function tailscaleLines() {
+    var lines = [];
+
+    if (!runtime) {
+        lines.push("Tailscale · " + (runtimeError ? "不可用" : "读取中"));
+        if (runtimeError) {
+            lines.push(runtimeError);
+        }
+        return lines;
+    }
+
+    var ts = runtime.tailscale || {};
+    var peers = ts.peers || [];
+    var online = [];
+    var offline = [];
+    var direct = 0;
+    var relay = 0;
+
+    for (var i = 0; i < peers.length; i++) {
+        var p = peers[i];
+        if (p.online) {
+            online.push(p);
+            if (p.status === "direct") {
+                direct++;
+            } else {
+                relay++;
+            }
+        } else {
+            offline.push(p);
+        }
+    }
+
+    lines.push("Tailscale 状态 · " + (ts.state || "未知"));
+
+    var stage = ts.controlStage ? "状态：" + ts.state + " · " + ts.controlStage : "状态：" + ts.state;
+    lines.push(stage);
+
+    var selfName = shortPeerName(ts.selfName || ts.hostname || "") || "—";
+    lines.push("本机：" + (ts.selfIPv4 || "—") + " · " + selfName);
+
+    var derpTotal = 0;
+    var derpConnected = 0;
+    var derpConnections = ts.derpConnections || [];
+    for (var d = 0; d < derpConnections.length; d++) {
+        derpTotal++;
+        if (derpConnections[d].connected) {
+            derpConnected++;
+        }
+    }
+    var home = derpCity(ts.homeDERPRegionCode) + " #" + (ts.homeDERPRegionID === undefined ? "?" : ts.homeDERPRegionID);
+    lines.push("DERP：" + home + " · " + derpConnected + "/" + derpTotal + " 连");
+
+    var exit = ts.exitNode || {};
+    var exitText = "未使用";
+    if (exit.enabled && exit.status !== "disabled") {
+        exitText = exit.selector && exit.selector !== "auto" ? exit.selector : "自动";
+    } else if (exit.status && exit.status !== "disabled") {
+        exitText = exit.status;
+    }
+    lines.push("出口：" + exitText);
+
+    var stEarly = getState();
+    var devEarly = stEarly.devices || {};
+    var inboundInEarly = 0;
+    var inboundOutEarly = 0;
+    for (var ek in devEarly) {
+        if (Object.prototype.hasOwnProperty.call(devEarly, ek)) {
+            inboundInEarly += Number(devEarly[ek].in) || 0;
+            inboundOutEarly += Number(devEarly[ek].out) || 0;
+        }
+    }
+    lines.push("入站：↓ " + formatBytes(inboundInEarly) + " ↑ " + formatBytes(inboundOutEarly));
+
+    lines.push(
+        "设备：" + online.length + "/" + peers.length + " 在线 · 直连 " + direct + " / 中继 " + relay
+    );
+
+    var st = getState();
+    var devicesState = st.devices || {};
+    var shown = [];
+    var listed = 0;
+
+    function deviceLine(peer, isOnline) {
+        var short = shortPeerName(peer.name);
+        var entry = devicesState[peerKey(short)] || { in: 0, out: 0 };
+        var pathText = "离线";
+        if (isOnline) {
+            pathText = peer.status === "direct" ? "直连" : "中继 " + derpCity(peer.derpRegionCode);
+        }
+        return (
+            (isOnline ? "● " : "○ ") + short + " · " + pathText +
+            " · ↓ " + formatBytes(entry.in) + " ↑ " + formatBytes(entry.out)
+        );
+    }
+
+    online.sort(function (a, b) {
+        var la = typeof a.lastActivityAgo === "number" ? a.lastActivityAgo : 1e9;
+        var lb = typeof b.lastActivityAgo === "number" ? b.lastActivityAgo : 1e9;
+        return la - lb;
+    });
+
+    for (var o = 0; o < online.length && listed < 6; o++) {
+        shown.push(deviceLine(online[o], true));
+        listed++;
+    }
+    // 离线但仍有累计流量的设备也列出来，避免历史数据看不到
+    for (var f = 0; f < offline.length && listed < 6; f++) {
+        var fe = devicesState[peerKey(offline[f].name)];
+        if (fe && (fe.in > 0 || fe.out > 0 || fe.count > 0)) {
+            shown.push(deviceLine(offline[f], false));
+            listed++;
+        }
+    }
+
+    for (var s = 0; s < shown.length; s++) {
+        lines.push(shown[s]);
+    }
+
+    var wanted = online.length;
+    for (var q = 0; q < offline.length; q++) {
+        var qe = devicesState[peerKey(offline[q].name)];
+        if (qe && (qe.in > 0 || qe.out > 0 || qe.count > 0)) {
+            wanted++;
+        }
+    }
+    if (wanted > listed) {
+        lines.push("… 其余 " + (wanted - listed) + " 台设备未显示");
+    }
+
+    return lines;
 }
 
 function render() {
@@ -551,67 +778,47 @@ function render() {
         return;
     }
 
-    const metrics = parseMetrics(metricsBody || "");
-    const buildInfo = getMetric(metrics, "surge_build_info");
-    const uptime = getMetric(metrics, "surge_uptime_seconds");
-    const memory = getMetric(metrics, "surge_memory_bytes");
-    const activeRequests = getMetric(metrics, "surge_active_requests");
-    const dnsCache = getMetric(metrics, "surge_dns_cache_entries");
-    const activeBans = getMetric(metrics, "surge_active_bans");
+    var metrics = parseMetrics(metricsBody || "");
+    var buildInfo = getMetric(metrics, "surge_build_info");
+    var uptime = getMetric(metrics, "surge_uptime_seconds");
+    var memory = getMetric(metrics, "surge_memory_bytes");
 
-    const version = buildInfo && buildInfo.labels.version ? buildInfo.labels.version : "未知";
-    const build = buildInfo && buildInfo.labels.build ? buildInfo.labels.build : "未知";
+    var version = buildInfo && buildInfo.labels.version ? buildInfo.labels.version : "未知";
+    var build = buildInfo && buildInfo.labels.build ? buildInfo.labels.build : "未知";
 
-    const download = sumMetrics(metrics, "surge_interface_in_bytes_total");
-    const upload = sumMetrics(metrics, "surge_interface_out_bytes_total");
+    var download = sumMetrics(metrics, "surge_interface_in_bytes_total");
+    var upload = sumMetrics(metrics, "surge_interface_out_bytes_total");
 
-    const state = getState();
+    var state = getState();
     saveState(state);
-    const devicesState = state.devices || {};
-    let inboundTotalIn = 0;
-    let inboundTotalOut = 0;
-    const deviceLines = [];
+    var devicesState = state.devices || {};
+    var inboundIn = 0;
+    var inboundOut = 0;
 
-    for (let i = 0; i < devices.length; i++) {
-        const entry = devicesState[devices[i]] || { in: 0, out: 0, count: 0 };
-        inboundTotalIn += entry.in;
-        inboundTotalOut += entry.out;
-        deviceLines.push(
-            devices[i] + "： ↓ " + formatBytes(entry.in) + " ↑ " + formatBytes(entry.out)
-        );
+    for (var key in devicesState) {
+        if (Object.prototype.hasOwnProperty.call(devicesState, key)) {
+            inboundIn += Number(devicesState[key].in) || 0;
+            inboundOut += Number(devicesState[key].out) || 0;
+        }
     }
 
-    const localIn = Math.max(0, download - inboundTotalIn);
-    const localOut = Math.max(0, upload - inboundTotalOut);
+    var localIn = Math.max(0, download - inboundIn);
+    var localOut = Math.max(0, upload - inboundOut);
 
-    const lines = [
+    var lines = [
         "内存占用： " + formatBytes(memory ? memory.value : NaN),
         "",
         "运行时间： " + formatUptime(uptime ? uptime.value : NaN),
         "",
-        "HTTP请求：" +
-            formatNumber(activeRequests ? activeRequests.value : NaN) +
-            " · DNS缓存：" +
-            formatNumber(dnsCache ? dnsCache.value : NaN) +
-            " · 封禁：" +
-            formatNumber(activeBans ? activeBans.value : NaN),
-        "",
-        "本机流量： ↓ " + formatBytes(localIn) + " ↑ " + formatBytes(localOut),
-        "",
-        "Tailscale 入站流量"
+        "流量： ↓ " + formatBytes(localIn) + " ↑ " + formatBytes(localOut),
+        ""
     ];
 
-    if (devices.length === 0) {
-        lines.push("（未配置设备）");
-        lines.push("编辑脚本参数添加设备名");
-    } else {
-        for (let i = 0; i < deviceLines.length; i++) {
-            lines.push(deviceLines[i]);
-        }
+    var tsLines = tailscaleLines();
+    for (var i = 0; i < tsLines.length; i++) {
+        lines.push(tsLines[i]);
     }
 
-    lines.push("");
-    lines.push("总计流量： ↓ " + formatBytes(download) + " ↑ " + formatBytes(upload));
     lines.push("");
     lines.push("Surge " + version + " · Build " + build);
 
@@ -623,10 +830,7 @@ function requestMetrics(key, callback) {
         {
             url: METRICS_URL,
             timeout: REQUEST_TIMEOUT,
-            headers: {
-                Accept: "text/plain",
-                "X-Key": key
-            }
+            headers: { Accept: "text/plain", "X-Key": key }
         },
         function (error, response, body) {
             if (error) {
@@ -642,7 +846,7 @@ function requestMetrics(key, callback) {
     );
 }
 
-// api_key 有大小写误填（surgeTest）会 401，而 Surge iOS 默认口令就是小写 surgetest，自动降级重试
+// api_key 大小写误填（surgeTest）会 401，Surge iOS 默认口令是小写 surgetest，自动降级重试
 function loadMetrics() {
     requestMetrics(apiKey, function (err, body) {
         if (err && String(err).indexOf("401") >= 0 && apiKey !== "surgetest") {
