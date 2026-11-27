@@ -1,5 +1,5 @@
 /*
- * 内存流量Tailscale实时监控（Memory Traffic）v25
+ * 内存流量Tailscale实时监控（Memory Traffic）v26
  *
  * 内存 + 流量 + Tailscale 状态卡。
  * Tailscale 段完全按「Tailscale 状态」卡的标准呈现：
@@ -458,8 +458,12 @@ function tailscaleLines() {
         var item = online[o];
         // 面板纯文本无行内着色；emoji 上色会把点撑大，改用与正文同号的实心/空心圆
         var isDirect = item.status === "direct";
-        var pathText = isDirect ? "直连" : "中继 " + derpCity(item.derpRegionCode);
-        lines.push((isDirect ? "● " : "○ ") + pathText + " · " + shortPeerName(item.name));
+        // 固定前缀「● 中继/直连 · 」保证设备名同列，城市挪到行尾不影响对齐
+        var line = (isDirect ? "● 直连" : "○ 中继") + " · " + shortPeerName(item.name);
+        if (!isDirect) {
+            line += " · " + derpCity(item.derpRegionCode);
+        }
+        lines.push(line);
         listed++;
     }
 
