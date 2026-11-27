@@ -1,4 +1,4 @@
-#!name=内存和流量实时监控
+#!name=内存流量Tailscale实时监控
 #!desc=内存 + 流量 + Tailscale 状态卡：会话状态、本机、DERP、出口、流量（TCP/UDP 连接数）、设备在线数与直连中继分布、设备列表。入站设备自动识别，参数页无需填写任何设备
 #!author=mickeu
 #!category=mickeu
@@ -6,7 +6,7 @@
 #!arguments-desc=\n📌 参数说明\n\n1️⃣ api_host / api_port / api_key\n   仅用于读取 Surge 的内存、运行时间与接口总流量（/v1/metrics，纯文本）。\n   Tailscale 运行时走引擎内置 $httpAPI 直连 MCP，不经过这三个参数，也不产生回环请求。\n\n2️⃣ 无需配置任何设备\n   入站设备名单自动取自 Tailscale 策略运行时的 peer 列表，新设备上线即出现，\n   不需要在参数页添加设备名。Tailscale 策略名同样自动从当前 Profile 的\n   「xxx = tailscale」行识别，策略改名或换配置后会自动重新探测。\n\n⚠️ 必须开启 MCP\n   Surge → 设置 → HTTP API → 打开「MCP」（配置项 http-api-mcp = true）。\n   未开启时 Tailscale 段显示「不可用」，内存与流量照常显示。\n\n⚠️ 填完参数后必须 Reload Profile 让脚本重新加载参数。\n\n\n⚠️ 重要注意事项\n\nTailscale 入站设备（如 iphone-xr）通过本机上网时，若访问被本机 MITM 的域名\n（如 weatherkit.apple.com 苹果天气），会因不信任 Surge 的 MITM CA 证书而连接失败\n（典型现象：入站设备的天气打不开）。\n解决方法：必须安装并信任【接受入站的那台 Surge（本机）】的 MITM CA 证书\n（不能是其他设备导出的证书）。在本机 Surge → 设置 → MITM → 导出描述文件（.mobileconfig），\n安装到入站设备后，到「设置 → 通用 → 关于本机 → 证书信任设置」开启完全信任。
 
 [Panel]
-MemoryTraffic = title="内存和流量实时监控",content="正在获取数据...",style=info,script-name=memory-traffic,update-interval=10
+MemoryTraffic = title="内存流量Tailscale实时监控",content="正在获取数据...",style=info,script-name=memory-traffic,update-interval=10
 
 [Script]
 # 面板脚本：面板可见时刷新显示（只在面板显示时才被调度）

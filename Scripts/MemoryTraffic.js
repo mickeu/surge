@@ -1,5 +1,5 @@
 /*
- * 内存和流量实时监控（Memory Traffic）v18
+ * 内存流量Tailscale实时监控（Memory Traffic）v19
  *
  * 内存 + 流量 + Tailscale 状态卡。
  * Tailscale 段完全按「Tailscale 状态」卡的标准呈现：
@@ -233,7 +233,7 @@ function finishPanel(title, content, style, icon, iconColor) {
 
 var sgFallbackTimer = setTimeout(function () {
     finishPanel(
-        "内存和流量实时监控",
+        "内存流量Tailscale实时监控",
         "请求超时",
         "error",
         "exclamationmark.triangle.fill",
@@ -478,7 +478,7 @@ function render() {
     }
     if (metricsError) {
         finishPanel(
-            "内存和流量实时监控",
+            "内存流量Tailscale实时监控",
             "无法获取数据\n\n" + String(metricsError),
             "error",
             "exclamationmark.triangle.fill",
@@ -513,7 +513,7 @@ function render() {
     lines.push("");
     lines.push("Surge " + version + " · Build " + build);
 
-    finishPanel("内存和流量实时监控", lines.join("\n"), null, "chart.bar.xaxis", "#4A90E2");
+    finishPanel("内存流量Tailscale实时监控", lines.join("\n"), null, "chart.bar.xaxis", "#4A90E2");
 }
 
 function requestMetrics(key, callback) {
