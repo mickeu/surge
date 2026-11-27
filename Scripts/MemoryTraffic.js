@@ -1,5 +1,5 @@
 /*
- * 内存流量Tailscale实时监控（Memory Traffic）v24
+ * 内存流量Tailscale实时监控（Memory Traffic）v25
  *
  * 内存 + 流量 + Tailscale 状态卡。
  * Tailscale 段完全按「Tailscale 状态」卡的标准呈现：
@@ -416,8 +416,7 @@ function tailscaleLines() {
     lines.push("Tailscale 状态 · " + state);
     lines.push("状态：" + state + (stage ? " · " + stage : ""));
 
-    var selfName = shortPeerName(ts.selfName || ts.hostname || "") || "—";
-    lines.push("本机：" + (ts.selfIPv4 || "—") + " · " + selfName);
+    lines.push("本机：" + (ts.selfIPv4 || "—"));
 
     var derpConnections = ts.derpConnections || [];
     var derpConnected = 0;
@@ -454,26 +453,13 @@ function tailscaleLines() {
         return la - lb;
     });
 
-    var nameWidth = 4;
-    for (var w = 0; w < online.length; w++) {
-        var wl = shortPeerName(online[w].name).length;
-        if (wl > nameWidth) nameWidth = wl;
-    }
-    if (nameWidth > 14) nameWidth = 14;
-
-    function padName(name) {
-        var t = shortPeerName(name);
-        while (t.length < nameWidth) t += " ";
-        return t;
-    }
-
     var listed = 0;
     for (var o = 0; o < online.length && listed < 6; o++) {
         var item = online[o];
         // 面板纯文本无行内着色；emoji 上色会把点撑大，改用与正文同号的实心/空心圆
         var isDirect = item.status === "direct";
         var pathText = isDirect ? "直连" : "中继 " + derpCity(item.derpRegionCode);
-        lines.push((isDirect ? "● " : "○ ") + padName(item.name) + " · " + pathText);
+        lines.push((isDirect ? "● " : "○ ") + pathText + " · " + shortPeerName(item.name));
         listed++;
     }
 
