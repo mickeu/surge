@@ -1,5 +1,5 @@
 /*
- * 内存流量Tailscale实时监控（Memory Traffic）v27
+ * 内存流量Tailscale实时监控（Memory Traffic）v28
  *
  * 内存 + 流量 + Tailscale 状态卡。
  * Tailscale 段完全按「Tailscale 状态」卡的标准呈现：
@@ -184,6 +184,45 @@ function derpCity(code) {
         return "未知";
     }
     return DERP_CITY[String(code).toLowerCase()] || String(code).toUpperCase();
+}
+
+// 面板用系统比例字体：名字补空格必须按字宽估算，不能按字符数。
+// 半角空格在 SF Pro 里约 0.26em，全角空格 1em，用两者组合逼近目标宽度。
+var CHAR_WIDTH = {
+    i: 0.28, l: 0.28, j: 0.28, t: 0.33, f: 0.33, r: 0.35,
+    ".": 0.28, ",": 0.28, "-": 0.33, "_": 0.5, " ": 0.26,
+    m: 0.85, w: 0.76, M: 0.85, W: 0.95
+};
+
+function textWidth(text) {
+    var total = 0;
+    for (var i = 0; i < text.length; i++) {
+        var ch = text.charAt(i);
+        if (CHAR_WIDTH[ch] !== undefined) {
+            total += CHAR_WIDTH[ch];
+        } else if (ch >= "0" && ch <= "9") {
+            total += 0.55;
+        } else if (ch >= "A" && ch <= "Z") {
+            total += 0.62;
+        } else {
+            total += 0.55;
+        }
+    }
+    return total;
+}
+
+function padToWidth(text, target) {
+    var rem = target - textWidth(text);
+    var out = text;
+    var full = Math.floor(rem);
+    for (var i = 0; i < full; i++) {
+        out += "\u3000";
+    }
+    var half = Math.round((rem - full) / 0.26);
+    for (var j = 0; j < half; j++) {
+        out += " ";
+    }
+    return out;
 }
 
 function loadState() {
@@ -453,13 +492,20 @@ function tailscaleLines() {
         return la - lb;
     });
 
+    var nameTarget = 0;
+    for (var n = 0; n < online.length; n++) {
+        var nw = textWidth(shortPeerName(online[n].name));
+        if (nw > nameTarget) nameTarget = nw;
+    }
+    nameTarget = Math.ceil(nameTarget * 10) / 10;
+
     var listed = 0;
     for (var o = 0; o < online.length && listed < 6; o++) {
         var item = online[o];
         // 面板纯文本无行内着色；emoji 上色会把点撑大，改用与正文同号的实心/空心圆
         var isDirect = item.status === "direct";
         var pathText = isDirect ? "直连" : "中继 " + derpCity(item.derpRegionCode);
-        lines.push((isDirect ? "● " : "○ ") + shortPeerName(item.name) + " · " + pathText);
+        lines.push((isDirect ? "● " : "○ ") + padToWidth(shortPeerName(item.name), nameTarget) + " · " + pathText);
         listed++;
     }
 
