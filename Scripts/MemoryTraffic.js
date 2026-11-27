@@ -1,5 +1,5 @@
 /*
- * 内存和流量实时监控（Memory Traffic）v17
+ * 内存和流量实时监控（Memory Traffic）v18
  *
  * 内存 + 流量 + Tailscale 状态卡。
  * Tailscale 段完全按「Tailscale 状态」卡的标准呈现：
@@ -439,6 +439,10 @@ function tailscaleLines() {
         exitText = exit.status;
     }
     lines.push("出口：" + exitText + (exit.status ? " (" + exit.status + ")" : ""));
+
+    var tcp = ts.activeTCPConnections === undefined ? "—" : ts.activeTCPConnections;
+    var udp = ts.activeUDPConnections === undefined ? "—" : ts.activeUDPConnections;
+    lines.push("连接：TCP " + tcp + " / UDP " + udp);
 
     lines.push(
         "设备：" + online.length + "/" + peers.length + " 在线 · 直连 " + direct + " / 中继 " + relay
