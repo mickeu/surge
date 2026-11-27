@@ -27,7 +27,10 @@ POLL = float(os.environ.get("MUSEQ_POLL", "2"))
 TIMEOUT = int(os.environ.get("MUSEQ_CMD_TIMEOUT", "900"))
 WORKDIR = os.environ.get("MUSEQ_WORKDIR", os.path.expanduser("~"))
 DRY = os.environ.get("MUSEQ_DRY", "") == "1"
-UA = "muse-agent/2.0"
+UA = "muse-agent/3.0"
+# 鉴权载体：query 默认（?k=）。hatch-egress-proxy 会把带 X-Token 头的请求黑洞掉，
+# 头里有疑似凭据就挂起不返回，所以不能用 header 作为默认。
+AUTH = os.environ.get("MUSEQ_AUTH", "query").strip().lower()
 
 
 def mask_proxy(p):
@@ -46,8 +49,11 @@ def mask_proxy(p):
 def call(path, payload=None, timeout=45):
     """返回 (http_code, body)。走 curl，代理与认证交给 curl 处理。"""
     args = ["curl", "-sS", "-m", str(timeout - 5),
-            "-H", "User-Agent: " + UA, "-H", "X-Token: " + TOKEN,
-            "-w", "\n%{http_code}"]
+            "-H", "User-Agent: " + UA, "-w", "\n%{http_code}"]
+    if AUTH == "header":
+        args += ["-H", "X-Client-Id: " + TOKEN]
+    elif AUTH == "cookie":
+        args += ["-H", "Cookie: mq=" + TOKEN]
     if PROXY:
         args += ["--proxy", PROXY]
     data = None
@@ -55,7 +61,11 @@ def call(path, payload=None, timeout=45):
         data = json.dumps(payload)
         args += ["-X", "POST", "-H", "Content-Type: application/json",
                  "--data-binary", "@-"]
-    args.append(URL + path)
+    if AUTH == "query":
+        sep = "&" if "?" in path else "?"
+        args.append(URL + path + sep + "k=" + TOKEN)
+    else:
+        args.append(URL + path)
     p = subprocess.run(args, input=data, capture_output=True, text=True, timeout=timeout)
     if p.returncode != 0:
         raise RuntimeError((p.stderr or "").strip()[:200] or ("curl exit %d" % p.returncode))
@@ -69,8 +79,8 @@ def call(path, payload=None, timeout=45):
 def main():
     if not URL or not TOKEN:
         sys.exit("需要 MUSEQ_URL 与 MUSEQ_TOKEN")
-    print("agent start url=%s proxy=%s poll=%ss dry=%s" %
-          (URL, mask_proxy(PROXY), POLL, DRY), flush=True)
+    print("agent start url=%s proxy=%s poll=%ss dry=%s auth=%s" %
+          (URL, mask_proxy(PROXY), POLL, DRY, AUTH), flush=True)
 
     while True:
         try:
