@@ -1,5 +1,5 @@
 /*
- * 内存流量Tailscale实时监控（Memory Traffic）v39
+ * 内存流量Tailscale实时监控（Memory Traffic）v40
  *
  * 内存 + 流量 + Tailscale 状态卡。
  * Tailscale 段完全按「Tailscale 状态」卡的标准呈现：
@@ -589,35 +589,22 @@ function render() {
     var download = sumMetrics(metrics, "surge_interface_in_bytes_total");
     var upload = sumMetrics(metrics, "surge_interface_out_bytes_total");
 
-    // Surge iOS 引擎进程的内存上限按 50 MB 计；20 格、每格 5%，分两行上下叠放
+    // Surge iOS 引擎进程的内存上限按 50 MB 计；单行 20 格、每格 5%
     var memoryBytes = memory && isFiniteNumber(memory.value) ? Number(memory.value) : NaN;
     var memoryBar = "";
-    var memoryBar2 = "";
     var barPrefix = "内存： " + formatBytes(memoryBytes) + " ";
     if (isFiniteNumber(memoryBytes)) {
         var MEMORY_LIMIT = 50 * 1024 * 1024;
         var pct = Math.max(0, Math.min(100, (memoryBytes / MEMORY_LIMIT) * 100));
         var filled = Math.max(0, Math.min(20, Math.round(pct / 5)));
-        for (var fi = 0; fi < 10; fi++) {
-            memoryBar += fi < filled ? "▰" : "▱";
-        }
-        for (var fj = 0; fj < 10; fj++) {
-            memoryBar2 += 10 + fj < filled ? "▰" : "▱";
+        for (var fi = 0; fi < 20; fi++) {
+            memoryBar += fi < filled ? "▪" : "▫";
         }
         memoryBar = " " + memoryBar;
     }
 
-    // 第二行格子缩进到第一行格子起点：比例字体下按字宽换算，0.23em 为半角空格
-    var indentCount = Math.max(0, Math.round(textWidth(barPrefix) / 0.23));
-    var barIndent = "";
-    for (var mi = 0; mi < indentCount; mi++) {
-        barIndent += " ";
-    }
-    memoryBar2 = memoryBar2 ? barIndent + memoryBar2 : "";
-
     var lines = [
         barPrefix + memoryBar,
-        memoryBar2,
         "运行： " + formatUptime(uptime ? uptime.value : NaN),
         "流量： ↓ " + formatBytes(download) + " ↑ " + formatBytes(upload),
         ""
