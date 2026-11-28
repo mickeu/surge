@@ -1,5 +1,5 @@
 /*
- * 内存流量Tailscale实时监控（Memory Traffic）v63
+ * 内存流量Tailscale实时监控（Memory Traffic）v64
  *
  * 内存 + 流量 + Tailscale 状态卡。
  * Tailscale 段完全按「Tailscale 状态」卡的标准呈现：
@@ -625,6 +625,7 @@ function render() {
     }
 
     lines.push("");
+    lines.push("脚本 v64 · 图标 speedometer");
     lines.push("Surge " + version + " · Build " + build);
 
     finishPanel("内存流量Tailscale实时监控", lines.join("\n"), null, "speedometer", "#4A90E2");
