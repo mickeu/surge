@@ -1,5 +1,5 @@
 /*
- * 内存流量Tailscale实时监控（Memory Traffic）v48
+ * 内存流量Tailscale实时监控（Memory Traffic）v49
  *
  * 内存 + 流量 + Tailscale 状态卡。
  * Tailscale 段完全按「Tailscale 状态」卡的标准呈现：
@@ -596,19 +596,26 @@ function render() {
     if (isFiniteNumber(memoryBytes)) {
         var MEMORY_LIMIT = 50 * 1024 * 1024;
         var pct = Math.max(0, Math.min(100, (memoryBytes / MEMORY_LIMIT) * 100));
-        // 不分格的连续长条：实心 █ 过渡 ▒ 底槽 ░，边界落在哪一段就哪段变浅
-        var rate = pct / 100;
-        var segs = 10;
-        for (var fi = 0; fi < segs; fi++) {
-            var center = (fi + 0.5) / segs;
-            if (center <= rate - 0.05) {
-                memoryBar += "█";
-            } else if (center < rate + 0.05) {
-                memoryBar += "▒";
-            } else {
-                memoryBar += "░";
-            }
+        // 不分格：实心块从左连续生长，右端 ▏ 标出总长边界，中间用空白而不是点阵底槽
+        var EIGHTHS = ["", "\u258F", "\u258E", "\u258D", "\u258C", "\u258B", "\u258A", "\u2589"];
+        var total = 10;
+        var units = Math.round((pct / 100) * total * 8);
+        if (units > total * 8) {
+            units = total * 8;
         }
+        var fullBlocks = Math.floor(units / 8);
+        var restEighths = units % 8;
+        for (var fi = 0; fi < fullBlocks; fi++) {
+            memoryBar += "\u2588";
+        }
+        if (restEighths > 0) {
+            memoryBar += EIGHTHS[restEighths];
+        }
+        var used = fullBlocks + (restEighths > 0 ? 1 : 0);
+        for (var fj = used; fj < total; fj++) {
+            memoryBar += " ";
+        }
+        memoryBar += "\u258F";
         memoryBar = " " + memoryBar;
     }
 
