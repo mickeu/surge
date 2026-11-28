@@ -1,5 +1,5 @@
 /*
- * 内存流量Tailscale实时监控（Memory Traffic）v51
+ * 内存流量Tailscale实时监控（Memory Traffic）v52
  *
  * 内存 + 流量 + Tailscale 状态卡。
  * Tailscale 段完全按「Tailscale 状态」卡的标准呈现：
@@ -597,33 +597,23 @@ function render() {
     var download = sumMetrics(metrics, "surge_interface_in_bytes_total");
     var upload = sumMetrics(metrics, "surge_interface_out_bytes_total");
 
-    // Surge iOS 引擎进程的内存上限按 50 MB 计；三行电池框：上下边框 + 内部按比例填充
+    // Surge iOS 引擎进程的内存上限按 50 MB 计；单行细框长条，按比例由空心变实心
     var memoryBytes = memory && isFiniteNumber(memory.value) ? Number(memory.value) : NaN;
     var barPrefix = "内存： " + formatBytes(memoryBytes) + " ";
-    var boxTop = "";
-    var boxMid = "";
-    var boxBot = "";
-    var boxIndent = "";
+    var memoryBar = "";
     if (isFiniteNumber(memoryBytes)) {
         var MEMORY_LIMIT = 50 * 1024 * 1024;
         var pct = Math.max(0, Math.min(100, (memoryBytes / MEMORY_LIMIT) * 100));
-        var inner = 10;
-        var cells = inner - 2;
-        var filled = Math.max(0, Math.min(cells, Math.round((pct / 100) * cells)));
-        var body = "";
-        for (var fi = 0; fi < cells; fi++) {
-            body += fi < filled ? "\u2588" : " ";
+        var segCount = 10;
+        var filled = Math.max(0, Math.min(segCount, Math.round((pct / 100) * segCount)));
+        for (var fi = 0; fi < segCount; fi++) {
+            memoryBar += fi < filled ? "\u25AC" : "\u25AD";
         }
-        boxTop = "\u250C" + repeatChar("\u2500", inner) + "\u2510";
-        boxMid = "\u2502 " + body + " \u2502";
-        boxBot = "\u2514" + repeatChar("\u2500", inner) + "\u2518";
-        boxIndent = repeatChar(" ", Math.max(0, Math.round(textWidth(barPrefix) / 0.23)));
+        memoryBar = " " + memoryBar;
     }
 
     var lines = [
-        barPrefix + boxTop,
-        boxIndent + boxMid,
-        boxIndent + boxBot,
+        barPrefix + memoryBar,
         "运行： " + formatUptime(uptime ? uptime.value : NaN),
         "流量： ↓ " + formatBytes(download) + " ↑ " + formatBytes(upload),
         ""
