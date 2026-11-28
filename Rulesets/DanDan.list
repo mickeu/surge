@@ -10,6 +10,12 @@ DOMAIN-SUFFIX,develop202.github.io
 DOMAIN-SUFFIX,s2.bfllvip.com
 IP-CIDR,38.76.202.248/32,no-resolve
 
+# 1.0.2 起主后端改为 https 域名（同一台机），备用站另起一台
+DOMAIN-SUFFIX,supabase.opengl.top
+DOMAIN-SUFFIX,opengl.top
+DOMAIN-SUFFIX,sb.danboxingqiu.cn
+DOMAIN-SUFFIX,danboxingqiu.cn
+
 # 补充视频资源站域名（用域名规则直连，避免 IP-CIDR 依赖 DNS）
 # 飞飞资源 ffzy
 DOMAIN-SUFFIX,ffzy5.tv

@@ -1,18 +1,19 @@
 /****************************** 
 脚本功能：蛋蛋不语 - 解锁会员
-Version  : v1.1.0
-更新时间：2026-06-01
-作者：Curtinp118
+Version  : v1.2.0
+更新时间：2026-11-28
+作者：Curtinp118 / mickeu
 Platform : Quantumult X / Loon / Surge
 
-使用说明：
-添加到重写 解锁蛋蛋不语VIP会员功能。
+适配：1.0.2 起 App 主后端从 http://38.76.202.248:8000 改为
+https://supabase.opengl.top（同一实例），备用 https://sb.danboxingqiu.cn。
+模块里对两种 host 都挂了本脚本。
 
 [rewrite_local]
-^http:\/\/38\.76\.202\.248:8000\/.*profiles.* url script-response-body https://raw.githubusercontent.com/curtinp118/Scripthub/main/scripts/dandanvip/dandanvip_unlock.js
+^https?:\/\/(38\.76\.202\.248:8000|supabase\.opengl\.top|sb\.danboxingqiu\.cn)\/.*profiles.* url script-response-body https://raw.githubusercontent.com/mickeu/surge/main/Scripts/DanDan/dandanvip_unlock.js?v=3
 
 [MITM]
-hostname = 38.76.202.248
+hostname = 38.76.202.248, supabase.opengl.top, sb.danboxingqiu.cn
 *******************************/
 
 // ========== 三端适配层 ==========
@@ -52,11 +53,14 @@ var logOnce = function (msg) { console.log("[蛋蛋] " + msg); };
 var VIP_PATCH = {
   vip_status: true,
   vip_level: 3,
-  vip_expire_at: "2099-09-19T22:21:06.147807+00:00"
+  vip_expire_at: "2099-09-19T22:21:06.147807+00:00",
+  is_vip: true
 };
 
 function patch(obj) {
   if (!obj || typeof obj !== "object") return obj;
+  // 备用站 503 时返回 {"message":"standby"}，不是用户资料，原样放行
+  if (obj.message && obj.vip_status === undefined && obj.id === undefined) return obj;
   return Object.assign(obj, VIP_PATCH);
 }
 
@@ -77,7 +81,7 @@ function run() {
   }
 
   data = Array.isArray(data) ? data.map(patch) : patch(data);
-  logOnce("unlocked");
+  logOnce("unlocked " + (Array.isArray(data) ? data.length : 1) + " profile(s)");
   done(data);
 }
 
