@@ -1,4 +1,4 @@
-#!name=内存流量Tailscale实时监控 v16
+#!name=内存流量Tailscale实时监控
 #!desc=内存 + 流量 + Tailscale 状态卡：会话状态、本机、DERP、出口、流量（TCP/UDP 连接数）、设备在线数与直连中继分布、设备列表。入站设备自动识别，参数页无需填写任何设备
 #!author=mickeu
 #!category=mickeu
