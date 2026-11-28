@@ -1,5 +1,5 @@
 /*
- * 内存流量Tailscale实时监控（Memory Traffic）v52
+ * 内存流量Tailscale实时监控（Memory Traffic）v53
  *
  * 内存 + 流量 + Tailscale 状态卡。
  * Tailscale 段完全按「Tailscale 状态」卡的标准呈现：
@@ -597,7 +597,7 @@ function render() {
     var download = sumMetrics(metrics, "surge_interface_in_bytes_total");
     var upload = sumMetrics(metrics, "surge_interface_out_bytes_total");
 
-    // Surge iOS 引擎进程的内存上限按 50 MB 计；单行细框长条，按比例由空心变实心
+    // Surge iOS 引擎进程的内存上限按 50 MB 计；单行斜块条，按比例实心/空心
     var memoryBytes = memory && isFiniteNumber(memory.value) ? Number(memory.value) : NaN;
     var barPrefix = "内存： " + formatBytes(memoryBytes) + " ";
     var memoryBar = "";
@@ -607,7 +607,7 @@ function render() {
         var segCount = 10;
         var filled = Math.max(0, Math.min(segCount, Math.round((pct / 100) * segCount)));
         for (var fi = 0; fi < segCount; fi++) {
-            memoryBar += fi < filled ? "\u25AC" : "\u25AD";
+            memoryBar += fi < filled ? "\u25B0" : "\u25B1";
         }
         memoryBar = " " + memoryBar;
     }
