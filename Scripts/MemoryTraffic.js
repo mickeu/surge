@@ -1,5 +1,5 @@
 /*
- * 内存流量Tailscale实时监控（Memory Traffic）v47
+ * 内存流量Tailscale实时监控（Memory Traffic）v48
  *
  * 内存 + 流量 + Tailscale 状态卡。
  * Tailscale 段完全按「Tailscale 状态」卡的标准呈现：
@@ -596,9 +596,18 @@ function render() {
     if (isFiniteNumber(memoryBytes)) {
         var MEMORY_LIMIT = 50 * 1024 * 1024;
         var pct = Math.max(0, Math.min(100, (memoryBytes / MEMORY_LIMIT) * 100));
-        var filled = Math.max(0, Math.min(10, Math.round(pct / 10)));
-        for (var fi = 0; fi < 10; fi++) {
-            memoryBar += fi < filled ? "▬" : "▭";
+        // 不分格的连续长条：实心 █ 过渡 ▒ 底槽 ░，边界落在哪一段就哪段变浅
+        var rate = pct / 100;
+        var segs = 10;
+        for (var fi = 0; fi < segs; fi++) {
+            var center = (fi + 0.5) / segs;
+            if (center <= rate - 0.05) {
+                memoryBar += "█";
+            } else if (center < rate + 0.05) {
+                memoryBar += "▒";
+            } else {
+                memoryBar += "░";
+            }
         }
         memoryBar = " " + memoryBar;
     }
