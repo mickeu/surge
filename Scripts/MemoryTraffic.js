@@ -1,5 +1,5 @@
 /*
- * 内存流量Tailscale实时监控（Memory Traffic）v54
+ * 内存流量Tailscale实时监控（Memory Traffic）v55
  *
  * 内存 + 流量 + Tailscale 状态卡。
  * Tailscale 段完全按「Tailscale 状态」卡的标准呈现：
@@ -607,7 +607,7 @@ function render() {
         var segCount = 10;
         var filled = Math.max(0, Math.min(segCount, Math.round((pct / 100) * segCount)));
         for (var fi = 0; fi < segCount; fi++) {
-            memoryBar += fi < filled ? "\u25A0" : "\u25A1";
+            memoryBar += fi < filled ? "\u25AA" : "\u25AB";
         }
         memoryBar = " " + memoryBar;
     }
