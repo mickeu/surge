@@ -1,5 +1,5 @@
 /*
- * 内存流量Tailscale实时监控（Memory Traffic）v50
+ * 内存流量Tailscale实时监控（Memory Traffic）v51
  *
  * 内存 + 流量 + Tailscale 状态卡。
  * Tailscale 段完全按「Tailscale 状态」卡的标准呈现：
@@ -237,6 +237,14 @@ function padToWidth(text, target) {
     var out = text;
     for (var i = 0; i < count; i++) {
         out += " ";
+    }
+    return out;
+}
+
+function repeatChar(ch, n) {
+    var out = "";
+    for (var i = 0; i < n; i++) {
+        out += ch;
     }
     return out;
 }
@@ -589,39 +597,33 @@ function render() {
     var download = sumMetrics(metrics, "surge_interface_in_bytes_total");
     var upload = sumMetrics(metrics, "surge_interface_out_bytes_total");
 
-    // Surge iOS 引擎进程的内存上限按 50 MB 计；单行 10 格、每格 10%
+    // Surge iOS 引擎进程的内存上限按 50 MB 计；三行电池框：上下边框 + 内部按比例填充
     var memoryBytes = memory && isFiniteNumber(memory.value) ? Number(memory.value) : NaN;
-    var memoryBar = "";
     var barPrefix = "内存： " + formatBytes(memoryBytes) + " ";
+    var boxTop = "";
+    var boxMid = "";
+    var boxBot = "";
+    var boxIndent = "";
     if (isFiniteNumber(memoryBytes)) {
         var MEMORY_LIMIT = 50 * 1024 * 1024;
         var pct = Math.max(0, Math.min(100, (memoryBytes / MEMORY_LIMIT) * 100));
-        // 不分格：实心块从左连续生长，右端 ▏ 标出总长边界，中间用空白而不是点阵底槽
-        var EIGHTHS = ["", "\u258F", "\u258E", "\u258D", "\u258C", "\u258B", "\u258A", "\u2589"];
-        var total = 10;
-        var units = Math.round((pct / 100) * total * 8);
-        if (units > total * 8) {
-            units = total * 8;
+        var inner = 10;
+        var cells = inner - 2;
+        var filled = Math.max(0, Math.min(cells, Math.round((pct / 100) * cells)));
+        var body = "";
+        for (var fi = 0; fi < cells; fi++) {
+            body += fi < filled ? "\u2588" : " ";
         }
-        var fullBlocks = Math.floor(units / 8);
-        var restEighths = units % 8;
-        for (var fi = 0; fi < fullBlocks; fi++) {
-            memoryBar += "\u2588";
-        }
-        if (restEighths > 0) {
-            memoryBar += EIGHTHS[restEighths];
-        }
-        var used = fullBlocks + (restEighths > 0 ? 1 : 0);
-        for (var fj = used; fj < total; fj++) {
-            memoryBar += " ";
-        }
-        // 左右各一根细竖线当框，把整条围成一个槽
-        memoryBar = "\u2502" + memoryBar + "\u2502";
-        memoryBar = " " + memoryBar;
+        boxTop = "\u250C" + repeatChar("\u2500", inner) + "\u2510";
+        boxMid = "\u2502 " + body + " \u2502";
+        boxBot = "\u2514" + repeatChar("\u2500", inner) + "\u2518";
+        boxIndent = repeatChar(" ", Math.max(0, Math.round(textWidth(barPrefix) / 0.23)));
     }
 
     var lines = [
-        barPrefix + memoryBar,
+        barPrefix + boxTop,
+        boxIndent + boxMid,
+        boxIndent + boxBot,
         "运行： " + formatUptime(uptime ? uptime.value : NaN),
         "流量： ↓ " + formatBytes(download) + " ↑ " + formatBytes(upload),
         ""
