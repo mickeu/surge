@@ -50,10 +50,11 @@ var logOnce = function (msg) { console.log("[蛋蛋] " + msg); };
 
 // 只解锁会员字段。原版这里还硬改 username 和 avatar_url 成作者的 TG 号与图床，
 // 会员功能用不到，删掉以免动用户的昵称和头像
+// 9999 年到期 ≈ 剩余 290 万天，App 按天数显示也不会溢出
 var VIP_PATCH = {
   vip_status: true,
   vip_level: 3,
-  vip_expire_at: "2099-09-19T22:21:06.147807+00:00",
+  vip_expire_at: "9999-12-31T23:59:59.999999+00:00",
   is_vip: true
 };
 
